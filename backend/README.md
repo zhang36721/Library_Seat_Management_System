@@ -6,7 +6,6 @@
 
 - **框架**: FastAPI
 - **数据存储**: JSON 文件（轻量级，无需数据库）
-- **认证**: JWT
 - **验证**: Pydantic
 
 ## 目录结构
@@ -31,7 +30,7 @@ backend/
 ### JSON 文件存储
 - 当前版本使用 JSON 文件作为轻量数据表
 - 无需安装和配置数据库，降低部署复杂度
-- 适合小规模场景（3 个座位）
+- 适合当前 3 个座位的小规模场景
 
 ### 数据模板（data_templates/）
 - 可提交到 GitHub 的示例 JSON 模板
@@ -43,6 +42,15 @@ backend/
 - **不提交到 GitHub**
 - 通过环境变量 `DATA_DIR` 指定实际数据目录
 - 云端建议路径：`/var/lib/library_seat/data/`
+
+## 主要功能
+
+- 接收 ESP32S3 上传的座位状态和刷卡事件
+- 读取 JSON 数据文件
+- 更新 seat 状态
+- 追加 card_logs 刷卡记录
+- 提供 Web 前端查询接口
+- 提供设备状态查询接口
 
 ## 快速开始
 
@@ -64,7 +72,7 @@ cp .env.example .env
 
 ### 3. 初始化数据
 
-首次运行时，后端会自动从 `data_templates/` 复制模板到 `runtime_data/`。
+首次运行时，后端会自动从 `data_templates/` 复制模板文件到此目录。
 
 ### 4. 启动服务
 
@@ -81,15 +89,6 @@ uvicorn main:app --host 0.0.0.0 --port 8000
 启动服务后访问：
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
-
-## 主要功能
-
-- 用户管理（注册、登录、权限）
-- 座位状态管理
-- 预约管理
-- 签到管理
-- 数据统计
-- 设备管理
 
 ## 开发规范
 
