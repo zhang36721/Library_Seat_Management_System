@@ -1,0 +1,19 @@
+# 运行时数据目录
+
+本目录用于存放后端服务的运行时 JSON 数据文件。
+
+## 说明
+
+- 此目录中的文件**不会**提交到 GitHub
+- 真实运行数据通过 `.gitignore` 规则排除
+- 首次运行时，后端会从 `data_templates/` 复制模板文件到此目录
+- 可通过环境变量 `DATA_DIR` 指定其他数据目录
+- 云端部署建议将数据目录放在 `/var/lib/library_seat/data/`
+
+## 包含的文件（运行时生成）
+
+- `seats.json` - 座位状态数据
+- `cards.json` - RFID 卡片信息
+- `card_logs.json` - 刷卡记录
+- `device_status.json` - 设备状态
+- `system_config.json` - 系统配置

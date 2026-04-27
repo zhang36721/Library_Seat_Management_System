@@ -5,8 +5,7 @@
 ## 技术栈
 
 - **框架**: FastAPI
-- **ORM**: SQLAlchemy
-- **数据库**: MySQL / PostgreSQL
+- **数据存储**: JSON 文件（轻量级，无需数据库）
 - **认证**: JWT
 - **验证**: Pydantic
 
@@ -16,15 +15,34 @@
 backend/
 ├── app/
 │   ├── api/          # API 路由
-│   ├── models/       # 数据模型
+│   ├── models/       # 数据模型（JSON 文件操作）
 │   ├── schemas/      # Pydantic 模型
 │   ├── services/     # 业务逻辑
 │   └── core/         # 核心配置
-├── database/         # 数据库迁移脚本
+├── data_templates/   # JSON 数据模板（可提交到 Git）
+├── runtime_data/     # 运行时数据（不提交到 Git）
 ├── main.py           # 应用入口
 ├── requirements.txt  # 依赖
 └── README.md         # 本文件
 ```
+
+## 数据存储方案
+
+### JSON 文件存储
+- 当前版本使用 JSON 文件作为轻量数据表
+- 无需安装和配置数据库，降低部署复杂度
+- 适合小规模场景（3 个座位）
+
+### 数据模板（data_templates/）
+- 可提交到 GitHub 的示例 JSON 模板
+- 包含数据结构定义和示例数据
+- 用于初始化新环境
+
+### 运行时数据（runtime_data/）
+- 本地或云端真实运行数据
+- **不提交到 GitHub**
+- 通过环境变量 `DATA_DIR` 指定实际数据目录
+- 云端建议路径：`/var/lib/library_seat/data/`
 
 ## 快速开始
 
@@ -42,12 +60,11 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-### 3. 数据库初始化
+配置 `DATA_DIR` 指定 JSON 数据目录。
 
-```bash
-# 运行数据库迁移
-alembic upgrade head
-```
+### 3. 初始化数据
+
+首次运行时，后端会自动从 `data_templates/` 复制模板到 `runtime_data/`。
 
 ### 4. 启动服务
 
@@ -56,7 +73,7 @@ alembic upgrade head
 uvicorn main:app --reload
 
 # 生产模式
-gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker
+uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
 ## API 文档
@@ -80,3 +97,7 @@ gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker
 - 使用类型注解
 - 编写单元测试
 - API 遵循 RESTful 规范
+
+## 后期扩展
+
+如果数据量变大，可迁移到 SQLite 或 MySQL 数据库。

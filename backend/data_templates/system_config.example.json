@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "description": "系统配置模板",
+  "config": {
+    "system_name": "图书馆座位管理系统",
+    "total_seats": 3,
+    "check_in_timeout": 15,
+    "auto_release_time": 30,
+    "gate_open_duration": 3,
+    "admin_users": [],
+    "maintenance_mode": false,
+    "log_retention_days": 30
+  },
+  "time_settings": {
+    "timezone": "Asia/Shanghai",
+    "opening_time": "08:00",
+    "closing_time": "22:00"
+  },
+  "notification_settings": {
+    "email_enabled": false,
+    "sms_enabled": false
+  }
+}

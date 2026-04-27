@@ -4,8 +4,7 @@
 
 ### 1.1 技术栈
 - **框架**: FastAPI
-- **ORM**: SQLAlchemy
-- **数据库**: MySQL / PostgreSQL
+- **数据存储**: JSON 文件（轻量级，无需数据库）
 - **认证**: JWT
 - **文档**: Swagger / ReDoc
 
@@ -14,11 +13,12 @@
 backend/
 ├── app/
 │   ├── api/          # API 路由
-│   ├── models/       # 数据模型
+│   ├── models/       # 数据模型（JSON 文件操作）
 │   ├── schemas/      # Pydantic 模型
 │   ├── services/     # 业务逻辑
 │   └── core/         # 核心配置
-├── database/         # 数据库迁移脚本
+├── data_templates/   # JSON 数据模板
+├── runtime_data/     # 运行时数据（不提交到 Git）
 ├── main.py           # 应用入口
 ├── requirements.txt  # 依赖
 └── README.md         # 说明文档
@@ -32,12 +32,18 @@ backend/
 - 数据统计
 - 设备管理
 
+### 1.4 数据存储方案
+- 当前版本使用 JSON 文件作为轻量数据表
+- 无需安装和配置数据库，降低部署复杂度
+- 适合当前 3 个座位的小规模场景
+- 后期如果数据量变大，可迁移到 SQLite 或 MySQL
+
 ## 2. 前端架构
 
 ### 2.1 技术栈
 - **框架**: Vue 3 (Composition API)
 - **构建工具**: Vite
-- **UI 组件库**: Element Plus
+- **样式**: 原生 CSS / 自定义组件
 - **状态管理**: Pinia
 - **路由**: Vue Router
 - **HTTP 客户端**: Axios
@@ -64,37 +70,42 @@ frontend/
 - 统计报表页
 - 系统设置页
 
-## 3. 数据库设计
+## 3. 数据结构
 
-### 3.1 主要表结构
+### 3.1 座位数据
+```json
+{
+  "id": 1,
+  "name": "座位A",
+  "status": 0,
+  "node_id": 1,
+  "description": "靠窗座位"
+}
+```
 
-#### 用户表 (users)
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| id | INT | 主键 |
-| username | VARCHAR(50) | 用户名 |
-| password | VARCHAR(255) | 密码哈希 |
-| role | ENUM | 角色(admin/student) |
-| created_at | DATETIME | 创建时间 |
+### 3.2 卡片数据
+```json
+{
+  "card_id": "A1B2C3D4E5",
+  "user_name": "张三",
+  "user_id": "2024001",
+  "status": "active",
+  "created_at": "2024-01-01T00:00:00Z"
+}
+```
 
-#### 座位表 (seats)
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| id | INT | 主键 |
-| seat_code | VARCHAR(20) | 座位编号 |
-| location | VARCHAR(100) | 位置描述 |
-| status | INT | 当前状态 |
-| node_id | INT | 关联节点ID |
-
-#### 预约记录表 (reservations)
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| id | INT | 主键 |
-| user_id | INT | 用户ID |
-| seat_id | INT | 座位ID |
-| start_time | DATETIME | 开始时间 |
-| end_time | DATETIME | 结束时间 |
-| status | INT | 预约状态 |
+### 3.3 刷卡记录
+```json
+{
+  "id": 1,
+  "card_id": "A1B2C3D4E5",
+  "user_name": "张三",
+  "action": "check_in",
+  "seat_id": 1,
+  "timestamp": "2024-01-15T08:30:00Z",
+  "result": "success"
+}
+```
 
 ## 4. API 设计规范
 

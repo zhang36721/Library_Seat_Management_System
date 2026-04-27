@@ -1,0 +1,25 @@
+{
+  "version": "1.0",
+  "description": "RFID 卡片信息模板",
+  "cards": [
+    {
+      "card_id": "A1B2C3D4E5",
+      "user_name": "张三",
+      "user_id": "2024001",
+      "status": "active",
+      "created_at": "2024-01-01T00:00:00Z"
+    },
+    {
+      "card_id": "B2C3D4E5F6",
+      "user_name": "李四",
+      "user_id": "2024002",
+      "status": "active",
+      "created_at": "2024-01-02T00:00:00Z"
+    }
+  ],
+  "status_codes": {
+    "active": "有效",
+    "inactive": "无效",
+    "lost": "挂失"
+  }
+}

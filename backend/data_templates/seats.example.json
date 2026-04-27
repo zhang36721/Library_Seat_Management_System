@@ -1,0 +1,32 @@
+{
+  "version": "1.0",
+  "description": "座位信息模板",
+  "seats": [
+    {
+      "id": 1,
+      "name": "座位A",
+      "status": 0,
+      "node_id": 1,
+      "description": "靠窗座位"
+    },
+    {
+      "id": 2,
+      "name": "座位B",
+      "status": 0,
+      "node_id": 2,
+      "description": "中间座位"
+    },
+    {
+      "id": 3,
+      "name": "座位C",
+      "status": 0,
+      "node_id": 3,
+      "description": "靠门座位"
+    }
+  ],
+  "status_codes": {
+    "0": "空闲",
+    "1": "占用",
+    "2": "疑似占用/异常"
+  }
+}

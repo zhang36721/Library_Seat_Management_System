@@ -43,8 +43,16 @@ build/
 logs/
 *.log
 
+# Runtime JSON data
+backend/runtime_data/*
+!backend/runtime_data/.gitkeep
+
+# Local data files
+*.local.json
+
 # Secrets and keys
 .env
+.env.*
 *.pem
 *.key
 secrets/

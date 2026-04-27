@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "description": "刷卡记录模板",
+  "logs": [
+    {
+      "id": 1,
+      "card_id": "A1B2C3D4E5",
+      "user_name": "张三",
+      "action": "check_in",
+      "seat_id": 1,
+      "timestamp": "2024-01-15T08:30:00Z",
+      "result": "success"
+    },
+    {
+      "id": 2,
+      "card_id": "A1B2C3D4E5",
+      "user_name": "张三",
+      "action": "check_out",
+      "seat_id": 1,
+      "timestamp": "2024-01-15T11:45:00Z",
+      "result": "success"
+    }
+  ],
+  "action_codes": {
+    "check_in": "签到",
+    "check_out": "签退"
+  },
+  "result_codes": {
+    "success": "成功",
+    "failed": "失败",
+    "rejected": "拒绝"
+  }
+}

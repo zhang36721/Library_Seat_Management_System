@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "description": "设备状态模板",
+  "devices": [
+    {
+      "device_id": 1,
+      "name": "主控端",
+      "type": "main_controller",
+      "status": "online",
+      "last_heartbeat": "2024-01-15T12:00:00Z",
+      "firmware_version": "1.0.0",
+      "ip_address": "192.168.1.100"
+    },
+    {
+      "device_id": 2,
+      "name": "网关",
+      "type": "esp32s3_gateway",
+      "status": "online",
+      "last_heartbeat": "2024-01-15T12:00:00Z",
+      "firmware_version": "1.0.0",
+      "ip_address": "192.168.1.101"
+    }
+  ],
+  "status_codes": {
+    "online": "在线",
+    "offline": "离线",
+    "error": "故障"
+  }
+}
