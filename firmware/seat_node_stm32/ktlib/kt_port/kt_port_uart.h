@@ -3,7 +3,6 @@
 
 #include "usart.h"
 #include <stdint.h>
-#include "kt_ringbuf.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,8 +14,17 @@ extern UART_HandleTypeDef huart2;
 /* Receive buffer for single-byte interrupt reception */
 extern volatile uint8_t kt_uart_rx_byte;
 
-/* Ring buffer for deferred RX processing (ISR writes, main loop reads) */
-extern kt_ringbuf_t kt_uart_rx_ring;
+/**
+ * @brief RX byte callback type - called from UART interrupt context
+ * @param byte  Received byte
+ */
+typedef void (*kt_uart_rx_callback_t)(uint8_t byte);
+
+/**
+ * @brief Register a callback for received UART bytes
+ * @param cb  Callback function pointer, NULL to unregister
+ */
+void kt_port_uart_set_rx_callback(kt_uart_rx_callback_t cb);
 
 /**
  * @brief Transmit a string over USART2 (blocking)
@@ -38,26 +46,11 @@ void kt_port_uart_start_receive_it(void);
 
 /**
  * @brief Callback to be called from HAL_UART_RxCpltCallback when huart == huart2
- *
- *        ISR responsibility: ONLY write the received byte into kt_uart_rx_ring.
- *        No callbacks, no protocol parsing, no blocking calls in ISR.
- *
+ *        This function only checks USART2 instance, forwards byte to registered
+ *        callback, and re-arms the interrupt. No business logic here.
  * @param huart  UART handle that triggered the callback
  */
 void kt_port_uart_rx_callback(UART_HandleTypeDef *huart);
-
-/**
- * @brief Get number of bytes available for reading from the RX ring buffer
- * @return Number of bytes currently buffered
- */
-uint16_t kt_port_uart_rx_available(void);
-
-/**
- * @brief Read one byte from the RX ring buffer (main loop context)
- * @param byte  Output: received byte
- * @return 0 on success, -1 if buffer is empty
- */
-int kt_port_uart_rx_read(uint8_t *byte);
 
 #ifdef __cplusplus
 }

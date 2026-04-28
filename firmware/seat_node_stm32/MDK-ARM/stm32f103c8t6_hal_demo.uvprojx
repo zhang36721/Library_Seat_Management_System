@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../ktlib;../ktlib/kt_debug;../ktlib/kt_log;../ktlib/kt_protocol;../ktlib/kt_port</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -493,6 +493,51 @@
               <FileName>system_stm32f1xx.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/system_stm32f1xx.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ktlib/ktlib_debug</GroupName>
+          <Files>
+            <File>
+              <FileName>kt_debug.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_debug\kt_debug.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ktlib/ktlib_protocol</GroupName>
+          <Files>
+            <File>
+              <FileName>kt_debug_protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_protocol\kt_debug_protocol.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ktlib/ktlib_port</GroupName>
+          <Files>
+            <File>
+              <FileName>kt_port_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_port\kt_port_uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>kt_port_gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_port\kt_port_gpio.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ktlib/ktlib_log</GroupName>
+          <Files>
+            <File>
+              <FileName>kt_log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_log\kt_log.c</FilePath>
             </File>
           </Files>
         </Group>

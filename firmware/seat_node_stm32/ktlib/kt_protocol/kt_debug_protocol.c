@@ -1,6 +1,6 @@
 #include "kt_debug_protocol.h"
 #include "kt_config.h"
-#include "kt_cmd.h"
+#include "kt_debug.h"
 #include "kt_port_uart.h"
 #include <stdio.h>
 
@@ -84,7 +84,7 @@ void kt_debug_protocol_input_byte(uint8_t byte)
         if (byte == KT_PROTOCOL_FRAME_MARKER) {
             /* Valid frame received */
             print_raw_frame(proto_cmd, proto_value);
-            kt_cmd_dispatch(proto_cmd, proto_value);
+            kt_debug_execute_command(proto_cmd, proto_value);
             proto_state = KT_PROTO_STATE_IDLE;
         } else {
             /* Invalid frame: missing trailing FF */

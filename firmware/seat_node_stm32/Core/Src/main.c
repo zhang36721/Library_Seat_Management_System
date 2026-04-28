@@ -23,7 +23,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "kt_debug.h"
+#include "kt_port_uart.h"
+#include "kt_port_gpio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -89,7 +91,10 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  kt_port_led_off();
+  kt_debug_init();
+  kt_debug_print_system_info();
+  kt_port_uart_start_receive_it();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -99,6 +104,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    kt_debug_task();
   }
   /* USER CODE END 3 */
 }
@@ -143,6 +149,16 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+/**
+  * @brief  UART RX complete callback
+  * @param  huart  UART handle
+  * @retval None
+  */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    kt_port_uart_rx_callback(huart);
+}
 
 /* USER CODE END 4 */
 

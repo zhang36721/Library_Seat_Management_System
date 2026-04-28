@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../ktlib;../ktlib/kt_debug;../ktlib/kt_log;../ktlib/kt_protocol;../ktlib/kt_port</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../ktlib;../ktlib/kt_debug;../ktlib/kt_log;../ktlib/kt_protocol;../ktlib/kt_port;../ktlib/kt_components;../ktlib/kt_cmd</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -513,6 +513,31 @@
               <FileName>kt_debug_protocol.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\ktlib\kt_protocol\kt_debug_protocol.c</FilePath>
+            </File>
+            <File>
+              <FileName>kt_protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_protocol\kt_protocol.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ktlib/ktlib_components</GroupName>
+          <Files>
+            <File>
+              <FileName>kt_ringbuf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_components\kt_ringbuf.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ktlib/ktlib_cmd</GroupName>
+          <Files>
+            <File>
+              <FileName>kt_cmd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_cmd\kt_cmd.c</FilePath>
             </File>
           </Files>
         </Group>

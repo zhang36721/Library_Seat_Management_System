@@ -18,6 +18,11 @@
 "stm32f103c8t6_hal_demo\stm32f1xx_hal_flash_ex.o"
 "stm32f103c8t6_hal_demo\stm32f1xx_hal_exti.o"
 "stm32f103c8t6_hal_demo\system_stm32f1xx.o"
+"stm32f103c8t6_hal_demo\kt_debug.o"
+"stm32f103c8t6_hal_demo\kt_debug_protocol.o"
+"stm32f103c8t6_hal_demo\kt_port_uart.o"
+"stm32f103c8t6_hal_demo\kt_port_gpio.o"
+"stm32f103c8t6_hal_demo\kt_log.o"
 --strict --scatter "stm32f103c8t6_hal_demo\stm32f103c8t6_hal_demo.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

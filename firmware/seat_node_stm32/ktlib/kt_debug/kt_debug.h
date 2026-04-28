@@ -10,20 +10,16 @@ extern "C" {
 
 /**
  * @brief Initialize the debug subsystem
- *
- *        v0.2 changes:
- *         - Initializes protocol parser and command dispatch
- *         - No longer registers UART callbacks (ISR now writes
- *           directly to ring buffer; protocol parsing happens in
- *           kt_debug_task() from main loop)
+ *         - Initializes the protocol state machine
+ *         - Registers the UART RX callback with kt_port_uart
  */
 void kt_debug_init(void);
 
 /**
  * @brief Debug main task (call periodically from main loop)
  *
- *        v0.2: Reads bytes from ring buffer and feeds them to the
- *        protocol parser. No business logic runs in interrupt context.
+ *        Currently a placeholder. In future iterations, protocol
+ *        parsing will be deferred here from interrupt context.
  */
 void kt_debug_task(void);
 
@@ -36,6 +32,13 @@ void kt_debug_print_system_info(void);
  * @brief Print help / command list via USART2
  */
 void kt_debug_print_help(void);
+
+/**
+ * @brief Execute a debug command received from the protocol
+ * @param cmd    Command byte
+ * @param value  Value byte
+ */
+void kt_debug_execute_command(uint8_t cmd, uint8_t value);
 
 #ifdef __cplusplus
 }

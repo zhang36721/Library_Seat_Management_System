@@ -3,51 +3,34 @@
 #include "kt_log.h"
 #include "kt_port_uart.h"
 #include "kt_port_gpio.h"
-#include "kt_protocol.h"
-#include "kt_cmd.h"
+#include "kt_debug_protocol.h"
 #include <stdio.h>
 
 /* Buffer for formatted output - shared across all debug print functions */
 static char kt_print_buf[128];
 
 /**
- * @brief Initialize the debug subsystem (v0.2)
- *
- *        - Initializes protocol parser state machine
- *        - Registers protocol -> command dispatch handler
- *        - Initializes command dispatch subsystem
+ * @brief Initialize the debug subsystem
  */
 void kt_debug_init(void)
 {
-    /* Initialize protocol parser */
-    kt_protocol_init();
+    kt_debug_protocol_init();
 
-    /* Route parsed frames to the command dispatcher */
-    kt_protocol_set_handler(kt_cmd_dispatch);
+    /* Register UART RX callback: protocol parser receives bytes directly */
+    kt_port_uart_set_rx_callback(kt_debug_protocol_input_byte);
 
-    /* Initialize command dispatch */
-    kt_cmd_init();
-
-    KT_LOG_INFO("System boot (v0.2 ringbuffer + protocol + cmd dispatch)");
+    KT_LOG_INFO("System boot");
 }
 
 /**
- * @brief Debug main task (call from main loop)
+ * @brief Debug main task (placeholder for future deferred processing)
  *
- *        v0.2: Drains the RX ring buffer and feeds each byte into the
- *        protocol parser.  No callbacks, no protocol logic in ISR.
- *
- *        This should be called as frequently as possible in the main
- *        loop so that incoming bytes are processed with minimal latency.
+ *        Currently empty. In a future iteration, protocol parsing will
+ *        be moved here from interrupt context to keep ISRs lean.
  */
 void kt_debug_task(void)
 {
-    uint8_t byte;
-
-    /* Drain all available bytes */
-    while (kt_port_uart_rx_read(&byte) == 0) {
-        kt_protocol_input_byte(byte);
-    }
+    /* TODO: Deferred protocol processing will go here */
 }
 
 /**
@@ -94,7 +77,7 @@ void kt_debug_print_system_info(void)
              "Debug UART   : USART2 %d\r\n", KT_DEBUG_UART_BAUDRATE);
     kt_port_uart_tx_string(kt_print_buf);
 
-    kt_port_uart_tx_string("Protocol     : FF CMD DATA FF\r\n");
+    kt_port_uart_tx_string("Protocol     : FF CMD VALUE FF\r\n");
     kt_port_uart_tx_string("========================================\r\n");
 }
 
@@ -103,10 +86,50 @@ void kt_debug_print_system_info(void)
  */
 void kt_debug_print_help(void)
 {
-    KT_LOG_INFO("=== Command List ===");
-    KT_LOG_INFO("  FF 01 xx FF  -> Print system info");
-    KT_LOG_INFO("  FF 02 xx FF  -> Turn ON  test LED (PC13)");
-    KT_LOG_INFO("  FF 03 xx FF  -> Turn OFF test LED (PC13)");
-    KT_LOG_INFO("  FF 04 xx FF  -> Print debug status");
-    KT_LOG_INFO("====================");
+    KT_LOG_INFO("Command List:");
+    KT_LOG_INFO("  FF 00 00 FF  -> Turn OFF PC13 LED");
+    KT_LOG_INFO("  FF 00 01 FF  -> Turn ON  PC13 LED");
+    KT_LOG_INFO("  FF 01 00 FF  -> Print system info");
+    KT_LOG_INFO("  FF 02 00 FF  -> Print this help");
+}
+
+/**
+ * @brief Execute a debug command received from the protocol
+ */
+void kt_debug_execute_command(uint8_t cmd, uint8_t value)
+{
+    switch (cmd) {
+
+    case 0x00: /* LED control */
+        if (value == 0x00) {
+            kt_port_led_off();
+            KT_LOG_INFO("CMD_LED_OFF: PC13 LED OFF");
+        } else if (value == 0x01) {
+            kt_port_led_on();
+            KT_LOG_INFO("CMD_LED_ON: PC13 LED ON");
+        } else {
+            KT_LOG_WARN("Unknown LED value: 0x%02X", value);
+        }
+        break;
+
+    case 0x01: /* Print system info */
+        if (value == 0x00) {
+            kt_debug_print_system_info();
+        } else {
+            KT_LOG_WARN("Unknown value for CMD 0x01: 0x%02X", value);
+        }
+        break;
+
+    case 0x02: /* Print help */
+        if (value == 0x00) {
+            kt_debug_print_help();
+        } else {
+            KT_LOG_WARN("Unknown value for CMD 0x02: 0x%02X", value);
+        }
+        break;
+
+    default:
+        KT_LOG_WARN("Unknown command: cmd=0x%02X value=0x%02X", cmd, value);
+        break;
+    }
 }
