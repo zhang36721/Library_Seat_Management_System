@@ -2,6 +2,55 @@
 
 基于 ZigBee 无线通信的图书馆座位管理系统，实现 3 路座位状态检测、RFID 刷卡签到和自动化管理功能。
 
+## v0.6 当前阶段范围
+
+v0.6 只整理和验证 STM32 主控硬件层：硬件引脚资源、GPIO 默认状态、USART2 debug 命令、基础输入输出自检。本阶段不做后端、前端、ESP32S3 上传、ZigBee 正式业务协议、OLED/RFID/DS1302/步进电机业务。
+
+串口职责固定如下：
+
+| 串口 | 职责 | 当前状态 |
+|------|------|----------|
+| USART1 | ZigBee 通信预留 | 暂不接入业务协议 |
+| USART2 | Debug 调试串口，115200，继续使用 `FF CMD DATA FF` 协议 | 当前唯一调试命令通道 |
+| USART3 | ESP32S3 通信预留 | 暂不与 USART2 debug 共用 |
+
+ESP32S3 后续协议必须独立于当前 USART2 debug 协议；旧接线文档中 ESP32S3 使用 PA2/PA3 的描述已在 `docs/hardware_pin_map.md` 标记为冲突待确认。
+
+硬件文档：
+
+- 硬件资源表：[docs/hardware_pin_map.md](docs/hardware_pin_map.md)
+- 接线布局规划：[docs/hardware_wiring_plan.md](docs/hardware_wiring_plan.md)
+
+推荐启动输出示例：
+
+```text
+=== System Boot ===
+Project : Library Seat Management System
+Firmware: Main Controller STM32
+Version : v0.6.1
+Build   : Apr 28 2026 18:20:00
+Author  : Kento
+Student : TODO_STUDENT_ID
+Boot    : 3
+Debug   : USART2 115200, FF CMD DATA FF
+===================
+```
+
+座位传感器未配置时，`FF 30 00 FF` 推荐输出：
+
+```text
+[INFO] CMD 0x30: Seat raw level
+[WARN] Seat sensor pins not configured (kt_cmd.c:90)
+[INFO] Set APP_SEAT_SENSOR_PINS_CONFIRMED=1 after wiring confirmed
+```
+
+`FF 31 00 FF` 推荐输出：
+
+```text
+[INFO] CMD 0x31: Seat status
+[WARN] Seat sensor pins not configured (kt_cmd.c:110)
+```
+
 ## 项目简介
 
 本系统通过座位检测端 STM32 统一采集 3 个座位的红外和压力传感器数据，经 ZigBee 无线传输至主控管理端，结合 RFID 刷卡进行身份验证，并通过 ESP32S3 将数据上传至后端服务器，提供 Web 管理界面。
