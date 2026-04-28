@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../ktlib;../ktlib/kt_debug;../ktlib/kt_log;../ktlib/kt_protocol;../ktlib/kt_port;../ktlib/kt_components;../ktlib/kt_cmd;../ktlib/kt_system;../ktlib/kt_task</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../ktlib;../ktlib/kt_debug;../ktlib/kt_log;../ktlib/kt_protocol;../ktlib/kt_port;../ktlib/kt_components;../ktlib/kt_cmd;../ktlib/kt_system;../ktlib/kt_task;../ktlib/kt_devices;../ktlib/kt_app</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -574,6 +574,11 @@
               <FileType>1</FileType>
               <FilePath>..\ktlib\kt_system\kt_tick.c</FilePath>
             </File>
+            <File>
+              <FileName>kt_boot_count.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_system\kt_boot_count.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -583,6 +588,36 @@
               <FileName>kt_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\ktlib\kt_task\kt_task.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ktlib/ktlib_devices</GroupName>
+          <Files>
+            <File>
+              <FileName>kt_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_devices\kt_led.c</FilePath>
+            </File>
+            <File>
+              <FileName>kt_button.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_devices\kt_button.c</FilePath>
+            </File>
+            <File>
+              <FileName>kt_buzzer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_devices\kt_buzzer.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ktlib/ktlib_app</GroupName>
+          <Files>
+            <File>
+              <FileName>app_io.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_app\app_io.c</FilePath>
             </File>
           </Files>
         </Group>

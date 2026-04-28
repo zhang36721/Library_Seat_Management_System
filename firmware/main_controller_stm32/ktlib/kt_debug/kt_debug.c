@@ -5,6 +5,7 @@
 #include "kt_port_gpio.h"
 #include "kt_protocol.h"
 #include "kt_cmd.h"
+#include "kt_system/kt_boot_count.h"
 #include <stdio.h>
 
 /* Buffer for formatted output - shared across all debug print functions */
@@ -28,7 +29,7 @@ void kt_debug_init(void)
     /* Initialize command dispatch */
     kt_cmd_init();
 
-    KT_LOG_INFO("System boot (v0.2 ringbuffer + protocol + cmd dispatch)");
+    /* Keep boot output concise; kt_debug_print_system_info() prints the banner. */
 }
 
 /**
@@ -68,42 +69,41 @@ void kt_debug_task(void)
  */
 void kt_debug_print_system_info(void)
 {
-    kt_port_uart_tx_string("========================================\r\n");
+    kt_port_uart_tx_string("=== System Boot ===\r\n");
 
     snprintf(kt_print_buf, sizeof(kt_print_buf),
-             "Project Name : %s\r\n", KT_PROJECT_NAME);
+             "Project : %s\r\n", KT_PROJECT_NAME);
     kt_port_uart_tx_string(kt_print_buf);
 
     snprintf(kt_print_buf, sizeof(kt_print_buf),
-             "Firmware Role: %s\r\n", KT_FIRMWARE_ROLE);
+             "Firmware: %s\r\n", KT_FW_NAME);
     kt_port_uart_tx_string(kt_print_buf);
 
     snprintf(kt_print_buf, sizeof(kt_print_buf),
-             "Author       : %s\r\n", KT_AUTHOR);
+             "Version : %s\r\n", KT_PROJECT_VERSION);
     kt_port_uart_tx_string(kt_print_buf);
 
     snprintf(kt_print_buf, sizeof(kt_print_buf),
-             "Student ID   : %s\r\n", KT_STUDENT_ID);
+             "Build   : %s %s\r\n", __DATE__, __TIME__);
     kt_port_uart_tx_string(kt_print_buf);
 
     snprintf(kt_print_buf, sizeof(kt_print_buf),
-             "Build Date   : %s\r\n", __DATE__);
+             "Author  : %s\r\n", KT_AUTHOR);
     kt_port_uart_tx_string(kt_print_buf);
 
     snprintf(kt_print_buf, sizeof(kt_print_buf),
-             "Build Time   : %s\r\n", __TIME__);
+             "Student : %s\r\n", KT_STUDENT_ID);
     kt_port_uart_tx_string(kt_print_buf);
 
     snprintf(kt_print_buf, sizeof(kt_print_buf),
-             "Boot Count   : %d\r\n", KT_BOOT_COUNT);
+             "Boot    : %lu\r\n", (unsigned long)kt_boot_count_get());
     kt_port_uart_tx_string(kt_print_buf);
 
     snprintf(kt_print_buf, sizeof(kt_print_buf),
-             "Debug UART   : USART2 %d\r\n", KT_DEBUG_UART_BAUDRATE);
+             "Debug   : USART2 %d, FF CMD DATA FF\r\n", KT_DEBUG_UART_BAUDRATE);
     kt_port_uart_tx_string(kt_print_buf);
 
-    kt_port_uart_tx_string("Protocol     : FF CMD DATA FF\r\n");
-    kt_port_uart_tx_string("========================================\r\n");
+    kt_port_uart_tx_string("===================\r\n");
 }
 
 /**
@@ -116,5 +116,13 @@ void kt_debug_print_help(void)
     KT_LOG_INFO("  FF 02 xx FF  -> Turn ON  test LED (PC13)");
     KT_LOG_INFO("  FF 03 xx FF  -> Turn OFF test LED (PC13)");
     KT_LOG_INFO("  FF 04 xx FF  -> Print debug status");
+    KT_LOG_INFO("  FF 20 00 FF  -> Print hardware resource status");
+    KT_LOG_INFO("  FF 21 00 FF  -> LED test");
+    KT_LOG_INFO("  FF 22 00 FF  -> Buzzer short beep test");
+    KT_LOG_INFO("  FF 23 00 FF  -> Read PA0 button state");
+    KT_LOG_INFO("  FF 24 00 FF  -> Print USART roles");
+    KT_LOG_INFO("  FF 25 00 FF  -> Print GPIO init status");
+    KT_LOG_INFO("  FF 30 00 FF  -> Read seat sensor raw levels");
+    KT_LOG_INFO("  FF 31 00 FF  -> Print seat FREE/OCCUPIED status");
     KT_LOG_INFO("====================");
 }
