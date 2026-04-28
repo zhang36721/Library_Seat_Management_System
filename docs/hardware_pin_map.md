@@ -17,9 +17,23 @@
 | OLED | I2C 显示接口 | PB6 SCL / PB7 SDA | GPIO 软件 I2C 开漏 | 待确认 | SCL/SDA 高 | 是 | 待 FF 50 实机验证 | 当前明确规划为 I2C OLED，地址 `0x78` |
 | DS1302 | CLK / DAT / RST | PB0 / PB1 / PB5 | GPIO 三线 | 待确认 | CLK/RST 低，DAT 输入上拉 | 是 | 待 FF 60/61 实机验证 | 只做时间读写验证，不接业务 |
 | 步进电机 | ULN2003/ULN12003 IN1-IN4 | PB8 / PB9 / PB14 / PB15 | GPIO 输出 | 高电平驱动 | 全低关闭线圈 | 是 | 待 FF 70/71/72 实机验证 | 相序需按实机确认 |
-| USART1 | ZigBee 测试 | PA9 TX / PA10 RX | USART 异步串口 115200 8N1 | 不适用 | 已初始化 | 是 | 待 FF 80 实机验证 | 只发送测试数据，不跑 ZigBee 业务协议 |
+| USART1 | ZigBee 测试 | PA9 TX / PA10 RX | USART 异步串口 115200 8N1 | 不适用 | 已初始化 | 是 | 待 FF 80/81/82 实机验证 | CC2530 串口透传测试通道，支持 TX/RX 缓冲验证，不跑 ZigBee 业务协议 |
 | USART2 | Debug 调试串口 | PA2 TX / PA3 RX | USART 异步串口 115200 8N1 | 不适用 | RX 中断接收 | 是 | 待实机验证 | 当前 `FF CMD DATA FF` 协议固定走 USART2；ESP32S3 暂不共用 |
 | USART3 | ESP32S3 测试 | PB10 TX / PB11 RX | USART 异步串口 115200 8N1 | 不适用 | 已初始化 | 是 | 待 FF 90 实机验证 | 只发送测试数据，不污染 USART2 debug |
+
+## ZigBee CC2530 接线补充
+
+| STM32 主控 | 方向 | CC2530 ZigBee 模块 | 说明 |
+|------------|------|--------------------|------|
+| PA9 USART1_TX | -> | P1.7 RX | TX/RX 必须交叉接 |
+| PA10 USART1_RX | <- | P1.6 TX | TX/RX 必须交叉接 |
+| GND | -> | GND | 共地 |
+| 3.3V | -> | VCC | 只能接 3.3V，不能接 5V |
+| GND | -> | P2.0 | P2.0 为休眠控制，串口通信时必须拉低保持唤醒 |
+
+RST 可以先保持模块默认连接，后续如需要再接 STM32 GPIO 控制。P1.3 / P1.1 是射频收发指示，可先不接。
+
+当前 `FF 80 00 FF` 只能证明 STM32 USART1 发送成功，不能证明 ZigBee 模块入网或对端收到。ZigBee 模块的频道、PAN ID、主从/协调器角色、透传参数，需要按模块资料或配置工具单独确认。
 
 ## 已发现的接线/文档冲突
 
@@ -34,7 +48,7 @@
 
 | 串口 | 职责 | 当前状态 |
 |------|------|----------|
-| USART1 | ZigBee 通信预留 | 未初始化，不接业务 |
+| USART1 | ZigBee 串口透传测试，115200 | 已初始化，支持 TX/RX 测试，不接业务 |
 | USART2 | Debug 调试串口，115200，`FF CMD DATA FF` 协议 | 已初始化并用于命令验证 |
 | USART3 | ESP32S3 通信预留 | 未初始化，不上传数据 |
 
@@ -59,4 +73,6 @@
 | `FF 71 00 FF` | 步进电机反转测试 |
 | `FF 72 00 FF` | 步进电机停止 |
 | `FF 80 00 FF` | USART1 ZigBee 测试发送 |
+| `FF 81 00 FF` | 打印 USART1 ZigBee 最近接收缓冲 |
+| `FF 82 00 FF` | 通过 USART1 ZigBee 发送 `MAIN,PING,1` |
 | `FF 90 00 FF` | USART3 ESP32S3 测试发送 |
