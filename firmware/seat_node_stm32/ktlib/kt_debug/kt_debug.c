@@ -4,6 +4,7 @@
 #include "kt_port_uart.h"
 #include "kt_port_gpio.h"
 #include "kt_debug_protocol.h"
+#include "seat_node_app.h"
 #include <stdio.h>
 
 /* Buffer for formatted output - shared across all debug print functions */
@@ -19,7 +20,7 @@ void kt_debug_init(void)
     /* Register UART RX callback: protocol parser receives bytes directly */
     kt_port_uart_set_rx_callback(kt_debug_protocol_input_byte);
 
-    KT_LOG_INFO("System boot");
+    KT_LOG_INFO("Seat node debug init");
 }
 
 /**
@@ -43,7 +44,7 @@ void kt_debug_task(void)
  */
 void kt_debug_print_system_info(void)
 {
-    kt_port_uart_tx_string("========================================\r\n");
+    kt_port_uart_tx_string("=== Seat Node Boot ===\r\n");
 
     snprintf(kt_print_buf, sizeof(kt_print_buf),
              "Project Name : %s\r\n", KT_PROJECT_NAME);
@@ -51,6 +52,10 @@ void kt_debug_print_system_info(void)
 
     snprintf(kt_print_buf, sizeof(kt_print_buf),
              "Firmware Role: %s\r\n", KT_FIRMWARE_ROLE);
+    kt_port_uart_tx_string(kt_print_buf);
+
+    snprintf(kt_print_buf, sizeof(kt_print_buf),
+             "Version      : %s\r\n", KT_PROJECT_VERSION);
     kt_port_uart_tx_string(kt_print_buf);
 
     snprintf(kt_print_buf, sizeof(kt_print_buf),
@@ -77,8 +82,8 @@ void kt_debug_print_system_info(void)
              "Debug UART   : USART2 %d\r\n", KT_DEBUG_UART_BAUDRATE);
     kt_port_uart_tx_string(kt_print_buf);
 
-    kt_port_uart_tx_string("Protocol     : FF CMD VALUE FF\r\n");
-    kt_port_uart_tx_string("========================================\r\n");
+    kt_port_uart_tx_string("Protocol     : FF CMD DATA FF\r\n");
+    kt_port_uart_tx_string("======================\r\n");
 }
 
 /**
@@ -91,6 +96,12 @@ void kt_debug_print_help(void)
     KT_LOG_INFO("  FF 00 01 FF  -> Turn ON  PC13 LED");
     KT_LOG_INFO("  FF 01 00 FF  -> Print system info");
     KT_LOG_INFO("  FF 02 00 FF  -> Print this help");
+    KT_LOG_INFO("  FF 20 00 FF  -> Print seat node hardware");
+    KT_LOG_INFO("  FF 24 00 FF  -> Print USART roles");
+    KT_LOG_INFO("  FF 30 00 FF  -> Read raw sensor levels");
+    KT_LOG_INFO("  FF 31 00 FF  -> Print FREE/OCCUPIED");
+    KT_LOG_INFO("  FF 80 00 FF  -> Send ZigBee seat status");
+    KT_LOG_INFO("  FF 81 00 FF  -> Send ZigBee PONG");
 }
 
 /**
@@ -126,6 +137,30 @@ void kt_debug_execute_command(uint8_t cmd, uint8_t value)
         } else {
             KT_LOG_WARN("Unknown value for CMD 0x02: 0x%02X", value);
         }
+        break;
+
+    case 0x20:
+        seat_node_print_hardware_status();
+        break;
+
+    case 0x24:
+        seat_node_print_uart_roles();
+        break;
+
+    case 0x30:
+        seat_node_print_raw_levels();
+        break;
+
+    case 0x31:
+        seat_node_print_status();
+        break;
+
+    case 0x80:
+        seat_node_send_zigbee_status();
+        break;
+
+    case 0x81:
+        seat_node_send_zigbee_pong();
         break;
 
     default:

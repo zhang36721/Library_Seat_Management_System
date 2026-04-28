@@ -1,9 +1,12 @@
 #ifndef KT_CONFIG_H
 #define KT_CONFIG_H
 
+#include "stm32f1xx_hal.h"
+
 /* Project Information */
 #define KT_PROJECT_NAME        "Library Seat Management System"
-#define KT_FIRMWARE_ROLE       "Main Controller STM32"
+#define KT_PROJECT_VERSION     "v0.8"
+#define KT_FIRMWARE_ROLE       "Seat Node STM32"
 #define KT_AUTHOR              "Kento"
 #define KT_STUDENT_ID          "TODO_STUDENT_ID"
 
@@ -21,5 +24,18 @@
 #define KT_LOG_ENABLE       1
 #define KT_LOG_LEVEL        0   /* 0=DEBUG, 1=INFO, 2=WARN, 3=ERR, 4=NONE */
 #define KT_LOG_BUFFER_SIZE  128
+
+/* Seat node v0.8 hardware */
+#define SEAT_NODE_ID                  1
+
+#define SEAT_SENSOR1_PORT             GPIOA
+#define SEAT_SENSOR1_PIN              GPIO_PIN_0
+#define SEAT_SENSOR2_PORT             GPIOA
+#define SEAT_SENSOR2_PIN              GPIO_PIN_1
+#define SEAT_SENSOR3_PORT             GPIOA
+#define SEAT_SENSOR3_PIN              GPIO_PIN_4
+#define SEAT_SENSOR_ACTIVE_LEVEL      GPIO_PIN_RESET
+
+#define KT_ZIGBEE_UART_BAUDRATE       115200
 
 #endif /* KT_CONFIG_H */

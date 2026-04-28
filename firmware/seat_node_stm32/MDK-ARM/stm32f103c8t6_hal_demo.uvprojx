@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../ktlib;../ktlib/kt_debug;../ktlib/kt_log;../ktlib/kt_protocol;../ktlib/kt_port</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../ktlib;../ktlib/kt_debug;../ktlib/kt_log;../ktlib/kt_protocol;../ktlib/kt_port;../ktlib/kt_app</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -538,6 +538,16 @@
               <FileName>kt_log.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\ktlib\kt_log\kt_log.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ktlib/ktlib_app</GroupName>
+          <Files>
+            <File>
+              <FileName>seat_node_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_app\seat_node_app.c</FilePath>
             </File>
           </Files>
         </Group>

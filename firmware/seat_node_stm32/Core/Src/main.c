@@ -26,6 +26,7 @@
 #include "kt_debug.h"
 #include "kt_port_uart.h"
 #include "kt_port_gpio.h"
+#include "seat_node_app.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -89,12 +90,14 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   kt_port_led_off();
   kt_debug_init();
   kt_debug_print_system_info();
   kt_port_uart_start_receive_it();
+  seat_node_app_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -104,6 +107,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    seat_node_app_task();
     kt_debug_task();
   }
   /* USER CODE END 3 */
@@ -157,6 +161,7 @@ void SystemClock_Config(void)
   */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+    seat_node_zigbee_rx_callback(huart);
     kt_port_uart_rx_callback(huart);
 }
 
