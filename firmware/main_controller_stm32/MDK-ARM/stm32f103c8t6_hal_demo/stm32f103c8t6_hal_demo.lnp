@@ -27,7 +27,12 @@
 "stm32f103c8t6_hal_demo\kt_port_gpio.o"
 "stm32f103c8t6_hal_demo\kt_log.o"
 "stm32f103c8t6_hal_demo\kt_tick.o"
+"stm32f103c8t6_hal_demo\kt_boot_count.o"
 "stm32f103c8t6_hal_demo\kt_task.o"
+"stm32f103c8t6_hal_demo\kt_led.o"
+"stm32f103c8t6_hal_demo\kt_button.o"
+"stm32f103c8t6_hal_demo\kt_buzzer.o"
+"stm32f103c8t6_hal_demo\app_io.o"
 --strict --scatter "stm32f103c8t6_hal_demo\stm32f103c8t6_hal_demo.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
