@@ -7,7 +7,7 @@
  * Project Information
  *===========================================================================*/
 #define KT_PROJECT_NAME        "Library Seat Management System"
-#define KT_PROJECT_VERSION     "v0.6.1"
+#define KT_PROJECT_VERSION     "v0.7"
 #define KT_FW_NAME             "Main Controller STM32"
 #define KT_FIRMWARE_ROLE       KT_FW_NAME
 #define KT_AUTHOR              "Kento"
@@ -19,10 +19,9 @@
 #define KT_DEBUG_UART_BAUDRATE 115200
 #define KT_DEBUG_UART           USART2
 
-/* v0.6 UART responsibilities */
-#define KT_USART1_ROLE          "Reserved for ZigBee communication"
+#define KT_USART1_ROLE          "ZigBee test UART, 115200"
 #define KT_USART2_ROLE          "Debug UART, 115200, FF CMD DATA FF protocol"
-#define KT_USART3_ROLE          "Reserved for ESP32S3 communication"
+#define KT_USART3_ROLE          "ESP32S3 test UART, 115200"
 
 /*===========================================================================
  * Protocol Frame Marker
@@ -90,5 +89,49 @@
 #define APP_SEAT3_SENSOR_PIN         GPIO_PIN_0
 
 #define APP_SEAT_SENSOR_ACTIVE_LEVEL GPIO_PIN_SET
+
+/*===========================================================================
+ * v0.7 Main Controller Peripheral Test Pins
+ *
+ * These are the current wiring-plan pins for independent module validation.
+ * Update the macros after real wiring is confirmed; USART2 debug remains
+ * independent and must not be shared by ZigBee or ESP32S3.
+ *===========================================================================*/
+#define KT_RC522_SCK_PORT       GPIOA
+#define KT_RC522_SCK_PIN        GPIO_PIN_5
+#define KT_RC522_MISO_PORT      GPIOA
+#define KT_RC522_MISO_PIN       GPIO_PIN_6
+#define KT_RC522_MOSI_PORT      GPIOA
+#define KT_RC522_MOSI_PIN       GPIO_PIN_7
+#define KT_RC522_NSS_PORT       GPIOB
+#define KT_RC522_NSS_PIN        GPIO_PIN_12
+#define KT_RC522_RST_PORT       GPIOB
+#define KT_RC522_RST_PIN        GPIO_PIN_13
+
+#define KT_OLED_SCL_PORT        GPIOB
+#define KT_OLED_SCL_PIN         GPIO_PIN_6
+#define KT_OLED_SDA_PORT        GPIOB
+#define KT_OLED_SDA_PIN         GPIO_PIN_7
+#define KT_OLED_I2C_ADDR        0x78U
+
+#define KT_DS1302_CLK_PORT      GPIOB
+#define KT_DS1302_CLK_PIN       GPIO_PIN_0
+#define KT_DS1302_DAT_PORT      GPIOB
+#define KT_DS1302_DAT_PIN       GPIO_PIN_1
+#define KT_DS1302_RST_PORT      GPIOB
+#define KT_DS1302_RST_PIN       GPIO_PIN_5
+
+#define KT_STEPPER_IN1_PORT     GPIOB
+#define KT_STEPPER_IN1_PIN      GPIO_PIN_8
+#define KT_STEPPER_IN2_PORT     GPIOB
+#define KT_STEPPER_IN2_PIN      GPIO_PIN_9
+#define KT_STEPPER_IN3_PORT     GPIOB
+#define KT_STEPPER_IN3_PIN      GPIO_PIN_14
+#define KT_STEPPER_IN4_PORT     GPIOB
+#define KT_STEPPER_IN4_PIN      GPIO_PIN_15
+#define KT_STEPPER_STEP_DELAY_MS 3U
+
+#define KT_ZIGBEE_TEST_BAUDRATE 115200
+#define KT_ESP32S3_TEST_BAUDRATE 115200
 
 #endif /* KT_CONFIG_H */

@@ -1,114 +1,14 @@
 #include "kt_cmd.h"
 #include "kt_config.h"
-#include <stdio.h>
 #include "kt_log.h"
-#include "kt_port_uart.h"
-#include "kt_protocol.h"
 #include "kt_debug.h"
 #include "kt_app/app_io.h"
-
-static const char *gpio_level_to_str(GPIO_PinState level)
-{
-    return (level == GPIO_PIN_SET) ? "HIGH" : "LOW";
-}
-
-static const char *active_level_to_str(GPIO_PinState level)
-{
-    return (level == GPIO_PIN_SET) ? "active-high" : "active-low";
-}
-
-static void kt_cmd_print_uart_roles(void)
-{
-    KT_LOG_INFO("USART1: %s", KT_USART1_ROLE);
-    KT_LOG_INFO("USART2: %s", KT_USART2_ROLE);
-    KT_LOG_INFO("USART3: %s", KT_USART3_ROLE);
-    KT_LOG_WARN("ESP32S3 must not share USART2 debug protocol in v0.6");
-}
-
-static void kt_cmd_print_gpio_init_status(void)
-{
-    KT_LOG_INFO("GPIO PC13: output push-pull, default HIGH/OFF, LED active-low");
-    KT_LOG_INFO("GPIO PA0 : input pull-up, button assumed active-low, verify with FF 23");
-    KT_LOG_INFO("GPIO PA4 : output push-pull, default LOW/OFF, buzzer active level verify with FF 22");
-#if APP_SEAT_SENSOR_PINS_CONFIRMED
-    KT_LOG_INFO("Seat sensor GPIO: initialized as input pull-up");
-#else
-    KT_LOG_WARN("Seat sensor GPIO: pins not confirmed; not initialized");
-#endif
-}
-
-static void kt_cmd_print_hardware_resources(void)
-{
-    KT_LOG_INFO("=== v0.6 Hardware Resources ===");
-    KT_LOG_INFO("MCU   : STM32F103C8T6");
-    KT_LOG_INFO("LED   : PC13, output, active-low, default OFF, initialized");
-    KT_LOG_INFO("Button: PA0, input pull-up, active-low pending real wiring check, initialized");
-    KT_LOG_INFO("Buzzer: PA4, output, default OFF, active level pending FF 22 verification");
-    KT_LOG_WARN("Seat sensors: 3 inputs reserved by macros, real pins pending confirmation");
-    KT_LOG_WARN("RC522 SPI / OLED / DS1302 / Stepper: pin map pending confirmation");
-    kt_cmd_print_uart_roles();
-    KT_LOG_INFO("===============================");
-}
-
-static void kt_cmd_read_button_state(void)
-{
-    GPIO_PinState raw = HAL_GPIO_ReadPin(APP_BTN_DEFAULT_PORT, APP_BTN_DEFAULT_PIN);
-    KT_LOG_INFO("Button PA0 raw level: %s", gpio_level_to_str(raw));
-    KT_LOG_INFO("Button PA0 logical pressed: %u",
-                (unsigned int)kt_button_is_pressed(&app_btn));
-}
-
-#if APP_SEAT_SENSOR_PINS_CONFIRMED
-static const char *port_to_str(GPIO_TypeDef *port)
-{
-    if (port == GPIOA) return "GPIOA";
-    if (port == GPIOB) return "GPIOB";
-    if (port == GPIOC) return "GPIOC";
-    if (port == GPIOD) return "GPIOD";
-    return "UNCONFIRMED";
-}
-
-static uint8_t kt_cmd_read_seat_raw(uint8_t index, GPIO_TypeDef *port, uint16_t pin)
-{
-    GPIO_PinState raw = HAL_GPIO_ReadPin(port, pin);
-    KT_LOG_INFO("Seat%u raw: %s %s pin 0x%04X",
-                (unsigned int)index,
-                port_to_str(port),
-                gpio_level_to_str(raw),
-                (unsigned int)pin);
-    return (raw == GPIO_PIN_SET) ? 1U : 0U;
-}
-#endif
-
-static void kt_cmd_print_seat_raw_levels(void)
-{
-#if APP_SEAT_SENSOR_PINS_CONFIRMED
-    (void)kt_cmd_read_seat_raw(1, APP_SEAT1_SENSOR_PORT, APP_SEAT1_SENSOR_PIN);
-    (void)kt_cmd_read_seat_raw(2, APP_SEAT2_SENSOR_PORT, APP_SEAT2_SENSOR_PIN);
-    (void)kt_cmd_read_seat_raw(3, APP_SEAT3_SENSOR_PORT, APP_SEAT3_SENSOR_PIN);
-#else
-    KT_LOG_WARN("Seat sensor pins not configured");
-    KT_LOG_INFO("Set APP_SEAT_SENSOR_PINS_CONFIRMED=1 after wiring confirmed");
-#endif
-}
-
-static void kt_cmd_print_seat_occupied_status(void)
-{
-#if APP_SEAT_SENSOR_PINS_CONFIRMED
-    uint8_t s1 = kt_cmd_read_seat_raw(1, APP_SEAT1_SENSOR_PORT, APP_SEAT1_SENSOR_PIN);
-    uint8_t s2 = kt_cmd_read_seat_raw(2, APP_SEAT2_SENSOR_PORT, APP_SEAT2_SENSOR_PIN);
-    uint8_t s3 = kt_cmd_read_seat_raw(3, APP_SEAT3_SENSOR_PORT, APP_SEAT3_SENSOR_PIN);
-    uint8_t active = (APP_SEAT_SENSOR_ACTIVE_LEVEL == GPIO_PIN_SET) ? 1U : 0U;
-
-    KT_LOG_INFO("Seat sensor active level: %s",
-                active_level_to_str(APP_SEAT_SENSOR_ACTIVE_LEVEL));
-    KT_LOG_INFO("Seat1: %s", (s1 == active) ? "OCCUPIED" : "FREE");
-    KT_LOG_INFO("Seat2: %s", (s2 == active) ? "OCCUPIED" : "FREE");
-    KT_LOG_INFO("Seat3: %s", (s3 == active) ? "OCCUPIED" : "FREE");
-#else
-    KT_LOG_WARN("Seat sensor pins not configured");
-#endif
-}
+#include "kt_modules/kt_hw_diag.h"
+#include "kt_modules/kt_rc522.h"
+#include "kt_modules/kt_oled.h"
+#include "kt_modules/kt_ds1302.h"
+#include "kt_modules/kt_stepper.h"
+#include "kt_modules/kt_uart_links.h"
 
 /**
  * @brief Initialize command dispatch
@@ -144,6 +44,16 @@ void kt_cmd_init(void)
  *   0x25  0x00    Print GPIO initialization status
  *   0x30  0x00    Read 3 seat sensor raw levels
  *   0x31  0x00    Print 3 seat FREE/OCCUPIED status
+ *   0x40  0x00    Initialize RC522
+ *   0x41  0x00    Read RC522 UID
+ *   0x50  0x00    OLED test text
+ *   0x60  0x00    DS1302 read time
+ *   0x61  0x00    DS1302 write test time
+ *   0x70  0x00    Stepper forward test
+ *   0x71  0x00    Stepper reverse test
+ *   0x72  0x00    Stepper stop
+ *   0x80  0x00    USART1 ZigBee test TX
+ *   0x90  0x00    USART3 ESP32S3 test TX
  */
 void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
 {
@@ -188,13 +98,9 @@ void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
 
     case 0x08:
         KT_LOG_INFO("CMD: Read button state");
-        {
-            char buf[64];
-            snprintf(buf, sizeof(buf), "Button pressed: %u, click event: %u",
-                     (unsigned int)kt_button_is_pressed(&app_btn),
-                     (unsigned int)kt_button_get_click_event(&app_btn));
-            KT_LOG_INFO("%s", buf);
-        }
+        KT_LOG_INFO("Button pressed: %u, click event: %u",
+                    (unsigned int)kt_button_is_pressed(&app_btn),
+                    (unsigned int)kt_button_get_click_event(&app_btn));
         break;
 
     /* Buzzer commands */
@@ -230,7 +136,7 @@ void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
 
     case 0x20:
         KT_LOG_INFO("CMD 0x20: Hardware resource status");
-        kt_cmd_print_hardware_resources();
+        kt_hw_diag_print_hardware_resources();
         break;
 
     case 0x21:
@@ -248,27 +154,80 @@ void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
 
     case 0x23:
         KT_LOG_INFO("CMD 0x23: PA0 button state");
-        kt_cmd_read_button_state();
+        kt_hw_diag_read_button_state();
         break;
 
     case 0x24:
         KT_LOG_INFO("CMD 0x24: USART roles");
-        kt_cmd_print_uart_roles();
+        kt_hw_diag_print_uart_roles();
         break;
 
     case 0x25:
         KT_LOG_INFO("CMD 0x25: GPIO init status");
-        kt_cmd_print_gpio_init_status();
+        kt_hw_diag_print_gpio_init_status();
         break;
 
     case 0x30:
         KT_LOG_INFO("CMD 0x30: Seat raw level");
-        kt_cmd_print_seat_raw_levels();
+        kt_hw_diag_print_seat_raw_levels();
         break;
 
     case 0x31:
         KT_LOG_INFO("CMD 0x31: Seat status");
-        kt_cmd_print_seat_occupied_status();
+        kt_hw_diag_print_seat_occupied_status();
+        break;
+
+    case 0x40:
+        KT_LOG_INFO("CMD 0x40: RC522 init");
+        kt_rc522_init();
+        break;
+
+    case 0x41:
+        KT_LOG_INFO("CMD 0x41: RC522 read UID");
+        {
+            uint8_t uid[5];
+            (void)kt_rc522_read_uid(uid);
+        }
+        break;
+
+    case 0x50:
+        KT_LOG_INFO("CMD 0x50: OLED test text");
+        kt_oled_test();
+        break;
+
+    case 0x60:
+        KT_LOG_INFO("CMD 0x60: DS1302 read time");
+        kt_ds1302_print_time();
+        break;
+
+    case 0x61:
+        KT_LOG_INFO("CMD 0x61: DS1302 write test time");
+        kt_ds1302_write_test_time();
+        break;
+
+    case 0x70:
+        KT_LOG_INFO("CMD 0x70: Stepper forward");
+        kt_stepper_forward_test();
+        break;
+
+    case 0x71:
+        KT_LOG_INFO("CMD 0x71: Stepper reverse");
+        kt_stepper_reverse_test();
+        break;
+
+    case 0x72:
+        KT_LOG_INFO("CMD 0x72: Stepper stop");
+        kt_stepper_stop();
+        break;
+
+    case 0x80:
+        KT_LOG_INFO("CMD 0x80: USART1 ZigBee test TX");
+        kt_zigbee_send_test();
+        break;
+
+    case 0x90:
+        KT_LOG_INFO("CMD 0x90: USART3 ESP32S3 test TX");
+        kt_esp32s3_send_test();
         break;
 
     default:
@@ -285,33 +244,5 @@ void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
  */
 void kt_cmd_print_status(void)
 {
-    /* Buffer for single-line formatted output */
-    char buf[64];
-
-    KT_LOG_INFO("=== Debug Status (v1.0) ===");
-    KT_LOG_INFO("LED State      : %s", kt_led_get_state(&app_led) ? "ON" : "OFF");
-
-    KT_LOG_INFO("Protocol       : FF CMD DATA FF");
-    KT_LOG_INFO("Uptime         : %lu s", (unsigned long)(HAL_GetTick() / 1000U));
-
-    KT_LOG_INFO("Build          : %s %s", __DATE__, __TIME__);
-
-    /* UART RX statistics */
-    snprintf(buf, sizeof(buf), "RX ring avail  : %u", kt_port_uart_rx_available());
-    KT_LOG_INFO("%s", buf);
-
-    snprintf(buf, sizeof(buf), "RX overflow    : %lu",
-             (unsigned long)kt_port_uart_rx_overflow_count());
-    KT_LOG_INFO("%s", buf);
-
-    /* Protocol parser statistics */
-    snprintf(buf, sizeof(buf), "Timeout drops  : %lu",
-             (unsigned long)kt_protocol_get_timeout_drop_count());
-    KT_LOG_INFO("%s", buf);
-
-    snprintf(buf, sizeof(buf), "Error drops    : %lu",
-             (unsigned long)kt_protocol_get_error_drop_count());
-    KT_LOG_INFO("%s", buf);
-
-    KT_LOG_INFO("===============================");
+    kt_hw_diag_print_debug_status();
 }

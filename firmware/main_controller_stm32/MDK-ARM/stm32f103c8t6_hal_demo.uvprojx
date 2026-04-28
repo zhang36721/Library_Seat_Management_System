@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../ktlib;../ktlib/kt_debug;../ktlib/kt_log;../ktlib/kt_protocol;../ktlib/kt_port;../ktlib/kt_components;../ktlib/kt_cmd;../ktlib/kt_system;../ktlib/kt_task;../ktlib/kt_devices;../ktlib/kt_app</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../ktlib;../ktlib/kt_debug;../ktlib/kt_log;../ktlib/kt_protocol;../ktlib/kt_port;../ktlib/kt_components;../ktlib/kt_cmd;../ktlib/kt_system;../ktlib/kt_task;../ktlib/kt_devices;../ktlib/kt_app;../ktlib/kt_modules</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -618,6 +618,41 @@
               <FileName>app_io.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\ktlib\kt_app\app_io.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ktlib/ktlib_modules</GroupName>
+          <Files>
+            <File>
+              <FileName>kt_rc522.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_modules\kt_rc522.c</FilePath>
+            </File>
+            <File>
+              <FileName>kt_hw_diag.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_modules\kt_hw_diag.c</FilePath>
+            </File>
+            <File>
+              <FileName>kt_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_modules\kt_oled.c</FilePath>
+            </File>
+            <File>
+              <FileName>kt_ds1302.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_modules\kt_ds1302.c</FilePath>
+            </File>
+            <File>
+              <FileName>kt_stepper.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_modules\kt_stepper.c</FilePath>
+            </File>
+            <File>
+              <FileName>kt_uart_links.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_modules\kt_uart_links.c</FilePath>
             </File>
           </Files>
         </Group>

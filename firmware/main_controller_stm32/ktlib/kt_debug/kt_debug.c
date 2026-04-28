@@ -124,5 +124,15 @@ void kt_debug_print_help(void)
     KT_LOG_INFO("  FF 25 00 FF  -> Print GPIO init status");
     KT_LOG_INFO("  FF 30 00 FF  -> Read seat sensor raw levels");
     KT_LOG_INFO("  FF 31 00 FF  -> Print seat FREE/OCCUPIED status");
+    KT_LOG_INFO("  FF 40 00 FF  -> RC522 init");
+    KT_LOG_INFO("  FF 41 00 FF  -> RC522 read UID");
+    KT_LOG_INFO("  FF 50 00 FF  -> OLED test text");
+    KT_LOG_INFO("  FF 60 00 FF  -> DS1302 read time");
+    KT_LOG_INFO("  FF 61 00 FF  -> DS1302 write test time");
+    KT_LOG_INFO("  FF 70 00 FF  -> Stepper forward");
+    KT_LOG_INFO("  FF 71 00 FF  -> Stepper reverse");
+    KT_LOG_INFO("  FF 72 00 FF  -> Stepper stop");
+    KT_LOG_INFO("  FF 80 00 FF  -> USART1 ZigBee test TX");
+    KT_LOG_INFO("  FF 90 00 FF  -> USART3 ESP32S3 test TX");
     KT_LOG_INFO("====================");
 }
