@@ -18,6 +18,7 @@
 #define RC522_T_PRESCALER_REG   0x2BU
 #define RC522_T_RELOAD_REG_H    0x2CU
 #define RC522_T_RELOAD_REG_L    0x2DU
+#define RC522_VERSION_REG       0x37U
 
 #define RC522_CMD_IDLE          0x00U
 #define RC522_CMD_TRANSCEIVE    0x0CU
@@ -135,8 +136,10 @@ static uint8_t rc522_transceive(const uint8_t *tx, uint8_t tx_len,
     return 1;
 }
 
-void kt_rc522_init(void)
+uint8_t kt_rc522_init(void)
 {
+    uint8_t version;
+
     HAL_GPIO_WritePin(KT_RC522_RST_PORT, KT_RC522_RST_PIN, GPIO_PIN_SET);
     HAL_Delay(5);
     rc522_write_reg(RC522_COMMAND_REG, RC522_CMD_SOFT_RESET);
@@ -153,7 +156,14 @@ void kt_rc522_init(void)
         rc522_set_bits(RC522_TX_CONTROL_REG, 0x03U);
     }
 
-    KT_LOG_INFO("RC522 initialized");
+    version = rc522_read_reg(RC522_VERSION_REG);
+    if (version == 0x91U || version == 0x92U) {
+        KT_LOG_INFO("RC522 init: OK, version=0x%02X", version);
+        return 1;
+    }
+
+    KT_LOG_WARN("RC522 init: PROBE_FAIL, version=0x%02X", version);
+    return 0;
 }
 
 uint8_t kt_rc522_read_uid(uint8_t uid[5])

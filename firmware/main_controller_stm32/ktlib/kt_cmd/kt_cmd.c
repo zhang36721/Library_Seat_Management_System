@@ -53,6 +53,8 @@ void kt_cmd_init(void)
  *   0x71  0x00    Stepper reverse test
  *   0x72  0x00    Stepper stop
  *   0x80  0x00    USART1 ZigBee test TX
+ *   0x81  0x00    Print USART1 ZigBee recent RX
+ *   0x82  0x00    USART1 ZigBee PING TX
  *   0x90  0x00    USART3 ESP32S3 test TX
  */
 void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
@@ -223,6 +225,16 @@ void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
     case 0x80:
         KT_LOG_INFO("CMD 0x80: USART1 ZigBee test TX");
         kt_zigbee_send_test();
+        break;
+
+    case 0x81:
+        KT_LOG_INFO("CMD 0x81: USART1 ZigBee recent RX");
+        kt_zigbee_print_recent_rx();
+        break;
+
+    case 0x82:
+        KT_LOG_INFO("CMD 0x82: USART1 ZigBee PING");
+        kt_zigbee_send_ping();
         break;
 
     case 0x90:

@@ -19,6 +19,8 @@ typedef struct
 
 void kt_ds1302_write_test_time(void);
 void kt_ds1302_read_time(kt_ds1302_time_t *time);
+uint8_t kt_ds1302_time_is_valid(const kt_ds1302_time_t *time);
+uint8_t kt_ds1302_init_check(void);
 void kt_ds1302_print_time(void);
 
 #ifdef __cplusplus

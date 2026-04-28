@@ -43,6 +43,8 @@ static const uint8_t font_5x7[][5] = {
     {0x06,0x49,0x49,0x29,0x1E}, /* 9 */
 };
 
+static const uint8_t font_dot[5] = {0x00,0x60,0x60,0x00,0x00};
+
 static void oled_delay(void)
 {
     volatile uint8_t i;
@@ -73,9 +75,11 @@ static void i2c_stop(void)
     sda(1); oled_delay();
 }
 
-static void i2c_write(uint8_t data)
+static uint8_t i2c_write(uint8_t data)
 {
     uint8_t i;
+    GPIO_PinState ack;
+
     for (i = 0; i < 8U; i++) {
         sda((data & 0x80U) != 0U);
         data <<= 1;
@@ -84,26 +88,31 @@ static void i2c_write(uint8_t data)
     }
     sda(1);
     scl(1); oled_delay();
+    ack = HAL_GPIO_ReadPin(KT_OLED_SDA_PORT, KT_OLED_SDA_PIN);
     scl(0);
+    return (ack == GPIO_PIN_RESET) ? 1U : 0U;
 }
 
-static void oled_write(uint8_t control, uint8_t data)
+static uint8_t oled_write(uint8_t control, uint8_t data)
 {
+    uint8_t ok;
+
     i2c_start();
-    i2c_write(KT_OLED_I2C_ADDR);
-    i2c_write(control);
-    i2c_write(data);
+    ok = i2c_write(KT_OLED_I2C_ADDR);
+    ok &= i2c_write(control);
+    ok &= i2c_write(data);
     i2c_stop();
+    return ok;
 }
 
-static void oled_cmd(uint8_t cmd)
+static uint8_t oled_cmd(uint8_t cmd)
 {
-    oled_write(0x00U, cmd);
+    return oled_write(0x00U, cmd);
 }
 
 static void oled_data(uint8_t data)
 {
-    oled_write(0x40U, data);
+    (void)oled_write(0x40U, data);
 }
 
 static void oled_pos(uint8_t page, uint8_t col)
@@ -129,6 +138,7 @@ static const uint8_t *font_for(char c)
     if (c >= 'A' && c <= 'Z') return font_5x7[1 + c - 'A'];
     if (c >= 'a' && c <= 'z') return font_5x7[1 + c - 'a'];
     if (c >= '0' && c <= '9') return font_5x7[27 + c - '0'];
+    if (c == '.') return font_dot;
     return font_5x7[0];
 }
 
@@ -145,7 +155,7 @@ static void oled_print(uint8_t page, uint8_t col, const char *text)
     }
 }
 
-void kt_oled_test(void)
+uint8_t kt_oled_init_startup(void)
 {
     static const uint8_t init_cmds[] = {
         0xAE,0x20,0x10,0xB0,0xC8,0x00,0x10,0x40,0x81,0x7F,0xA1,0xA6,
@@ -154,11 +164,25 @@ void kt_oled_test(void)
     };
     uint8_t i;
 
+    uint8_t ok = 1U;
+
     for (i = 0; i < sizeof(init_cmds); i++) {
-        oled_cmd(init_cmds[i]);
+        ok &= oled_cmd(init_cmds[i]);
     }
+    if (!ok) {
+        KT_LOG_WARN("OLED init: ACK_FAIL");
+        return 0;
+    }
+
     oled_clear();
     oled_print(1, 0, "STM32 MAIN");
-    oled_print(3, 0, "V07 OLED");
+    oled_print(3, 0, "v0.7.1");
+    KT_LOG_INFO("OLED init: OK");
+    return 1;
+}
+
+void kt_oled_test(void)
+{
+    (void)kt_oled_init_startup();
     KT_LOG_INFO("OLED test text sent");
 }

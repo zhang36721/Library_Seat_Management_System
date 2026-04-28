@@ -127,10 +127,40 @@ void kt_ds1302_read_time(kt_ds1302_time_t *time)
     time->year = bcd_to_dec(read_reg(DS1302_YEAR_W));
 }
 
+uint8_t kt_ds1302_time_is_valid(const kt_ds1302_time_t *time)
+{
+    if (time == 0) return 0;
+    if (time->year > 99U) return 0;
+    if (time->month < 1U || time->month > 12U) return 0;
+    if (time->day < 1U || time->day > 31U) return 0;
+    if (time->hour > 23U) return 0;
+    if (time->minute > 59U) return 0;
+    if (time->second > 59U) return 0;
+    return 1;
+}
+
+uint8_t kt_ds1302_init_check(void)
+{
+    kt_ds1302_time_t t;
+    kt_ds1302_read_time(&t);
+    if (!kt_ds1302_time_is_valid(&t)) {
+        KT_LOG_WARN("DS1302 init: INVALID_TIME");
+        return 0;
+    }
+
+    KT_LOG_INFO("DS1302 init: OK, time=20%02u-%02u-%02u %02u:%02u:%02u",
+                t.year, t.month, t.day, t.hour, t.minute, t.second);
+    return 1;
+}
+
 void kt_ds1302_print_time(void)
 {
     kt_ds1302_time_t t;
     kt_ds1302_read_time(&t);
+    if (!kt_ds1302_time_is_valid(&t)) {
+        KT_LOG_WARN("DS1302 time: INVALID_TIME");
+        return;
+    }
     KT_LOG_INFO("DS1302 time: 20%02u-%02u-%02u %02u:%02u:%02u",
                 t.year, t.month, t.day, t.hour, t.minute, t.second);
 }

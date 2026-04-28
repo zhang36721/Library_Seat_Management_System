@@ -7,7 +7,7 @@
  * Project Information
  *===========================================================================*/
 #define KT_PROJECT_NAME        "Library Seat Management System"
-#define KT_PROJECT_VERSION     "v0.7"
+#define KT_PROJECT_VERSION     "v0.7.1"
 #define KT_FW_NAME             "Main Controller STM32"
 #define KT_FIRMWARE_ROLE       KT_FW_NAME
 #define KT_AUTHOR              "Kento"

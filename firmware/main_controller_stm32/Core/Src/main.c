@@ -30,6 +30,8 @@
 #include "kt_task/kt_task.h"
 #include "kt_app/app_io.h"
 #include "kt_system/kt_boot_count.h"
+#include "kt_modules/kt_modules.h"
+#include "kt_modules/kt_uart_links.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -132,6 +134,7 @@ int main(void)
   kt_debug_init();
   kt_debug_print_system_info();
   kt_port_uart_start_receive_it();
+  kt_modules_init();
 
   /* v1.0: App I/O initialization (LED, Button, Buzzer - multi-instance) */
   app_io_init();
@@ -156,6 +159,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    kt_modules_task();
     kt_task_run();
   }
   /* USER CODE END 3 */
@@ -209,6 +213,7 @@ void SystemClock_Config(void)
   */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+    kt_zigbee_uart_rx_callback(huart);
     kt_port_uart_rx_callback(huart);
 }
 
