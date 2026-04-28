@@ -28,6 +28,8 @@
 #include "kt_port_uart.h"
 #include "kt_port_gpio.h"
 #include "kt_task/kt_task.h"
+#include "kt_app/app_io.h"
+#include "kt_system/kt_boot_count.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,8 +56,12 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+#if APP_HEARTBEAT_LED_ENABLE
 static void app_heartbeat_task(void);
+#endif
+#if KT_ENABLE_UPTIME_LOG
 static void app_status_task(void);
+#endif
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -64,14 +70,17 @@ static void app_status_task(void);
 /**
  * @brief  Heartbeat task — toggle PC13 LED every 500ms
  */
+#if APP_HEARTBEAT_LED_ENABLE
 static void app_heartbeat_task(void)
 {
-    kt_port_led_toggle();
+    kt_led_toggle(&app_led);
 }
+#endif
 
 /**
  * @brief  Status task — print uptime every 3000ms
  */
+#if KT_ENABLE_UPTIME_LOG
 static void app_status_task(void)
 {
     static uint32_t last_print_ms = 0;
@@ -82,6 +91,7 @@ static void app_status_task(void)
     snprintf(buf, sizeof(buf), "%lu s\r\n", (unsigned long)uptime_s);
     kt_port_uart_tx_string(buf);
 }
+#endif
 
 /* USER CODE END 0 */
 
@@ -116,16 +126,25 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  kt_port_led_off();
+  kt_boot_count_init();
   kt_debug_init();
   kt_debug_print_system_info();
   kt_port_uart_start_receive_it();
 
-  /* v0.3: Task scheduler */
+  /* v1.0: App I/O initialization (LED, Button, Buzzer - multi-instance) */
+  app_io_init();
+  kt_led_off(&app_led);  /* Ensure LED starts off */
+
+  /* v1.0: Task scheduler - includes device & app tasks */
   kt_task_init();
   kt_task_register("debug",     kt_debug_task,       1);
+  kt_task_register("app_io",    app_io_tasks,       10);   /* LED blink + button debounce + buzzer */
+#if APP_HEARTBEAT_LED_ENABLE
   kt_task_register("heartbeat", app_heartbeat_task, 500);
+#endif
+#if KT_ENABLE_UPTIME_LOG
   kt_task_register("status",    app_status_task,    3000);
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */

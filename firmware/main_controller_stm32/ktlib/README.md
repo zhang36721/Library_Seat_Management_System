@@ -1,13 +1,15 @@
-# ktlib - Kento Debug Library for STM32 (v0.3)
+# ktlib - Kento Debug Library for STM32 (v0.4)
 
 ## Overview
 
 ktlib is a lightweight, modular debug serial library for STM32F103C8T6.  
-**v0.3** adds a non-blocking cooperative task scheduler on top of v0.2.1's architecture:
+**v0.4** adds device abstraction (Led, Button) on top of v0.3's task scheduler:
 
-- **Task scheduler** — statically-allocated periodic task dispatch
-- **Tick abstraction** — `kt_tick_get_ms()` / `kt_tick_is_timeout()` wrapping `HAL_GetTick()`
-- **Refactored main loop** — `kt_task_run()` drives all periodic work (debug protocol drain, heartbeat LED, status printing)
+- **Device abstraction** — hardware-independent `kt_led` and `kt_button` modules
+- **Led module** — generic LED state management with GPIO driver dispatch
+- **Button module** — generic push button with debounce, edge detection, and callbacks
+- **Refactored heartbeat** — `app_heartbeat_task` now uses `kt_led_toggle()` via device layer
+- **Non-blocking** — all device polling runs in cooperative tasks, no delay loops
 - **Zero malloc** — all task descriptors are static
 
 | Module                   | Responsibility |
@@ -15,6 +17,8 @@ ktlib is a lightweight, modular debug serial library for STM32F103C8T6.
 | `kt_config.h`            | Project identity & compile-time constants |
 | `kt_system/tick`         | Millisecond tick abstraction (wrap `HAL_GetTick`) |
 | `kt_task`                | Cooperative periodic task scheduler |
+| `kt_devices/led`         | Generic LED abstraction (state, toggle, GPIO dispatch) |
+| `kt_devices/button`      | Generic push button (debounce, edge detect, callback) |
 | `kt_port/uart`           | USART2 hardware abstraction (TX string/byte, ring‑buffer RX) |
 | `kt_port/gpio`           | PC13 LED on/off/toggle (active‑low) |
 | `kt_components/ringbuf`  | Interrupt‑safe 256‑byte FIFO ring buffer |
@@ -23,7 +27,7 @@ ktlib is a lightweight, modular debug serial library for STM32F103C8T6.
 | `kt_log`                 | Logging macros (`KT_LOG_INFO`, `KT_LOG_WARN`, etc.) |
 | `kt_debug`               | Top‑level init, system info banner, main‑loop task |
 
-## Architecture (v0.3)
+## Architecture (v0.4)
 
 ```
 HAL_UART_RxCpltCallback (ISR)
@@ -38,12 +42,14 @@ main() loop
           ├─► checks kt_tick_is_timeout() for each
           └─► calls task function if due
                 ├─► "debug"     (1 ms)    → kt_debug_task()   — drain ring buffer, parse protocol
+                ├─► "led"       (20 ms)   → kt_led_task()     — poll LED state machine
+                ├─► "button"    (10 ms)   → kt_button_task()  — poll button debounce
                 ├─► "heartbeat" (500 ms)  → app_heartbeat_task() — toggle PC13 LED
                 ├─► "status"    (3000 ms) → app_status_task()    — print uptime
                 └─► (extensible up to 8 tasks)
 ```
 
-**Key design principles (v0.3):**
+**Key design principles (v0.4):**
 - **Cooperative multitasking** — no RTOS, no interrupts, no stack switching
 - **Single tick source** — `kt_tick_get_ms()` wraps `HAL_GetTick()`, all timing flows through it
 - **Wrap-around safe** — `kt_tick_is_timeout()` uses unsigned subtraction for correct 49.7-day rollover
@@ -65,6 +71,11 @@ ktlib/
 ├── kt_debug/
 │   ├── kt_debug.h
 │   └── kt_debug.c                 # Top-level init, system info, task
+├── kt_devices/
+│   ├── kt_led.h
+│   ├── kt_led.c                   # Generic LED device abstraction
+│   ├── kt_button.h
+│   └── kt_button.c                # Generic button device abstraction
 ├── kt_log/
 │   ├── kt_log.h
 │   └── kt_log.c                   # Log formatting & output
@@ -100,6 +111,7 @@ ktlib/
 | `ktlib/ktlib_cmd`           | `kt_cmd.c` |
 | `ktlib/ktlib_system`        | `kt_tick.c` |
 | `ktlib/ktlib_task`          | `kt_task.c` |
+| `ktlib/ktlib_devices`       | `kt_led.c`, `kt_button.c` |
 
 ### 2. Include Paths
 
@@ -113,15 +125,18 @@ ktlib/
 ..\ktlib\kt_cmd
 ..\ktlib\kt_system
 ..\ktlib\kt_task
+..\ktlib\kt_devices
 ```
 
-### 3. main.c integration (v0.3)
+### 3. main.c integration (v0.4)
 
 ```c
 #include "kt_debug.h"
 #include "kt_port_uart.h"
 #include "kt_port_gpio.h"
 #include "kt_task/kt_task.h"
+#include "kt_devices/kt_led.h"
+#include "kt_devices/kt_button.h"
 
 // After MX_GPIO_Init() and MX_USART2_UART_Init():
 kt_port_led_off();
@@ -129,9 +144,15 @@ kt_debug_init();
 kt_debug_print_system_info();
 kt_port_uart_start_receive_it();
 
-// v0.3: Task scheduler
+// v0.4: Device initialization
+kt_led_init();
+kt_button_init();
+
+// v0.4: Task scheduler - includes device tasks
 kt_task_init();
 kt_task_register("debug",     kt_debug_task,       1);
+kt_task_register("led",       kt_led_task,        20);
+kt_task_register("button",    kt_button_task,     10);
 kt_task_register("heartbeat", app_heartbeat_task, 500);
 kt_task_register("status",    app_status_task,    3000);
 
@@ -213,6 +234,20 @@ Serial terminal settings: `115200, 8, N, 1`
 9. **Observe status** → Uptime printed every 3 seconds
 
 ## Changelog
+
+### v0.4 (2026-04-28)
+- Add `kt_devices/kt_led` — generic LED abstraction with GPIO dispatch
+  - Supported effects: ON, OFF, TOGGLE, BLINK (N-times), BREATHING (placeholder)
+  - Configurable via `kt_led_config_t` struct (port, pin, active_low)
+  - `kt_led_task()` runs the LED state machine (register every ~20ms)
+- Add `kt_devices/kt_button` — generic push button with debounce
+  - 40ms debounce, edge detection (press/release/repeat/hold)
+  - Callback-based: `on_press`, `on_release`, `on_hold`, `on_repeat` hooks
+  - Configurable via `kt_button_config_t` struct (port, pin, pull, active_low)
+  - `kt_button_task()` polls GPIO and runs debounce state machine (register every ~10ms)
+- Refactor `app_heartbeat_task`: use `kt_led_toggle()` instead of raw `kt_port_led_toggle()`
+- Added `ktlib/ktlib_devices` Keil group and `../ktlib/kt_devices` include path in uvprojx
+- Updated README with Led/Button architecture and integration notes
 
 ### v0.3 (2026-04-28)
 - Add `kt_system/kt_tick` — millisecond tick abstraction (`kt_tick_get_ms`, `kt_tick_is_timeout`)

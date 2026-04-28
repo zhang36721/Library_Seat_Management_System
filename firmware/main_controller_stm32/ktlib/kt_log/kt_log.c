@@ -5,6 +5,24 @@
 #include "kt_log.h"
 #include "kt_port_uart.h"
 
+static const char *kt_log_basename(const char *path)
+{
+    const char *name = path;
+
+    if (path == NULL) {
+        return "?";
+    }
+
+    while (*path != '\0') {
+        if (*path == '/' || *path == '\\') {
+            name = path + 1;
+        }
+        path++;
+    }
+
+    return name;
+}
+
 /**
  * @brief Format and output a log message via USART2
  *
@@ -53,13 +71,13 @@ void kt_log_output(kt_log_level_t level, const char *file, int line,
         break;
 
     case KT_LOG_LEVEL_WARN:
-        snprintf(out_buf, sizeof(out_buf), "[WARN] %s:%d | %s\r\n",
-                 file, line, msg_buf);
+        snprintf(out_buf, sizeof(out_buf), "[WARN] %s (%s:%d)\r\n",
+                 msg_buf, kt_log_basename(file), line);
         break;
 
     case KT_LOG_LEVEL_ERR:
-        snprintf(out_buf, sizeof(out_buf), "[ERR ] %s:%d | %s\r\n",
-                 file, line, msg_buf);
+        snprintf(out_buf, sizeof(out_buf), "[ERR ] %s (%s:%d)\r\n",
+                 msg_buf, kt_log_basename(file), line);
         break;
 
     default:
