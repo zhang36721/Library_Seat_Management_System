@@ -15,7 +15,22 @@ static char kt_print_buf[128];
 void kt_debug_init(void)
 {
     kt_debug_protocol_init();
+
+    /* Register UART RX callback: protocol parser receives bytes directly */
+    kt_port_uart_set_rx_callback(kt_debug_protocol_input_byte);
+
     KT_LOG_INFO("System boot");
+}
+
+/**
+ * @brief Debug main task (placeholder for future deferred processing)
+ *
+ *        Currently empty. In a future iteration, protocol parsing will
+ *        be moved here from interrupt context to keep ISRs lean.
+ */
+void kt_debug_task(void)
+{
+    /* TODO: Deferred protocol processing will go here */
 }
 
 /**
@@ -71,11 +86,11 @@ void kt_debug_print_system_info(void)
  */
 void kt_debug_print_help(void)
 {
-    kt_port_uart_tx_string("[DEBUG] Command List:\r\n");
-    kt_port_uart_tx_string("  FF 00 00 FF  -> Turn OFF PC13 LED\r\n");
-    kt_port_uart_tx_string("  FF 00 01 FF  -> Turn ON  PC13 LED\r\n");
-    kt_port_uart_tx_string("  FF 01 00 FF  -> Print system info\r\n");
-    kt_port_uart_tx_string("  FF 02 00 FF  -> Print this help\r\n");
+    KT_LOG_INFO("Command List:");
+    KT_LOG_INFO("  FF 00 00 FF  -> Turn OFF PC13 LED");
+    KT_LOG_INFO("  FF 00 01 FF  -> Turn ON  PC13 LED");
+    KT_LOG_INFO("  FF 01 00 FF  -> Print system info");
+    KT_LOG_INFO("  FF 02 00 FF  -> Print this help");
 }
 
 /**
@@ -88,12 +103,12 @@ void kt_debug_execute_command(uint8_t cmd, uint8_t value)
     case 0x00: /* LED control */
         if (value == 0x00) {
             kt_port_led_off();
-            KT_LOG_DEBUG("CMD_LED_OFF: PC13 LED OFF\r\n");
+            KT_LOG_INFO("CMD_LED_OFF: PC13 LED OFF");
         } else if (value == 0x01) {
             kt_port_led_on();
-            KT_LOG_DEBUG("CMD_LED_ON: PC13 LED ON\r\n");
+            KT_LOG_INFO("CMD_LED_ON: PC13 LED ON");
         } else {
-            KT_LOG_DEBUG("Unknown  value\r\n");
+            KT_LOG_WARN("Unknown LED value: 0x%02X", value);
         }
         break;
 
@@ -101,7 +116,7 @@ void kt_debug_execute_command(uint8_t cmd, uint8_t value)
         if (value == 0x00) {
             kt_debug_print_system_info();
         } else {
-            KT_LOG_DEBUG("Unknown value for CMD 0x01\r\n");
+            KT_LOG_WARN("Unknown value for CMD 0x01: 0x%02X", value);
         }
         break;
 
@@ -109,24 +124,12 @@ void kt_debug_execute_command(uint8_t cmd, uint8_t value)
         if (value == 0x00) {
             kt_debug_print_help();
         } else {
-            KT_LOG_DEBUG("Unknown value for CMD 0x02\r\n");
+            KT_LOG_WARN("Unknown value for CMD 0x02: 0x%02X", value);
         }
         break;
 
     default:
-        KT_LOG_DEBUG("Unknown command\r\n");
+        KT_LOG_WARN("Unknown command: cmd=0x%02X value=0x%02X", cmd, value);
         break;
-    }
-}
-
-/**
- * @brief UART RX callback - called from kt_port_uart_rx_callback
- *        when huart->Instance == USART2.
- *        Forwards the received byte to the protocol parser.
- */
-void kt_debug_uart_rx_callback(UART_HandleTypeDef *huart)
-{
-    if (huart->Instance == USART2) {
-        kt_debug_protocol_input_byte(kt_uart_rx_byte);
     }
 }

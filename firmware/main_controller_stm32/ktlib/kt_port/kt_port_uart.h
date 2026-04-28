@@ -15,10 +15,23 @@ extern UART_HandleTypeDef huart2;
 extern volatile uint8_t kt_uart_rx_byte;
 
 /**
+ * @brief RX byte callback type - called from UART interrupt context
+ * @param byte  Received byte
+ */
+typedef void (*kt_uart_rx_callback_t)(uint8_t byte);
+
+/**
+ * @brief Register a callback for received UART bytes
+ * @param cb  Callback function pointer, NULL to unregister
+ */
+void kt_port_uart_set_rx_callback(kt_uart_rx_callback_t cb);
+
+/**
  * @brief Transmit a string over USART2 (blocking)
  * @param str  Null-terminated string to send
+ * @return HAL_StatusTypeDef  HAL_OK on success, error code otherwise
  */
-void kt_port_uart_tx_string(const char *str);
+int kt_port_uart_tx_string(const char *str);
 
 /**
  * @brief Transmit a single byte over USART2 (blocking)
@@ -33,6 +46,8 @@ void kt_port_uart_start_receive_it(void);
 
 /**
  * @brief Callback to be called from HAL_UART_RxCpltCallback when huart == huart2
+ *        This function only checks USART2 instance, forwards byte to registered
+ *        callback, and re-arms the interrupt. No business logic here.
  * @param huart  UART handle that triggered the callback
  */
 void kt_port_uart_rx_callback(UART_HandleTypeDef *huart);

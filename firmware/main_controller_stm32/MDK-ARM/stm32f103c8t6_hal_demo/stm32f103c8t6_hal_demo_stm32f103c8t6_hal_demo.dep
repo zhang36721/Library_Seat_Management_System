@@ -1,7 +1,7 @@
 Dependencies for Project 'stm32f103c8t6_hal_demo', Target 'stm32f103c8t6_hal_demo': (DO NOT MODIFY !)
 CompilerVersion: 6190000::V6.19::ARMCLANG
 F (startup_stm32f103xb.s)(0x69D5C62D)(--target=arm-arm-none-eabi -mcpu=cortex-m3 -masm=auto  -Wa,armasm,--diag_suppress=A1950W -c-gdwarf-4-I./RTE/_stm32f103c8t6_hal_demo-IC:/Users/admin/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/admin/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.1/Device/Include-Wa,armasm,--pd,"__UVISION_VERSION SETA 538" -Wa,armasm,--pd,"_RTE_ SETA 1" -Wa,armasm,--pd,"STM32F10X_MD SETA 1" -Wa,armasm,--pd,"_RTE_ SETA 1"-o stm32f103c8t6_hal_demo/startup_stm32f103xb.o)
-F (../Core/Src/main.c)(0x69F026E1)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include -I ../ktlib -I ../ktlib/kt_debug -I ../ktlib/kt_log -I ../ktlib/kt_protocol -I ../ktlib/kt_port-I./RTE/_stm32f103c8t6_hal_demo-IC:/Users/admin/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/admin/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.1/Device/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F10X_MD -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F103xB-o stm32f103c8t6_hal_demo/main.o -MD)
+F (../Core/Src/main.c)(0x69F0324C)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include -I ../ktlib -I ../ktlib/kt_debug -I ../ktlib/kt_log -I ../ktlib/kt_protocol -I ../ktlib/kt_port-I./RTE/_stm32f103c8t6_hal_demo-IC:/Users/admin/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/admin/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.1/Device/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F10X_MD -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F103xB-o stm32f103c8t6_hal_demo/main.o -MD)
 I (..\Core\Inc\main.h)(0x69D5C62A)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal.h)(0x69CF3B15)
 I (..\Core\Inc\stm32f1xx_hal_conf.h)(0x69D5C629)
@@ -32,8 +32,8 @@ I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_pwr.h)(0x69CF3B15)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_uart.h)(0x69CF3B15)
 I (..\Core\Inc\usart.h)(0x69D5C629)
 I (..\Core\Inc\gpio.h)(0x69D5C628)
-I (..\ktlib\kt_debug\kt_debug.h)(0x69F0266E)
-I (..\ktlib\kt_port\kt_port_uart.h)(0x69F025CC)
+I (..\ktlib\kt_debug\kt_debug.h)(0x69F031EE)
+I (..\ktlib\kt_port\kt_port_uart.h)(0x69F031BD)
 I (..\ktlib\kt_port\kt_port_gpio.h)(0x69F02606)
 F (../Core/Src/gpio.c)(0x69D5C628)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include -I ../ktlib -I ../ktlib/kt_debug -I ../ktlib/kt_log -I ../ktlib/kt_protocol -I ../ktlib/kt_port-I./RTE/_stm32f103c8t6_hal_demo-IC:/Users/admin/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/admin/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.1/Device/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F10X_MD -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F103xB-o stm32f103c8t6_hal_demo/gpio.o -MD)
 I (..\Core\Inc\gpio.h)(0x69D5C628)
@@ -518,8 +518,8 @@ I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_flash.h)(0x69CF3B15)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_flash_ex.h)(0x69CF3B15)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_pwr.h)(0x69CF3B15)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_uart.h)(0x69CF3B15)
-F (..\ktlib\kt_debug\kt_debug.c)(0x69F02C0B)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include -I ../ktlib -I ../ktlib/kt_debug -I ../ktlib/kt_log -I ../ktlib/kt_protocol -I ../ktlib/kt_port-I./RTE/_stm32f103c8t6_hal_demo-IC:/Users/admin/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/admin/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.1/Device/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F10X_MD -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F103xB-o stm32f103c8t6_hal_demo/kt_debug.o -MD)
-I (..\ktlib\kt_debug\kt_debug.h)(0x69F0266E)
+F (..\ktlib\kt_debug\kt_debug.c)(0x69F03238)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include -I ../ktlib -I ../ktlib/kt_debug -I ../ktlib/kt_log -I ../ktlib/kt_protocol -I ../ktlib/kt_port-I./RTE/_stm32f103c8t6_hal_demo-IC:/Users/admin/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/admin/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.1/Device/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F10X_MD -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F103xB-o stm32f103c8t6_hal_demo/kt_debug.o -MD)
+I (..\ktlib\kt_debug\kt_debug.h)(0x69F031EE)
 I (..\Core\Inc\usart.h)(0x69D5C629)
 I (..\Core\Inc\main.h)(0x69D5C62A)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal.h)(0x69CF3B15)
@@ -551,7 +551,7 @@ I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_pwr.h)(0x69CF3B15)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_uart.h)(0x69CF3B15)
 I (..\ktlib\kt_config.h)(0x69F02AB8)
 I (..\ktlib\kt_log\kt_log.h)(0x69F02A7B)
-I (..\ktlib\kt_port\kt_port_uart.h)(0x69F025CC)
+I (..\ktlib\kt_port\kt_port_uart.h)(0x69F031BD)
 I (..\ktlib\kt_port\kt_port_gpio.h)(0x69F02606)
 I (..\Core\Inc\gpio.h)(0x69D5C628)
 I (..\ktlib\kt_protocol\kt_debug_protocol.h)(0x69F02630)
@@ -560,7 +560,7 @@ F (..\ktlib\kt_protocol\kt_debug_protocol.c)(0x69F02657)(-xc -std=c99 --target=a
 I (..\ktlib\kt_protocol\kt_debug_protocol.h)(0x69F02630)
 I (C:\Keil_v5\ARM\ARMCLANG\include\stdint.h)(0x63884908)
 I (..\ktlib\kt_config.h)(0x69F02AB8)
-I (..\ktlib\kt_debug\kt_debug.h)(0x69F0266E)
+I (..\ktlib\kt_debug\kt_debug.h)(0x69F031EE)
 I (..\Core\Inc\usart.h)(0x69D5C629)
 I (..\Core\Inc\main.h)(0x69D5C62A)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal.h)(0x69CF3B15)
@@ -589,10 +589,10 @@ I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_flash.h)(0x69CF3B15)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_flash_ex.h)(0x69CF3B15)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_pwr.h)(0x69CF3B15)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_uart.h)(0x69CF3B15)
-I (..\ktlib\kt_port\kt_port_uart.h)(0x69F025CC)
+I (..\ktlib\kt_port\kt_port_uart.h)(0x69F031BD)
 I (C:\Keil_v5\ARM\ARMCLANG\include\stdio.h)(0x63884908)
-F (..\ktlib\kt_port\kt_port_uart.c)(0x69F0291D)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include -I ../ktlib -I ../ktlib/kt_debug -I ../ktlib/kt_log -I ../ktlib/kt_protocol -I ../ktlib/kt_port-I./RTE/_stm32f103c8t6_hal_demo-IC:/Users/admin/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/admin/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.1/Device/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F10X_MD -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F103xB-o stm32f103c8t6_hal_demo/kt_port_uart.o -MD)
-I (..\ktlib\kt_port\kt_port_uart.h)(0x69F025CC)
+F (..\ktlib\kt_port\kt_port_uart.c)(0x69F031D6)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include -I ../ktlib -I ../ktlib/kt_debug -I ../ktlib/kt_log -I ../ktlib/kt_protocol -I ../ktlib/kt_port-I./RTE/_stm32f103c8t6_hal_demo-IC:/Users/admin/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/admin/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.1/Device/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F10X_MD -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F103xB-o stm32f103c8t6_hal_demo/kt_port_uart.o -MD)
+I (..\ktlib\kt_port\kt_port_uart.h)(0x69F031BD)
 I (..\Core\Inc\usart.h)(0x69D5C629)
 I (..\Core\Inc\main.h)(0x69D5C62A)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal.h)(0x69CF3B15)
@@ -622,7 +622,6 @@ I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_flash.h)(0x69CF3B15)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_flash_ex.h)(0x69CF3B15)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_pwr.h)(0x69CF3B15)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_uart.h)(0x69CF3B15)
-I (..\ktlib\kt_debug\kt_debug.h)(0x69F0266E)
 I (C:\Keil_v5\ARM\ARMCLANG\include\string.h)(0x63884908)
 F (..\ktlib\kt_port\kt_port_gpio.c)(0x69F0261B)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m3 -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include -I ../ktlib -I ../ktlib/kt_debug -I ../ktlib/kt_log -I ../ktlib/kt_protocol -I ../ktlib/kt_port-I./RTE/_stm32f103c8t6_hal_demo-IC:/Users/admin/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Users/admin/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.1/Device/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F10X_MD -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F103xB-o stm32f103c8t6_hal_demo/kt_port_gpio.o -MD)
 I (..\ktlib\kt_port\kt_port_gpio.h)(0x69F02606)
@@ -661,7 +660,7 @@ I (C:\Keil_v5\ARM\ARMCLANG\include\stdarg.h)(0x63884908)
 I (C:\Keil_v5\ARM\ARMCLANG\include\string.h)(0x63884908)
 I (..\ktlib\kt_config.h)(0x69F02AB8)
 I (..\ktlib\kt_log\kt_log.h)(0x69F02A7B)
-I (..\ktlib\kt_port\kt_port_uart.h)(0x69F025CC)
+I (..\ktlib\kt_port\kt_port_uart.h)(0x69F031BD)
 I (..\Core\Inc\usart.h)(0x69D5C629)
 I (..\Core\Inc\main.h)(0x69D5C62A)
 I (..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal.h)(0x69CF3B15)

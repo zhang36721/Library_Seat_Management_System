@@ -104,6 +104,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    kt_debug_task();
   }
   /* USER CODE END 3 */
 }
