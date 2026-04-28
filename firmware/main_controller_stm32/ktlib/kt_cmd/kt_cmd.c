@@ -1,5 +1,6 @@
 #include "kt_cmd.h"
 #include "kt_config.h"
+#include <stdio.h>
 #include "kt_log.h"
 #include "kt_port_gpio.h"
 #include "kt_port_uart.h"

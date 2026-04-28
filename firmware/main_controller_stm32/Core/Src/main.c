@@ -20,12 +20,14 @@
 #include "main.h"
 #include "usart.h"
 #include "gpio.h"
+#include <stdio.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "kt_debug.h"
 #include "kt_port_uart.h"
 #include "kt_port_gpio.h"
+#include "kt_task/kt_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,11 +54,34 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+static void app_heartbeat_task(void);
+static void app_status_task(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+/**
+ * @brief  Heartbeat task — toggle PC13 LED every 500ms
+ */
+static void app_heartbeat_task(void)
+{
+    kt_port_led_toggle();
+}
+
+/**
+ * @brief  Status task — print uptime every 3000ms
+ */
+static void app_status_task(void)
+{
+    static uint32_t last_print_ms = 0;
+    char buf[64];
+    uint32_t uptime_s = HAL_GetTick() / 1000;
+
+    kt_port_uart_tx_string("[LOG] Uptime: ");
+    snprintf(buf, sizeof(buf), "%lu s\r\n", (unsigned long)uptime_s);
+    kt_port_uart_tx_string(buf);
+}
 
 /* USER CODE END 0 */
 
@@ -95,6 +120,12 @@ int main(void)
   kt_debug_init();
   kt_debug_print_system_info();
   kt_port_uart_start_receive_it();
+
+  /* v0.3: Task scheduler */
+  kt_task_init();
+  kt_task_register("debug",     kt_debug_task,       1);
+  kt_task_register("heartbeat", app_heartbeat_task, 500);
+  kt_task_register("status",    app_status_task,    3000);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -104,7 +135,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    kt_debug_task();
+    kt_task_run();
   }
   /* USER CODE END 3 */
 }

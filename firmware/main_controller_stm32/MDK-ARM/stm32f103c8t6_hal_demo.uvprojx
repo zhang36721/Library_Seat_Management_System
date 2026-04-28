@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../ktlib;../ktlib/kt_debug;../ktlib/kt_log;../ktlib/kt_protocol;../ktlib/kt_port;../ktlib/kt_components;../ktlib/kt_cmd</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../ktlib;../ktlib/kt_debug;../ktlib/kt_log;../ktlib/kt_protocol;../ktlib/kt_port;../ktlib/kt_components;../ktlib/kt_cmd;../ktlib/kt_system;../ktlib/kt_task</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -563,6 +563,26 @@
               <FileName>kt_log.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\ktlib\kt_log\kt_log.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ktlib/ktlib_system</GroupName>
+          <Files>
+            <File>
+              <FileName>kt_tick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_system\kt_tick.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ktlib/ktlib_task</GroupName>
+          <Files>
+            <File>
+              <FileName>kt_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_task\kt_task.c</FilePath>
             </File>
           </Files>
         </Group>
