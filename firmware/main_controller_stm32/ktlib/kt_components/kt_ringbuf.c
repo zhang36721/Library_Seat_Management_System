@@ -1,10 +1,15 @@
 #include "kt_ringbuf.h"
+#include <stddef.h>
 
 /**
  * @brief Initialize a ring buffer instance
  */
 void kt_ringbuf_init(kt_ringbuf_t *rb, uint8_t *buffer, uint16_t size)
 {
+    if (rb == NULL || buffer == NULL || size < 2) {
+        /* Invalid parameters - cannot initialize */
+        return;
+    }
     rb->buffer = buffer;
     rb->size   = size;
     rb->head   = 0;
@@ -18,6 +23,10 @@ void kt_ringbuf_init(kt_ringbuf_t *rb, uint8_t *buffer, uint16_t size)
 int kt_ringbuf_put(kt_ringbuf_t *rb, uint8_t byte)
 {
     uint16_t next_head;
+
+    if (rb == NULL || rb->buffer == NULL || rb->size < 2) {
+        return -1;
+    }
 
     next_head = rb->head + 1;
     if (next_head >= rb->size) {
@@ -42,6 +51,10 @@ int kt_ringbuf_get(kt_ringbuf_t *rb, uint8_t *byte)
 {
     uint16_t next_tail;
 
+    if (rb == NULL || rb->buffer == NULL || rb->size < 2 || byte == NULL) {
+        return -1;
+    }
+
     if (rb->head == rb->tail) {
         return -1;  /* Empty */
     }
@@ -63,6 +76,9 @@ int kt_ringbuf_get(kt_ringbuf_t *rb, uint8_t *byte)
  */
 int kt_ringbuf_is_empty(kt_ringbuf_t *rb)
 {
+    if (rb == NULL || rb->buffer == NULL) {
+        return 1;  /* Invalid state → treat as empty */
+    }
     return (rb->head == rb->tail) ? 1 : 0;
 }
 
@@ -73,6 +89,10 @@ int kt_ringbuf_is_empty(kt_ringbuf_t *rb)
 int kt_ringbuf_is_full(kt_ringbuf_t *rb)
 {
     uint16_t next_head;
+
+    if (rb == NULL || rb->buffer == NULL || rb->size < 2) {
+        return 1;  /* Invalid state → treat as full (can't write) */
+    }
 
     next_head = rb->head + 1;
     if (next_head >= rb->size) {
@@ -87,6 +107,10 @@ int kt_ringbuf_is_full(kt_ringbuf_t *rb)
  */
 uint16_t kt_ringbuf_available(kt_ringbuf_t *rb)
 {
+    if (rb == NULL || rb->buffer == NULL || rb->size < 2) {
+        return 0;  /* Invalid state → nothing available */
+    }
+
     if (rb->head >= rb->tail) {
         return rb->head - rb->tail;
     } else {

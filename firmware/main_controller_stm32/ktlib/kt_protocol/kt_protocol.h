@@ -43,9 +43,41 @@ void kt_protocol_set_handler(kt_protocol_frame_handler_t handler);
  *        It is intentionally NOT safe for ISR context because it may
  *        invoke user callbacks that do blocking UART TX.
  *
- * @param byte  Received byte
+ * @param byte    Received byte
+ * @param now_ms  Current system tick (milliseconds), used for timeout tracking
  */
-void kt_protocol_input_byte(uint8_t byte);
+void kt_protocol_input_byte(uint8_t byte, uint32_t now_ms);
+
+/**
+ * @brief Check for partial-frame timeout
+ *
+ *        If the state machine has been waiting in a non-IDLE state
+ *        for longer than KT_PROTOCOL_RX_TIMEOUT_MS, the partial frame
+ *        is discarded and the state machine resets to IDLE.
+ *
+ *        Call this at the beginning of each main-loop iteration,
+ *        BEFORE draining the ring buffer.
+ *
+ * @param now_ms  Current system tick (milliseconds)
+ */
+void kt_protocol_check_timeout(uint32_t now_ms);
+
+/**
+ * @brief Get timeout-drop count (partial frames discarded due to timeout)
+ * @return Number of timeout drops since last reset
+ */
+uint32_t kt_protocol_get_timeout_drop_count(void);
+
+/**
+ * @brief Get error-drop count (invalid frames discarded)
+ * @return Number of error drops since last reset
+ */
+uint32_t kt_protocol_get_error_drop_count(void);
+
+/**
+ * @brief Reset protocol state machine to IDLE and clear statistics
+ */
+void kt_protocol_reset(void);
 
 #ifdef __cplusplus
 }

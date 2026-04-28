@@ -59,6 +59,12 @@ uint16_t kt_port_uart_rx_available(void);
  */
 int kt_port_uart_rx_read(uint8_t *byte);
 
+/**
+ * @brief Get RX overflow count (incremented when ring buffer is full in ISR)
+ * @return Number of bytes lost due to ring buffer full
+ */
+uint32_t kt_port_uart_rx_overflow_count(void);
+
 #ifdef __cplusplus
 }
 #endif

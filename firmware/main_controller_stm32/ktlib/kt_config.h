@@ -14,6 +14,12 @@
 /* Protocol Frame Marker */
 #define KT_PROTOCOL_FRAME_MARKER  0xFF
 
+/* Protocol RX Timeout - discard partial frame after this many ms */
+#define KT_PROTOCOL_RX_TIMEOUT_MS 100
+
+/* UART TX Timeout - max blocking time per transmit call */
+#define KT_UART_TX_TIMEOUT_MS     100
+
 /* Boot Count - first version fixed to 1, Flash persistence to be added later */
 #define KT_BOOT_COUNT             1
 

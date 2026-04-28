@@ -17,7 +17,7 @@ static char kt_print_buf[128];
  *        - Registers protocol -> command dispatch handler
  *        - Initializes command dispatch subsystem
  */
-void kt_debug_init(void)
+void kt_debug_init(void) 
 {
     /* Initialize protocol parser */
     kt_protocol_init();
@@ -34,8 +34,9 @@ void kt_debug_init(void)
 /**
  * @brief Debug main task (call from main loop)
  *
- *        v0.2: Drains the RX ring buffer and feeds each byte into the
- *        protocol parser.  No callbacks, no protocol logic in ISR.
+ *        v0.2.1: Adds protocol RX timeout checking (call BEFORE draining
+ *        ring buffer). Each byte is fed to the protocol parser with the
+ *        current system tick for timeout tracking.
  *
  *        This should be called as frequently as possible in the main
  *        loop so that incoming bytes are processed with minimal latency.
@@ -43,10 +44,17 @@ void kt_debug_init(void)
 void kt_debug_task(void)
 {
     uint8_t byte;
+    uint32_t now_ms;
+
+    /* Get current system tick once per task invocation */
+    now_ms = HAL_GetTick();
+
+    /* Check and handle partial-frame timeout BEFORE processing new bytes */
+    kt_protocol_check_timeout(now_ms);
 
     /* Drain all available bytes */
     while (kt_port_uart_rx_read(&byte) == 0) {
-        kt_protocol_input_byte(byte);
+        kt_protocol_input_byte(byte, now_ms);
     }
 }
 
