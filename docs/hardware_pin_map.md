@@ -13,13 +13,13 @@
 | 座位检测 1 | 红外/压力输入 | 待确认 | 待配置为 GPIO 输入 | `APP_SEAT_SENSOR_ACTIVE_LEVEL` | 待确认 | 否 | 待确认 | 已保留 `APP_SEAT1_SENSOR_PORT/PIN`；未确认前不占用具体引脚 |
 | 座位检测 2 | 红外/压力输入 | 待确认 | 待配置为 GPIO 输入 | `APP_SEAT_SENSOR_ACTIVE_LEVEL` | 待确认 | 否 | 待确认 | 已保留 `APP_SEAT2_SENSOR_PORT/PIN`；未确认前不占用具体引脚 |
 | 座位检测 3 | 红外/压力输入 | 待确认 | 待配置为 GPIO 输入 | `APP_SEAT_SENSOR_ACTIVE_LEVEL` | 待确认 | 否 | 待确认 | 已保留 `APP_SEAT3_SENSOR_PORT/PIN`；未确认前不占用具体引脚 |
-| RC522 | SPI SCK/MISO/MOSI/NSS/RST | 待确认 | SPI/GPIO | 待确认 | 未初始化 | 否 | 未验证 | 本阶段不做 RC522 业务；需确认是否占用 PA4 NSS，与蜂鸣器 PA4 冲突待确认 |
-| OLED | I2C 或 SPI 显示接口 | 待确认 | I2C/SPI/GPIO | 待确认 | 未初始化 | 否 | 未验证 | 采购/接线说明为 OLED IIC，但源码未初始化 I2C |
-| DS1302 | CLK / DAT / RST | 待确认 | GPIO | 待确认 | 未初始化 | 否 | 未验证 | 本阶段不做时间业务 |
-| 步进电机 | ULN2003/ULN12003 IN1-IN4 | 待确认 | GPIO 输出 | 待确认 | 未初始化 | 否 | 未验证 | 本阶段不做闸机业务；ULN 型号需确认 |
-| USART1 | ZigBee 预留 | PA9 TX / PA10 RX | USART 异步串口 | 不适用 | 未初始化 | 否 | 未验证 | 仅预留，不接入 v0.6 debug 协议 |
+| RC522 | 软件 SPI SCK/MISO/MOSI/NSS/RST | PA5 / PA6 / PA7 / PB12 / PB13 | GPIO 软件 SPI | 待确认 | NSS 高、RST 高 | 是 | 待 FF 40/41 实机验证 | 避开 PA4；若实物 NSS 接 PA4，则与蜂鸣器冲突待确认 |
+| OLED | I2C 显示接口 | PB6 SCL / PB7 SDA | GPIO 软件 I2C 开漏 | 待确认 | SCL/SDA 高 | 是 | 待 FF 50 实机验证 | 当前明确规划为 I2C OLED，地址 `0x78` |
+| DS1302 | CLK / DAT / RST | PB0 / PB1 / PB5 | GPIO 三线 | 待确认 | CLK/RST 低，DAT 输入上拉 | 是 | 待 FF 60/61 实机验证 | 只做时间读写验证，不接业务 |
+| 步进电机 | ULN2003/ULN12003 IN1-IN4 | PB8 / PB9 / PB14 / PB15 | GPIO 输出 | 高电平驱动 | 全低关闭线圈 | 是 | 待 FF 70/71/72 实机验证 | 相序需按实机确认 |
+| USART1 | ZigBee 测试 | PA9 TX / PA10 RX | USART 异步串口 115200 8N1 | 不适用 | 已初始化 | 是 | 待 FF 80 实机验证 | 只发送测试数据，不跑 ZigBee 业务协议 |
 | USART2 | Debug 调试串口 | PA2 TX / PA3 RX | USART 异步串口 115200 8N1 | 不适用 | RX 中断接收 | 是 | 待实机验证 | 当前 `FF CMD DATA FF` 协议固定走 USART2；ESP32S3 暂不共用 |
-| USART3 | ESP32S3 预留 | PB10 TX / PB11 RX | USART 异步串口 | 不适用 | 未初始化 | 否 | 未验证 | 后续 ESP32S3 协议独立于 USART2 debug 协议 |
+| USART3 | ESP32S3 测试 | PB10 TX / PB11 RX | USART 异步串口 115200 8N1 | 不适用 | 已初始化 | 是 | 待 FF 90 实机验证 | 只发送测试数据，不污染 USART2 debug |
 
 ## 已发现的接线/文档冲突
 
@@ -50,3 +50,13 @@
 | `FF 25 00 FF` | 打印当前 GPIO 初始化状态 |
 | `FF 30 00 FF` | 读取 3 路座位传感器原始电平 |
 | `FF 31 00 FF` | 打印 3 路座位 FREE/OCCUPIED 判断结果 |
+| `FF 40 00 FF` | 初始化 RC522 |
+| `FF 41 00 FF` | 读取 RC522 UID |
+| `FF 50 00 FF` | OLED 显示测试文字 |
+| `FF 60 00 FF` | 读取 DS1302 时间 |
+| `FF 61 00 FF` | 写入 DS1302 测试时间 |
+| `FF 70 00 FF` | 步进电机正转测试 |
+| `FF 71 00 FF` | 步进电机反转测试 |
+| `FF 72 00 FF` | 步进电机停止 |
+| `FF 80 00 FF` | USART1 ZigBee 测试发送 |
+| `FF 90 00 FF` | USART3 ESP32S3 测试发送 |
