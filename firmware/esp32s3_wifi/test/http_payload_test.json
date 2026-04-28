@@ -1,0 +1,83 @@
+{
+    "test_cases": [
+        {
+            "name": "seat_status_test",
+            "endpoint": "/api/seat/status",
+            "method": "POST",
+            "payload": {
+                "seat_id": 1,
+                "status": 1,
+                "timestamp": 1714275600,
+                "sensor_type": "ir+pressure"
+            },
+            "expected_status": 200,
+            "expected_response": {
+                "success": true,
+                "message": "Seat status updated"
+            }
+        },
+        {
+            "name": "card_event_enter_test",
+            "endpoint": "/api/card/event",
+            "method": "POST",
+            "payload": {
+                "uid": "AABBCCDD",
+                "event_type": "enter",
+                "seat_id": 1,
+                "timestamp": 1714275600
+            },
+            "expected_status": 200,
+            "expected_response": {
+                "success": true,
+                "message": "Card event recorded"
+            }
+        },
+        {
+            "name": "card_event_leave_test",
+            "endpoint": "/api/card/event",
+            "method": "POST",
+            "payload": {
+                "uid": "AABBCCDD",
+                "event_type": "leave",
+                "seat_id": 1,
+                "timestamp": 1714275660
+            },
+            "expected_status": 200,
+            "expected_response": {
+                "success": true,
+                "message": "Card event recorded"
+            }
+        },
+        {
+            "name": "system_status_test",
+            "endpoint": "/api/system/status",
+            "method": "POST",
+            "payload": {
+                "device_id": "esp32s3_001",
+                "wifi_status": "connected",
+                "signal_strength": -55,
+                "uptime": 3600,
+                "timestamp": 1714275600
+            },
+            "expected_status": 200,
+            "expected_response": {
+                "success": true,
+                "message": "System status received"
+            }
+        },
+        {
+            "name": "heartbeat_test",
+            "endpoint": "/api/heartbeat",
+            "method": "POST",
+            "payload": {
+                "device_id": "esp32s3_001",
+                "timestamp": 1714275600
+            },
+            "expected_status": 200,
+            "expected_response": {
+                "success": true,
+                "server_time": 1714275600
+            }
+        }
+    ]
+}

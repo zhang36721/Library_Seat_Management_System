@@ -1,0 +1,25 @@
+{
+    "seat_status_example": {
+        "seat_id": 1,
+        "status": 1,
+        "timestamp": 1714275600,
+        "sensor_type": "ir+pressure"
+    },
+    "card_event_example": {
+        "uid": "AABBCCDD",
+        "event_type": "enter",
+        "seat_id": 1,
+        "timestamp": 1714275600
+    },
+    "system_status_example": {
+        "device_id": "esp32s3_001",
+        "wifi_status": "connected",
+        "signal_strength": -55,
+        "uptime": 3600,
+        "timestamp": 1714275600
+    },
+    "heartbeat_example": {
+        "device_id": "esp32s3_001",
+        "timestamp": 1714275600
+    }
+}
