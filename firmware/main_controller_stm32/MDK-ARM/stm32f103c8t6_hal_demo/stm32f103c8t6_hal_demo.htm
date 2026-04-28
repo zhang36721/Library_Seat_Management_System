@@ -3,11 +3,11 @@
 <title>Static Call Graph - [stm32f103c8t6_hal_demo\stm32f103c8t6_hal_demo.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image stm32f103c8t6_hal_demo\stm32f103c8t6_hal_demo.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Tue Apr 28 17:29:50 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Tue Apr 28 17:58:23 2026
 <BR><P>
-<H3>Maximum Stack Usage =        664 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        608 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
-kt_cmd_dispatch &rArr; kt_cmd_print_status &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+kt_cmd_dispatch &rArr; kt_hw_diag_print_debug_status &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
 <P>
 <H3>
 Functions with no stack information
@@ -97,8 +97,8 @@ Function Pointers
 Global Symbols
 </H3>
 <P><STRONG><a name="[36]"></a>__main</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, __main.o(!!!main))
-<BR><BR>[Calls]<UL><LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload
-<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry
+<BR><BR>[Calls]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xb.o(.text)
 </UL>
@@ -110,9 +110,9 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry
 </UL>
 
-<P><STRONG><a name="[f1]"></a>__scatterload_rt2_thumb_only</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __scatter.o(!!!scatter), UNUSED)
+<P><STRONG><a name="[10c]"></a>__scatterload_rt2_thumb_only</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __scatter.o(!!!scatter), UNUSED)
 
-<P><STRONG><a name="[f2]"></a>__scatterload_null</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __scatter.o(!!!scatter), UNUSED)
+<P><STRONG><a name="[10d]"></a>__scatterload_null</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __scatter.o(!!!scatter), UNUSED)
 
 <P><STRONG><a name="[41]"></a>__scatterload_copy</STRONG> (Thumb, 26 bytes, Stack size unknown bytes, __scatter_copy.o(!!handler_copy), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload_copy
@@ -120,7 +120,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload_copy
 </UL>
 
-<P><STRONG><a name="[f3]"></a>__scatterload_zeroinit</STRONG> (Thumb, 28 bytes, Stack size unknown bytes, __scatter_zi.o(!!handler_zi), UNUSED)
+<P><STRONG><a name="[10e]"></a>__scatterload_zeroinit</STRONG> (Thumb, 28 bytes, Stack size unknown bytes, __scatter_zi.o(!!handler_zi), UNUSED)
 
 <P><STRONG><a name="[42]"></a>_printf_n</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, _printf_n.o(.ARM.Collect$$_printf_percent$$00000001))
 <BR><BR>[Calls]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_charcount
@@ -165,7 +165,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_fp_hex
 </UL>
 
-<P><STRONG><a name="[f4]"></a>_printf_ll</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, _printf_ll.o(.ARM.Collect$$_printf_percent$$00000007))
+<P><STRONG><a name="[10f]"></a>_printf_ll</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, _printf_ll.o(.ARM.Collect$$_printf_percent$$00000007))
 
 <P><STRONG><a name="[4c]"></a>_printf_i</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, _printf_i.o(.ARM.Collect$$_printf_percent$$00000008))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72 + Unknown Stack Size
@@ -237,7 +237,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_ll_hex
 </UL>
 
-<P><STRONG><a name="[f5]"></a>_printf_l</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, _printf_l.o(.ARM.Collect$$_printf_percent$$00000012))
+<P><STRONG><a name="[110]"></a>_printf_l</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, _printf_l.o(.ARM.Collect$$_printf_percent$$00000012))
 
 <P><STRONG><a name="[5c]"></a>_printf_c</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, _printf_c.o(.ARM.Collect$$_printf_percent$$00000013))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40 + Unknown Stack Size
@@ -267,29 +267,29 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_wstring
 </UL>
 
-<P><STRONG><a name="[f6]"></a>_printf_percent_end</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, _printf_percent_end.o(.ARM.Collect$$_printf_percent$$00000017))
+<P><STRONG><a name="[111]"></a>_printf_percent_end</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, _printf_percent_end.o(.ARM.Collect$$_printf_percent$$00000017))
 
 <P><STRONG><a name="[6c]"></a>__rt_lib_init</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit.o(.ARM.Collect$$libinit$$00000000))
 <BR><BR>[Called By]<UL><LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_li
 </UL>
 
-<P><STRONG><a name="[f7]"></a>__rt_lib_init_fp_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000002))
+<P><STRONG><a name="[112]"></a>__rt_lib_init_fp_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000002))
 
-<P><STRONG><a name="[f8]"></a>__rt_lib_init_heap_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000000C))
+<P><STRONG><a name="[113]"></a>__rt_lib_init_heap_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000000C))
 
 <P><STRONG><a name="[64]"></a>__rt_lib_init_lc_common</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000011))
 <BR><BR>[Calls]<UL><LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_locale
 </UL>
 
-<P><STRONG><a name="[f9]"></a>__rt_lib_init_preinit_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000006))
+<P><STRONG><a name="[114]"></a>__rt_lib_init_preinit_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000006))
 
-<P><STRONG><a name="[fa]"></a>__rt_lib_init_rand_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000010))
+<P><STRONG><a name="[115]"></a>__rt_lib_init_rand_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000010))
 
-<P><STRONG><a name="[fb]"></a>__rt_lib_init_relocate_pie_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000004))
+<P><STRONG><a name="[116]"></a>__rt_lib_init_relocate_pie_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000004))
 
-<P><STRONG><a name="[fc]"></a>__rt_lib_init_user_alloc_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000000E))
+<P><STRONG><a name="[117]"></a>__rt_lib_init_user_alloc_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000000E))
 
-<P><STRONG><a name="[fd]"></a>__rt_lib_init_lc_collate_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000013))
+<P><STRONG><a name="[118]"></a>__rt_lib_init_lc_collate_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000013))
 
 <P><STRONG><a name="[66]"></a>__rt_lib_init_lc_ctype_2</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000014))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8 + Unknown Stack Size
@@ -298,9 +298,9 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_get_lc_ctype
 </UL>
 
-<P><STRONG><a name="[fe]"></a>__rt_lib_init_lc_ctype_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000015))
+<P><STRONG><a name="[119]"></a>__rt_lib_init_lc_ctype_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000015))
 
-<P><STRONG><a name="[ff]"></a>__rt_lib_init_lc_monetary_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000017))
+<P><STRONG><a name="[11a]"></a>__rt_lib_init_lc_monetary_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000017))
 
 <P><STRONG><a name="[67]"></a>__rt_lib_init_lc_numeric_2</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000018))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8 + Unknown Stack Size
@@ -309,56 +309,56 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_get_lc_numeric
 </UL>
 
-<P><STRONG><a name="[100]"></a>__rt_lib_init_alloca_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000030))
+<P><STRONG><a name="[11b]"></a>__rt_lib_init_alloca_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000030))
 
-<P><STRONG><a name="[101]"></a>__rt_lib_init_argv_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000002E))
+<P><STRONG><a name="[11c]"></a>__rt_lib_init_argv_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000002E))
 
-<P><STRONG><a name="[102]"></a>__rt_lib_init_atexit_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000001D))
+<P><STRONG><a name="[11d]"></a>__rt_lib_init_atexit_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000001D))
 
-<P><STRONG><a name="[103]"></a>__rt_lib_init_clock_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000023))
+<P><STRONG><a name="[11e]"></a>__rt_lib_init_clock_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000023))
 
-<P><STRONG><a name="[104]"></a>__rt_lib_init_cpp_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000034))
+<P><STRONG><a name="[11f]"></a>__rt_lib_init_cpp_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000034))
 
-<P><STRONG><a name="[105]"></a>__rt_lib_init_exceptions_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000032))
+<P><STRONG><a name="[120]"></a>__rt_lib_init_exceptions_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000032))
 
-<P><STRONG><a name="[106]"></a>__rt_lib_init_fp_trap_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000021))
+<P><STRONG><a name="[121]"></a>__rt_lib_init_fp_trap_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000021))
 
-<P><STRONG><a name="[107]"></a>__rt_lib_init_getenv_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000025))
+<P><STRONG><a name="[122]"></a>__rt_lib_init_getenv_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000025))
 
-<P><STRONG><a name="[108]"></a>__rt_lib_init_lc_numeric_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000019))
+<P><STRONG><a name="[123]"></a>__rt_lib_init_lc_numeric_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000019))
 
-<P><STRONG><a name="[109]"></a>__rt_lib_init_lc_time_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000001B))
+<P><STRONG><a name="[124]"></a>__rt_lib_init_lc_time_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000001B))
 
-<P><STRONG><a name="[10a]"></a>__rt_lib_init_return</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000035))
+<P><STRONG><a name="[125]"></a>__rt_lib_init_return</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000035))
 
-<P><STRONG><a name="[10b]"></a>__rt_lib_init_signal_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000001F))
+<P><STRONG><a name="[126]"></a>__rt_lib_init_signal_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$0000001F))
 
-<P><STRONG><a name="[10c]"></a>__rt_lib_init_stdio_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000027))
+<P><STRONG><a name="[127]"></a>__rt_lib_init_stdio_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libinit2.o(.ARM.Collect$$libinit$$00000027))
 
 <P><STRONG><a name="[71]"></a>__rt_lib_shutdown</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown.o(.ARM.Collect$$libshutdown$$00000000))
 <BR><BR>[Called By]<UL><LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_exit_ls
 </UL>
 
-<P><STRONG><a name="[10d]"></a>__rt_lib_shutdown_cpp_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$00000002))
+<P><STRONG><a name="[128]"></a>__rt_lib_shutdown_cpp_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$00000002))
 
-<P><STRONG><a name="[10e]"></a>__rt_lib_shutdown_fp_trap_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$00000007))
+<P><STRONG><a name="[129]"></a>__rt_lib_shutdown_fp_trap_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$00000007))
 
-<P><STRONG><a name="[10f]"></a>__rt_lib_shutdown_heap_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$0000000F))
+<P><STRONG><a name="[12a]"></a>__rt_lib_shutdown_heap_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$0000000F))
 
-<P><STRONG><a name="[110]"></a>__rt_lib_shutdown_return</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$00000010))
+<P><STRONG><a name="[12b]"></a>__rt_lib_shutdown_return</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$00000010))
 
-<P><STRONG><a name="[111]"></a>__rt_lib_shutdown_signal_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$0000000A))
+<P><STRONG><a name="[12c]"></a>__rt_lib_shutdown_signal_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$0000000A))
 
-<P><STRONG><a name="[112]"></a>__rt_lib_shutdown_stdio_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$00000004))
+<P><STRONG><a name="[12d]"></a>__rt_lib_shutdown_stdio_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$00000004))
 
-<P><STRONG><a name="[113]"></a>__rt_lib_shutdown_user_alloc_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$0000000C))
+<P><STRONG><a name="[12e]"></a>__rt_lib_shutdown_user_alloc_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, libshutdown2.o(.ARM.Collect$$libshutdown$$0000000C))
 
 <P><STRONG><a name="[3f]"></a>__rt_entry</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry.o(.ARM.Collect$$rtentry$$00000000))
-<BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload_rt2
-<LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__main
+<BR><BR>[Called By]<UL><LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__main
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload_rt2
 </UL>
 
-<P><STRONG><a name="[114]"></a>__rt_entry_presh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000002))
+<P><STRONG><a name="[12f]"></a>__rt_entry_presh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000002))
 
 <P><STRONG><a name="[69]"></a>__rt_entry_sh</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry4.o(.ARM.Collect$$rtentry$$00000004))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8 + Unknown Stack Size
@@ -371,7 +371,7 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_lib_init
 </UL>
 
-<P><STRONG><a name="[115]"></a>__rt_entry_postsh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000009))
+<P><STRONG><a name="[130]"></a>__rt_entry_postsh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000009))
 
 <P><STRONG><a name="[6d]"></a>__rt_entry_main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000D))
 <BR><BR>[Stack]<UL><LI>Max Depth = 216 + Unknown Stack Size
@@ -381,7 +381,7 @@ Global Symbols
 <LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit
 </UL>
 
-<P><STRONG><a name="[116]"></a>__rt_entry_postli_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000C))
+<P><STRONG><a name="[131]"></a>__rt_entry_postli_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000C))
 
 <P><STRONG><a name="[94]"></a>__rt_exit</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, rtexit.o(.ARM.Collect$$rtexit$$00000000))
 <BR><BR>[Called By]<UL><LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit
@@ -391,7 +391,7 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_lib_shutdown
 </UL>
 
-<P><STRONG><a name="[117]"></a>__rt_exit_prels_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, rtexit2.o(.ARM.Collect$$rtexit$$00000002))
+<P><STRONG><a name="[132]"></a>__rt_exit_prels_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, rtexit2.o(.ARM.Collect$$rtexit$$00000002))
 
 <P><STRONG><a name="[72]"></a>__rt_exit_exit</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, rtexit2.o(.ARM.Collect$$rtexit$$00000004))
 <BR><BR>[Calls]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_sys_exit
@@ -540,7 +540,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_char_common
 </UL>
-<BR>[Called By]<UL><LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
 </UL>
 
 <P><STRONG><a name="[76]"></a>__2snprintf</STRONG> (Thumb, 58 bytes, Stack size 32 bytes, __2snprintf.o(.text))
@@ -549,10 +549,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_char_common
 </UL>
-<BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_print_status
-<LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
-<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
-<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_print_system_info
+<BR>[Called By]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_debug_status
+<LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_print_system_info
 </UL>
 
 <P><STRONG><a name="[78]"></a>_printf_pre_padding</STRONG> (Thumb, 44 bytes, Stack size 16 bytes, _printf_pad.o(.text))
@@ -643,17 +642,17 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_char_common
 </UL>
 
-<P><STRONG><a name="[e7]"></a>strlen</STRONG> (Thumb, 62 bytes, Stack size 8 bytes, strlen.o(.text))
+<P><STRONG><a name="[ff]"></a>strlen</STRONG> (Thumb, 62 bytes, Stack size 8 bytes, strlen.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = strlen
 </UL>
-<BR>[Called By]<UL><LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_tx_string
+<BR>[Called By]<UL><LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_tx_string
 </UL>
 
-<P><STRONG><a name="[118]"></a>__use_two_region_memory</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
+<P><STRONG><a name="[133]"></a>__use_two_region_memory</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
 
-<P><STRONG><a name="[119]"></a>__rt_heap_escrow$2region</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
+<P><STRONG><a name="[134]"></a>__rt_heap_escrow$2region</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
 
-<P><STRONG><a name="[11a]"></a>__rt_heap_expand$2region</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
+<P><STRONG><a name="[135]"></a>__rt_heap_expand$2region</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
 
 <P><STRONG><a name="[7a]"></a>_printf_truncate_signed</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, _printf_truncate.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_int_dec
@@ -687,8 +686,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__printf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vsnprintf
-<LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
+<BR>[Called By]<UL><LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
+<LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vsnprintf
 </UL>
 
 <P><STRONG><a name="[37]"></a>_snputc</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, _snputc.o(.text))
@@ -883,15 +882,15 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[11b]"></a>__user_libspace</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, libspace.o(.text), UNUSED)
+<P><STRONG><a name="[136]"></a>__user_libspace</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, libspace.o(.text), UNUSED)
 
 <P><STRONG><a name="[92]"></a>__user_perproc_libspace</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, libspace.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__user_setup_stackheap
 </UL>
 
-<P><STRONG><a name="[11c]"></a>__user_perthread_libspace</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, libspace.o(.text), UNUSED)
+<P><STRONG><a name="[137]"></a>__user_perthread_libspace</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, libspace.o(.text), UNUSED)
 
-<P><STRONG><a name="[f0]"></a>strcmp</STRONG> (Thumb, 128 bytes, Stack size 0 bytes, strcmpv7m.o(.text))
+<P><STRONG><a name="[10b]"></a>strcmp</STRONG> (Thumb, 128 bytes, Stack size 0 bytes, strcmpv7m.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_get_lc_ctype
 <LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_get_lc_numeric
 </UL>
@@ -900,11 +899,11 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_exit_exit
 </UL>
 
-<P><STRONG><a name="[11d]"></a>__I$use$semihosting</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, use_no_semi.o(.text), UNUSED)
+<P><STRONG><a name="[138]"></a>__I$use$semihosting</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, use_no_semi.o(.text), UNUSED)
 
-<P><STRONG><a name="[11e]"></a>__use_no_semihosting_swi</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, use_no_semi.o(.text), UNUSED)
+<P><STRONG><a name="[139]"></a>__use_no_semihosting_swi</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, use_no_semi.o(.text), UNUSED)
 
-<P><STRONG><a name="[11f]"></a>__semihosting_library_function</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, indicate_semi.o(.text), UNUSED)
+<P><STRONG><a name="[13a]"></a>__semihosting_library_function</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, indicate_semi.o(.text), UNUSED)
 
 <P><STRONG><a name="[4]"></a>BusFault_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f1xx_it.o(.text.BusFault_Handler))
 <BR><BR>[Calls]<UL><LI><a href="#[4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BusFault_Handler
@@ -916,8 +915,10 @@ Global Symbols
 <P><STRONG><a name="[7]"></a>DebugMon_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f1xx_it.o(.text.DebugMon_Handler))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xb.o(RESET)
 </UL>
-<P><STRONG><a name="[b4]"></a>Error_Handler</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, main.o(.text.Error_Handler))
-<BR><BR>[Called By]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART2_UART_Init
+<P><STRONG><a name="[b5]"></a>Error_Handler</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, main.o(.text.Error_Handler))
+<BR><BR>[Called By]<UL><LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART3_UART_Init
+<LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART2_UART_Init
+<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART1_UART_Init
 </UL>
 
 <P><STRONG><a name="[95]"></a>FLASH_WaitForLastOperation</STRONG> (Thumb, 224 bytes, Stack size 16 bytes, stm32f1xx_hal_flash.o(.text.FLASH_WaitForLastOperation))
@@ -925,149 +926,174 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
-<BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASHEx_Erase
-<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Program
+<BR>[Called By]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASHEx_Erase
+<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Program
 </UL>
 
-<P><STRONG><a name="[a4]"></a>HAL_DMA_Abort</STRONG> (Thumb, 70 bytes, Stack size 0 bytes, stm32f1xx_hal_dma.o(.text.HAL_DMA_Abort))
-<BR><BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
+<P><STRONG><a name="[a5]"></a>HAL_DMA_Abort</STRONG> (Thumb, 70 bytes, Stack size 0 bytes, stm32f1xx_hal_dma.o(.text.HAL_DMA_Abort))
+<BR><BR>[Called By]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
 </UL>
 
-<P><STRONG><a name="[a5]"></a>HAL_DMA_Abort_IT</STRONG> (Thumb, 178 bytes, Stack size 8 bytes, stm32f1xx_hal_dma.o(.text.HAL_DMA_Abort_IT))
+<P><STRONG><a name="[a6]"></a>HAL_DMA_Abort_IT</STRONG> (Thumb, 178 bytes, Stack size 8 bytes, stm32f1xx_hal_dma.o(.text.HAL_DMA_Abort_IT))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = HAL_DMA_Abort_IT
 </UL>
-<BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
+<BR>[Called By]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
 </UL>
 
-<P><STRONG><a name="[97]"></a>HAL_FLASHEx_Erase</STRONG> (Thumb, 238 bytes, Stack size 32 bytes, stm32f1xx_hal_flash_ex.o(.text.HAL_FLASHEx_Erase))
+<P><STRONG><a name="[97]"></a>HAL_Delay</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, stm32f1xx_hal.o(.text.HAL_Delay))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = HAL_Delay
+</UL>
+<BR>[Calls]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
+</UL>
+<BR>[Called By]<UL><LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_rc522_init
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;run_steps
+</UL>
+
+<P><STRONG><a name="[98]"></a>HAL_FLASHEx_Erase</STRONG> (Thumb, 238 bytes, Stack size 32 bytes, stm32f1xx_hal_flash_ex.o(.text.HAL_FLASHEx_Erase))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = HAL_FLASHEx_Erase &rArr; FLASH_WaitForLastOperation
 </UL>
 <BR>[Calls]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FLASH_WaitForLastOperation
 </UL>
-<BR>[Called By]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_boot_count_init
+<BR>[Called By]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_boot_count_init
 </UL>
 
-<P><STRONG><a name="[bf]"></a>HAL_FLASH_Lock</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, stm32f1xx_hal_flash.o(.text.HAL_FLASH_Lock))
-<BR><BR>[Called By]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_boot_count_init
+<P><STRONG><a name="[c3]"></a>HAL_FLASH_Lock</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, stm32f1xx_hal_flash.o(.text.HAL_FLASH_Lock))
+<BR><BR>[Called By]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_boot_count_init
 </UL>
 
-<P><STRONG><a name="[98]"></a>HAL_FLASH_Program</STRONG> (Thumb, 172 bytes, Stack size 40 bytes, stm32f1xx_hal_flash.o(.text.HAL_FLASH_Program))
+<P><STRONG><a name="[99]"></a>HAL_FLASH_Program</STRONG> (Thumb, 172 bytes, Stack size 40 bytes, stm32f1xx_hal_flash.o(.text.HAL_FLASH_Program))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = HAL_FLASH_Program &rArr; FLASH_WaitForLastOperation
 </UL>
 <BR>[Calls]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FLASH_WaitForLastOperation
 </UL>
-<BR>[Called By]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_boot_count_init
+<BR>[Called By]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_boot_count_init
 </UL>
 
-<P><STRONG><a name="[be]"></a>HAL_FLASH_Unlock</STRONG> (Thumb, 46 bytes, Stack size 0 bytes, stm32f1xx_hal_flash.o(.text.HAL_FLASH_Unlock))
-<BR><BR>[Called By]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_boot_count_init
+<P><STRONG><a name="[c2]"></a>HAL_FLASH_Unlock</STRONG> (Thumb, 46 bytes, Stack size 0 bytes, stm32f1xx_hal_flash.o(.text.HAL_FLASH_Unlock))
+<BR><BR>[Called By]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_boot_count_init
 </UL>
 
-<P><STRONG><a name="[ac]"></a>HAL_GPIO_Init</STRONG> (Thumb, 538 bytes, Stack size 44 bytes, stm32f1xx_hal_gpio.o(.text.HAL_GPIO_Init))
+<P><STRONG><a name="[ad]"></a>HAL_GPIO_Init</STRONG> (Thumb, 538 bytes, Stack size 44 bytes, stm32f1xx_hal_gpio.o(.text.HAL_GPIO_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = HAL_GPIO_Init
 </UL>
-<BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_MspInit
-<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_GPIO_Init
+<BR>[Called By]<UL><LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_MspInit
+<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_GPIO_Init
+<LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_reg
+<LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;write_byte
 </UL>
 
-<P><STRONG><a name="[c0]"></a>HAL_GPIO_ReadPin</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, stm32f1xx_hal_gpio.o(.text.HAL_GPIO_ReadPin))
-<BR><BR>[Called By]<UL><LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_button_task
-<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+<P><STRONG><a name="[c4]"></a>HAL_GPIO_ReadPin</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, stm32f1xx_hal_gpio.o(.text.HAL_GPIO_ReadPin))
+<BR><BR>[Called By]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rc522_spi_transfer
+<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_button_task
+<LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_read_button_state
+<LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_reg
 </UL>
 
-<P><STRONG><a name="[e0]"></a>HAL_GPIO_TogglePin</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, stm32f1xx_hal_gpio.o(.text.HAL_GPIO_TogglePin))
-<BR><BR>[Called By]<UL><LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_task
-<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_toggle
+<P><STRONG><a name="[f6]"></a>HAL_GPIO_TogglePin</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, stm32f1xx_hal_gpio.o(.text.HAL_GPIO_TogglePin))
+<BR><BR>[Called By]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_task
+<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_toggle
 </UL>
 
-<P><STRONG><a name="[b2]"></a>HAL_GPIO_WritePin</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, stm32f1xx_hal_gpio.o(.text.HAL_GPIO_WritePin))
-<BR><BR>[Called By]<UL><LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_task
-<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_init
-<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_init
-<LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_cycle_stop
-<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_cycle_start
-<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_beep
-<LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_off
-<LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_on
-<LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_on
-<LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_off
-<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_GPIO_Init
+<P><STRONG><a name="[b3]"></a>HAL_GPIO_WritePin</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, stm32f1xx_hal_gpio.o(.text.HAL_GPIO_WritePin))
+<BR><BR>[Called By]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rc522_transceive
+<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rc522_spi_transfer
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_task
+<LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_init
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_init
+<LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_stepper_stop
+<LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_ds1302_write_test_time
+<LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_rc522_read_uid
+<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_rc522_init
+<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_cycle_stop
+<LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_cycle_start
+<LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_beep
+<LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_off
+<LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_on
+<LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_on
+<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_off
+<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_GPIO_Init
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;run_steps
+<LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_reg
+<LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;write_byte
+<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;i2c_write
+<LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;oled_write
 </UL>
 
 <P><STRONG><a name="[96]"></a>HAL_GetTick</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, stm32f1xx_hal.o(.text.HAL_GetTick))
-<BR><BR>[Called By]<UL><LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_is_timeout
-<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
-<LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_print_status
+<BR><BR>[Called By]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_is_timeout
+<LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
+<LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_debug_status
 <LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FLASH_WaitForLastOperation
-<LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
+<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit
 <LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_task
-<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_ClockConfig
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_OscConfig
+<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_ClockConfig
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_OscConfig
 </UL>
 
-<P><STRONG><a name="[b5]"></a>HAL_IncTick</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, stm32f1xx_hal.o(.text.HAL_IncTick))
+<P><STRONG><a name="[b8]"></a>HAL_IncTick</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, stm32f1xx_hal.o(.text.HAL_IncTick))
 <BR><BR>[Called By]<UL><LI><a href="#[9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysTick_Handler
 </UL>
 
-<P><STRONG><a name="[99]"></a>HAL_Init</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, stm32f1xx_hal.o(.text.HAL_Init))
+<P><STRONG><a name="[9a]"></a>HAL_Init</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, stm32f1xx_hal.o(.text.HAL_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = HAL_Init &rArr; HAL_InitTick &rArr; HAL_NVIC_SetPriority
 </UL>
-<BR>[Calls]<UL><LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_InitTick
-<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_NVIC_SetPriorityGrouping
-<LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_MspInit
+<BR>[Calls]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_InitTick
+<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_NVIC_SetPriorityGrouping
+<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_MspInit
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[9b]"></a>HAL_InitTick</STRONG> (Thumb, 72 bytes, Stack size 16 bytes, stm32f1xx_hal.o(.text.HAL_InitTick))
+<P><STRONG><a name="[9c]"></a>HAL_InitTick</STRONG> (Thumb, 72 bytes, Stack size 16 bytes, stm32f1xx_hal.o(.text.HAL_InitTick))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = HAL_InitTick &rArr; HAL_NVIC_SetPriority
 </UL>
-<BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SYSTICK_Config
-<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_NVIC_SetPriority
+<BR>[Calls]<UL><LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SYSTICK_Config
+<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_NVIC_SetPriority
 </UL>
-<BR>[Called By]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_ClockConfig
-<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
+<BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_ClockConfig
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
 </UL>
 
-<P><STRONG><a name="[9c]"></a>HAL_MspInit</STRONG> (Thumb, 66 bytes, Stack size 8 bytes, stm32f1xx_hal_msp.o(.text.HAL_MspInit))
+<P><STRONG><a name="[9d]"></a>HAL_MspInit</STRONG> (Thumb, 66 bytes, Stack size 8 bytes, stm32f1xx_hal_msp.o(.text.HAL_MspInit))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = HAL_MspInit
 </UL>
-<BR>[Called By]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
+<BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
 </UL>
 
-<P><STRONG><a name="[ad]"></a>HAL_NVIC_EnableIRQ</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, stm32f1xx_hal_cortex.o(.text.HAL_NVIC_EnableIRQ))
-<BR><BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_MspInit
+<P><STRONG><a name="[ae]"></a>HAL_NVIC_EnableIRQ</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, stm32f1xx_hal_cortex.o(.text.HAL_NVIC_EnableIRQ))
+<BR><BR>[Called By]<UL><LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_MspInit
 </UL>
 
-<P><STRONG><a name="[9e]"></a>HAL_NVIC_SetPriority</STRONG> (Thumb, 86 bytes, Stack size 8 bytes, stm32f1xx_hal_cortex.o(.text.HAL_NVIC_SetPriority))
+<P><STRONG><a name="[9f]"></a>HAL_NVIC_SetPriority</STRONG> (Thumb, 86 bytes, Stack size 8 bytes, stm32f1xx_hal_cortex.o(.text.HAL_NVIC_SetPriority))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = HAL_NVIC_SetPriority
 </UL>
-<BR>[Called By]<UL><LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_InitTick
-<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_MspInit
+<BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_InitTick
+<LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_MspInit
 </UL>
 
-<P><STRONG><a name="[9a]"></a>HAL_NVIC_SetPriorityGrouping</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, stm32f1xx_hal_cortex.o(.text.HAL_NVIC_SetPriorityGrouping))
-<BR><BR>[Called By]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
+<P><STRONG><a name="[9b]"></a>HAL_NVIC_SetPriorityGrouping</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, stm32f1xx_hal_cortex.o(.text.HAL_NVIC_SetPriorityGrouping))
+<BR><BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
 </UL>
 
-<P><STRONG><a name="[9f]"></a>HAL_RCC_ClockConfig</STRONG> (Thumb, 446 bytes, Stack size 32 bytes, stm32f1xx_hal_rcc.o(.text.HAL_RCC_ClockConfig))
+<P><STRONG><a name="[a0]"></a>HAL_RCC_ClockConfig</STRONG> (Thumb, 446 bytes, Stack size 32 bytes, stm32f1xx_hal_rcc.o(.text.HAL_RCC_ClockConfig))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = HAL_RCC_ClockConfig &rArr; HAL_InitTick &rArr; HAL_NVIC_SetPriority
 </UL>
-<BR>[Calls]<UL><LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_InitTick
+<BR>[Calls]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_InitTick
 <LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[aa]"></a>HAL_RCC_GetPCLK1Freq</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, stm32f1xx_hal_rcc.o(.text.HAL_RCC_GetPCLK1Freq))
-<BR><BR>[Called By]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Init
+<P><STRONG><a name="[ab]"></a>HAL_RCC_GetPCLK1Freq</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, stm32f1xx_hal_rcc.o(.text.HAL_RCC_GetPCLK1Freq))
+<BR><BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Init
 </UL>
 
-<P><STRONG><a name="[ab]"></a>HAL_RCC_GetPCLK2Freq</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, stm32f1xx_hal_rcc.o(.text.HAL_RCC_GetPCLK2Freq))
-<BR><BR>[Called By]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Init
+<P><STRONG><a name="[ac]"></a>HAL_RCC_GetPCLK2Freq</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, stm32f1xx_hal_rcc.o(.text.HAL_RCC_GetPCLK2Freq))
+<BR><BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Init
 </UL>
 
-<P><STRONG><a name="[a0]"></a>HAL_RCC_OscConfig</STRONG> (Thumb, 948 bytes, Stack size 32 bytes, stm32f1xx_hal_rcc.o(.text.HAL_RCC_OscConfig))
+<P><STRONG><a name="[a1]"></a>HAL_RCC_OscConfig</STRONG> (Thumb, 948 bytes, Stack size 32 bytes, stm32f1xx_hal_rcc.o(.text.HAL_RCC_OscConfig))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = HAL_RCC_OscConfig
 </UL>
 <BR>[Calls]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
@@ -1075,76 +1101,80 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[9d]"></a>HAL_SYSTICK_Config</STRONG> (Thumb, 44 bytes, Stack size 0 bytes, stm32f1xx_hal_cortex.o(.text.HAL_SYSTICK_Config))
-<BR><BR>[Called By]<UL><LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_InitTick
+<P><STRONG><a name="[9e]"></a>HAL_SYSTICK_Config</STRONG> (Thumb, 44 bytes, Stack size 0 bytes, stm32f1xx_hal_cortex.o(.text.HAL_SYSTICK_Config))
+<BR><BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_InitTick
 </UL>
 
-<P><STRONG><a name="[a7]"></a>HAL_UARTEx_RxEventCallback</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f1xx_hal_uart.o(.text.HAL_UARTEx_RxEventCallback))
-<BR><BR>[Called By]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Receive_IT
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
+<P><STRONG><a name="[a8]"></a>HAL_UARTEx_RxEventCallback</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f1xx_hal_uart.o(.text.HAL_UARTEx_RxEventCallback))
+<BR><BR>[Called By]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Receive_IT
+<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
 </UL>
 
-<P><STRONG><a name="[a6]"></a>HAL_UART_ErrorCallback</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f1xx_hal_uart.o(.text.HAL_UART_ErrorCallback))
+<P><STRONG><a name="[a7]"></a>HAL_UART_ErrorCallback</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f1xx_hal_uart.o(.text.HAL_UART_ErrorCallback))
 <BR><BR>[Called By]<UL><LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_DMAAbortOnError
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
+<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
 </UL>
 
-<P><STRONG><a name="[a1]"></a>HAL_UART_IRQHandler</STRONG> (Thumb, 1376 bytes, Stack size 24 bytes, stm32f1xx_hal_uart.o(.text.HAL_UART_IRQHandler))
+<P><STRONG><a name="[a2]"></a>HAL_UART_IRQHandler</STRONG> (Thumb, 1376 bytes, Stack size 24 bytes, stm32f1xx_hal_uart.o(.text.HAL_UART_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = HAL_UART_IRQHandler &rArr; UART_Receive_IT &rArr; HAL_UART_RxCpltCallback &rArr; kt_port_uart_rx_callback &rArr; kt_ringbuf_put
 </UL>
-<BR>[Calls]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UARTEx_RxEventCallback
-<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_DMA_Abort_IT
-<LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_DMA_Abort
-<LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_ErrorCallback
-<LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_TxCpltCallback
-<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Receive_IT
+<BR>[Calls]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UARTEx_RxEventCallback
+<LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_DMA_Abort_IT
+<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_DMA_Abort
+<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_ErrorCallback
+<LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_TxCpltCallback
+<LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Receive_IT
 </UL>
 <BR>[Called By]<UL><LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART2_IRQHandler
 </UL>
 
-<P><STRONG><a name="[a8]"></a>HAL_UART_Init</STRONG> (Thumb, 226 bytes, Stack size 8 bytes, stm32f1xx_hal_uart.o(.text.HAL_UART_Init))
+<P><STRONG><a name="[a9]"></a>HAL_UART_Init</STRONG> (Thumb, 226 bytes, Stack size 8 bytes, stm32f1xx_hal_uart.o(.text.HAL_UART_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 92<LI>Call Chain = HAL_UART_Init &rArr; HAL_UART_MspInit &rArr; HAL_GPIO_Init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_GetPCLK2Freq
-<LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_GetPCLK1Freq
-<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_MspInit
+<BR>[Calls]<UL><LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_GetPCLK2Freq
+<LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_GetPCLK1Freq
+<LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_MspInit
 </UL>
-<BR>[Called By]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART2_UART_Init
+<BR>[Called By]<UL><LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART3_UART_Init
+<LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART2_UART_Init
+<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART1_UART_Init
 </UL>
 
-<P><STRONG><a name="[a9]"></a>HAL_UART_MspInit</STRONG> (Thumb, 134 bytes, Stack size 40 bytes, usart.o(.text.HAL_UART_MspInit))
+<P><STRONG><a name="[aa]"></a>HAL_UART_MspInit</STRONG> (Thumb, 372 bytes, Stack size 40 bytes, usart.o(.text.HAL_UART_MspInit))
 <BR><BR>[Stack]<UL><LI>Max Depth = 84<LI>Call Chain = HAL_UART_MspInit &rArr; HAL_GPIO_Init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_NVIC_EnableIRQ
-<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_NVIC_SetPriority
-<LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_Init
+<BR>[Calls]<UL><LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_NVIC_EnableIRQ
+<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_NVIC_SetPriority
+<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_Init
 </UL>
-<BR>[Called By]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Init
-</UL>
-
-<P><STRONG><a name="[e3]"></a>HAL_UART_Receive_IT</STRONG> (Thumb, 82 bytes, Stack size 0 bytes, stm32f1xx_hal_uart.o(.text.HAL_UART_Receive_IT))
-<BR><BR>[Called By]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_callback
-<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_start_receive_it
+<BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Init
 </UL>
 
-<P><STRONG><a name="[ae]"></a>HAL_UART_RxCpltCallback</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, main.o(.text.HAL_UART_RxCpltCallback))
+<P><STRONG><a name="[fb]"></a>HAL_UART_Receive_IT</STRONG> (Thumb, 82 bytes, Stack size 0 bytes, stm32f1xx_hal_uart.o(.text.HAL_UART_Receive_IT))
+<BR><BR>[Called By]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_callback
+<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_start_receive_it
+</UL>
+
+<P><STRONG><a name="[af]"></a>HAL_UART_RxCpltCallback</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, main.o(.text.HAL_UART_RxCpltCallback))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = HAL_UART_RxCpltCallback &rArr; kt_port_uart_rx_callback &rArr; kt_ringbuf_put
 </UL>
-<BR>[Calls]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_callback
+<BR>[Calls]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_callback
 </UL>
-<BR>[Called By]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Receive_IT
+<BR>[Called By]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Receive_IT
 </UL>
 
-<P><STRONG><a name="[b0]"></a>HAL_UART_Transmit</STRONG> (Thumb, 376 bytes, Stack size 24 bytes, stm32f1xx_hal_uart.o(.text.HAL_UART_Transmit))
+<P><STRONG><a name="[b1]"></a>HAL_UART_Transmit</STRONG> (Thumb, 376 bytes, Stack size 24 bytes, stm32f1xx_hal_uart.o(.text.HAL_UART_Transmit))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = HAL_UART_Transmit
 </UL>
 <BR>[Calls]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
-<BR>[Called By]<UL><LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_tx_string
+<BR>[Called By]<UL><LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_esp32s3_send_test
+<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_zigbee_send_test
+<LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_tx_string
 </UL>
 
-<P><STRONG><a name="[a3]"></a>HAL_UART_TxCpltCallback</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f1xx_hal_uart.o(.text.HAL_UART_TxCpltCallback))
-<BR><BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
+<P><STRONG><a name="[a4]"></a>HAL_UART_TxCpltCallback</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f1xx_hal_uart.o(.text.HAL_UART_TxCpltCallback))
+<BR><BR>[Called By]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
 </UL>
 
 <P><STRONG><a name="[2]"></a>HardFault_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f1xx_it.o(.text.HardFault_Handler))
@@ -1154,20 +1184,38 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xb.o(RESET)
 </UL>
-<P><STRONG><a name="[b1]"></a>MX_GPIO_Init</STRONG> (Thumb, 174 bytes, Stack size 48 bytes, gpio.o(.text.MX_GPIO_Init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 92<LI>Call Chain = MX_GPIO_Init &rArr; HAL_GPIO_Init
+<P><STRONG><a name="[b2]"></a>MX_GPIO_Init</STRONG> (Thumb, 328 bytes, Stack size 56 bytes, gpio.o(.text.MX_GPIO_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = MX_GPIO_Init &rArr; HAL_GPIO_Init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_Init
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+<BR>[Calls]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_Init
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[b3]"></a>MX_USART2_UART_Init</STRONG> (Thumb, 60 bytes, Stack size 8 bytes, usart.o(.text.MX_USART2_UART_Init))
+<P><STRONG><a name="[b4]"></a>MX_USART1_UART_Init</STRONG> (Thumb, 60 bytes, Stack size 8 bytes, usart.o(.text.MX_USART1_UART_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = MX_USART1_UART_Init &rArr; HAL_UART_Init &rArr; HAL_UART_MspInit &rArr; HAL_GPIO_Init
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Init
+<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Error_Handler
+</UL>
+<BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[b6]"></a>MX_USART2_UART_Init</STRONG> (Thumb, 60 bytes, Stack size 8 bytes, usart.o(.text.MX_USART2_UART_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = MX_USART2_UART_Init &rArr; HAL_UART_Init &rArr; HAL_UART_MspInit &rArr; HAL_GPIO_Init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Init
-<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Error_Handler
+<BR>[Calls]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Init
+<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Error_Handler
+</UL>
+<BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[b7]"></a>MX_USART3_UART_Init</STRONG> (Thumb, 60 bytes, Stack size 8 bytes, usart.o(.text.MX_USART3_UART_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = MX_USART3_UART_Init &rArr; HAL_UART_Init &rArr; HAL_UART_MspInit &rArr; HAL_GPIO_Init
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Init
+<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Error_Handler
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -1193,7 +1241,7 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xb.o(RESET)
 </UL>
 <P><STRONG><a name="[9]"></a>SysTick_Handler</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, stm32f1xx_it.o(.text.SysTick_Handler))
-<BR><BR>[Calls]<UL><LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_IncTick
+<BR><BR>[Calls]<UL><LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_IncTick
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xb.o(RESET)
 </UL>
@@ -1203,7 +1251,7 @@ Global Symbols
 <P><STRONG><a name="[30]"></a>USART2_IRQHandler</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, stm32f1xx_it.o(.text.USART2_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = USART2_IRQHandler &rArr; HAL_UART_IRQHandler &rArr; UART_Receive_IT &rArr; HAL_UART_RxCpltCallback &rArr; kt_port_uart_rx_callback &rArr; kt_ringbuf_put
 </UL>
-<BR>[Calls]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
+<BR>[Calls]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xb.o(RESET)
 </UL>
@@ -1214,12 +1262,12 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xb.o(RESET)
 </UL>
-<P><STRONG><a name="[b6]"></a>app_io_init</STRONG> (Thumb, 78 bytes, Stack size 24 bytes, app_io.o(.text.app_io_init))
+<P><STRONG><a name="[b9]"></a>app_io_init</STRONG> (Thumb, 78 bytes, Stack size 24 bytes, app_io.o(.text.app_io_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = app_io_init &rArr; kt_buzzer_init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_init
-<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_button_init
-<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_init
+<BR>[Calls]<UL><LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_init
+<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_button_init
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -1227,164 +1275,163 @@ Global Symbols
 <P><STRONG><a name="[3d]"></a>app_io_tasks</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, app_io.o(.text.app_io_tasks))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = app_io_tasks &rArr; kt_button_task &rArr; kt_tick_is_timeout
 </UL>
-<BR>[Calls]<UL><LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_task
-<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_button_task
-<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_task
+<BR>[Calls]<UL><LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_task
+<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_button_task
+<LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_task
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text.main)
 </UL>
-<P><STRONG><a name="[dc]"></a>kt_boot_count_get</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, kt_boot_count.o(.text.kt_boot_count_get))
-<BR><BR>[Called By]<UL><LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_print_system_info
+<P><STRONG><a name="[ec]"></a>kt_boot_count_get</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, kt_boot_count.o(.text.kt_boot_count_get))
+<BR><BR>[Called By]<UL><LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_print_system_info
 </UL>
 
-<P><STRONG><a name="[bd]"></a>kt_boot_count_init</STRONG> (Thumb, 138 bytes, Stack size 40 bytes, kt_boot_count.o(.text.kt_boot_count_init))
+<P><STRONG><a name="[c1]"></a>kt_boot_count_init</STRONG> (Thumb, 138 bytes, Stack size 40 bytes, kt_boot_count.o(.text.kt_boot_count_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = kt_boot_count_init &rArr; HAL_FLASH_Program &rArr; FLASH_WaitForLastOperation
 </UL>
-<BR>[Calls]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASHEx_Erase
-<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Lock
-<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Unlock
-<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Program
+<BR>[Calls]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASHEx_Erase
+<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Lock
+<LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Unlock
+<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Program
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[d1]"></a>kt_button_get_click_event</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, kt_button.o(.text.kt_button_get_click_event))
+<P><STRONG><a name="[d5]"></a>kt_button_get_click_event</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, kt_button.o(.text.kt_button_get_click_event))
 <BR><BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 </UL>
 
-<P><STRONG><a name="[b8]"></a>kt_button_init</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, kt_button.o(.text.kt_button_init))
-<BR><BR>[Called By]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_io_init
+<P><STRONG><a name="[bb]"></a>kt_button_init</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, kt_button.o(.text.kt_button_init))
+<BR><BR>[Called By]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_io_init
 </UL>
 
-<P><STRONG><a name="[d0]"></a>kt_button_is_pressed</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, kt_button.o(.text.kt_button_is_pressed))
-<BR><BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+<P><STRONG><a name="[d4]"></a>kt_button_is_pressed</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, kt_button.o(.text.kt_button_is_pressed))
+<BR><BR>[Called By]<UL><LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_read_button_state
+<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 </UL>
 
-<P><STRONG><a name="[bb]"></a>kt_button_task</STRONG> (Thumb, 80 bytes, Stack size 24 bytes, kt_button.o(.text.kt_button_task))
+<P><STRONG><a name="[be]"></a>kt_button_task</STRONG> (Thumb, 80 bytes, Stack size 24 bytes, kt_button.o(.text.kt_button_task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = kt_button_task &rArr; kt_tick_is_timeout
 </UL>
-<BR>[Calls]<UL><LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_is_timeout
-<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
-<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_ReadPin
+<BR>[Calls]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_is_timeout
+<LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
+<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_ReadPin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_io_tasks
 </UL>
 
-<P><STRONG><a name="[c3]"></a>kt_buzzer_beep</STRONG> (Thumb, 48 bytes, Stack size 16 bytes, kt_buzzer.o(.text.kt_buzzer_beep))
+<P><STRONG><a name="[c7]"></a>kt_buzzer_beep</STRONG> (Thumb, 48 bytes, Stack size 16 bytes, kt_buzzer.o(.text.kt_buzzer_beep))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = kt_buzzer_beep
 </UL>
-<BR>[Calls]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+<BR>[Calls]<UL><LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 </UL>
 
-<P><STRONG><a name="[c4]"></a>kt_buzzer_cycle_start</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, kt_buzzer.o(.text.kt_buzzer_cycle_start))
+<P><STRONG><a name="[c8]"></a>kt_buzzer_cycle_start</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, kt_buzzer.o(.text.kt_buzzer_cycle_start))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = kt_buzzer_cycle_start
 </UL>
-<BR>[Calls]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+<BR>[Calls]<UL><LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 </UL>
 
-<P><STRONG><a name="[c5]"></a>kt_buzzer_cycle_stop</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, kt_buzzer.o(.text.kt_buzzer_cycle_stop))
-<BR><BR>[Calls]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+<P><STRONG><a name="[c9]"></a>kt_buzzer_cycle_stop</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, kt_buzzer.o(.text.kt_buzzer_cycle_stop))
+<BR><BR>[Calls]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 </UL>
 
-<P><STRONG><a name="[b9]"></a>kt_buzzer_init</STRONG> (Thumb, 58 bytes, Stack size 8 bytes, kt_buzzer.o(.text.kt_buzzer_init))
+<P><STRONG><a name="[bc]"></a>kt_buzzer_init</STRONG> (Thumb, 58 bytes, Stack size 8 bytes, kt_buzzer.o(.text.kt_buzzer_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = kt_buzzer_init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+<BR>[Calls]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 </UL>
-<BR>[Called By]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_io_init
+<BR>[Called By]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_io_init
 </UL>
 
-<P><STRONG><a name="[c6]"></a>kt_buzzer_off</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, kt_buzzer.o(.text.kt_buzzer_off))
-<BR><BR>[Calls]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+<P><STRONG><a name="[ca]"></a>kt_buzzer_off</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, kt_buzzer.o(.text.kt_buzzer_off))
+<BR><BR>[Calls]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 </UL>
 
-<P><STRONG><a name="[c7]"></a>kt_buzzer_on</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, kt_buzzer.o(.text.kt_buzzer_on))
-<BR><BR>[Calls]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+<P><STRONG><a name="[cb]"></a>kt_buzzer_on</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, kt_buzzer.o(.text.kt_buzzer_on))
+<BR><BR>[Calls]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 </UL>
 
-<P><STRONG><a name="[bc]"></a>kt_buzzer_task</STRONG> (Thumb, 124 bytes, Stack size 16 bytes, kt_buzzer.o(.text.kt_buzzer_task))
+<P><STRONG><a name="[bf]"></a>kt_buzzer_task</STRONG> (Thumb, 124 bytes, Stack size 16 bytes, kt_buzzer.o(.text.kt_buzzer_task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = kt_buzzer_task &rArr; kt_tick_is_timeout
 </UL>
-<BR>[Calls]<UL><LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_is_timeout
-<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+<BR>[Calls]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_is_timeout
+<LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_io_tasks
 </UL>
 
-<P><STRONG><a name="[3b]"></a>kt_cmd_dispatch</STRONG> (Thumb, 1536 bytes, Stack size 88 bytes, kt_cmd.o(.text.kt_cmd_dispatch))
-<BR><BR>[Stack]<UL><LI>Max Depth = 664 + Unknown Stack Size
-<LI>Call Chain = kt_cmd_dispatch &rArr; kt_cmd_print_status &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+<P><STRONG><a name="[3b]"></a>kt_cmd_dispatch</STRONG> (Thumb, 1452 bytes, Stack size 32 bytes, kt_cmd.o(.text.kt_cmd_dispatch))
+<BR><BR>[Stack]<UL><LI>Max Depth = 608 + Unknown Stack Size
+<LI>Call Chain = kt_cmd_dispatch &rArr; kt_hw_diag_print_debug_status &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_get_state
-<LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_cycle_stop
-<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_cycle_start
-<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_beep
-<LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_off
-<LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_on
-<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_button_get_click_event
-<LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_button_is_pressed
-<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_blink_stop
-<LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_blink_start
-<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_toggle
-<LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_print_status
-<LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_on
-<LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
-<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_ReadPin
-<LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_off
-<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_print_system_info
-<LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
+<BR>[Calls]<UL><LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_esp32s3_send_test
+<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_zigbee_send_test
+<LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_stepper_stop
+<LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_stepper_reverse_test
+<LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_stepper_forward_test
+<LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_ds1302_write_test_time
+<LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_ds1302_print_time
+<LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_oled_test
+<LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_rc522_read_uid
+<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_rc522_init
+<LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_seat_occupied_status
+<LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_seat_raw_levels
+<LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_gpio_init_status
+<LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_uart_roles
+<LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_read_button_state
+<LI><a href="#[d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_get_state
+<LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_hardware_resources
+<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_cycle_stop
+<LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_cycle_start
+<LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_beep
+<LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_off
+<LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_on
+<LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_button_get_click_event
+<LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_button_is_pressed
+<LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_blink_stop
+<LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_blink_start
+<LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_toggle
+<LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_debug_status
+<LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_on
+<LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_off
+<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_print_system_info
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> kt_debug.o(.text.kt_debug_init)
 </UL>
-<P><STRONG><a name="[da]"></a>kt_cmd_init</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, kt_cmd.o(.text.kt_cmd_init))
-<BR><BR>[Called By]<UL><LI><a href="#[d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_init
+<P><STRONG><a name="[ea]"></a>kt_cmd_init</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, kt_cmd.o(.text.kt_cmd_init))
+<BR><BR>[Called By]<UL><LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_init
 </UL>
 
-<P><STRONG><a name="[cc]"></a>kt_cmd_print_status</STRONG> (Thumb, 304 bytes, Stack size 88 bytes, kt_cmd.o(.text.kt_cmd_print_status))
-<BR><BR>[Stack]<UL><LI>Max Depth = 576 + Unknown Stack Size
-<LI>Call Chain = kt_cmd_print_status &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
-</UL>
-<BR>[Calls]<UL><LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_overflow_count
-<LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_available
-<LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_get_state
-<LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_get_error_drop_count
-<LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_get_timeout_drop_count
-<LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
-<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
-<LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
-</UL>
-<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
-</UL>
-
-<P><STRONG><a name="[d7]"></a>kt_debug_init</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, kt_debug.o(.text.kt_debug_init))
+<P><STRONG><a name="[e7]"></a>kt_debug_init</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, kt_debug.o(.text.kt_debug_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = kt_debug_init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_init
-<LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_set_handler
-<LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_init
+<BR>[Calls]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_init
+<LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_set_handler
+<LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[c9]"></a>kt_debug_print_system_info</STRONG> (Thumb, 236 bytes, Stack size 16 bytes, kt_debug.o(.text.kt_debug_print_system_info))
+<P><STRONG><a name="[cd]"></a>kt_debug_print_system_info</STRONG> (Thumb, 236 bytes, Stack size 16 bytes, kt_debug.o(.text.kt_debug_print_system_info))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152 + Unknown Stack Size
 <LI>Call Chain = kt_debug_print_system_info &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_boot_count_get
-<LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_tx_string
+<BR>[Calls]<UL><LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_boot_count_get
+<LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_tx_string
 <LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
@@ -1395,269 +1442,466 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 536 + Unknown Stack Size
 <LI>Call Chain = kt_debug_task &rArr; kt_protocol_check_timeout &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_input_byte
-<LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_read
-<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_check_timeout
+<BR>[Calls]<UL><LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_input_byte
+<LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_read
+<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_check_timeout
 <LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text.main)
 </UL>
-<P><STRONG><a name="[ce]"></a>kt_led_blink_start</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, kt_led.o(.text.kt_led_blink_start))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = kt_led_blink_start
+<P><STRONG><a name="[e0]"></a>kt_ds1302_print_time</STRONG> (Thumb, 168 bytes, Stack size 48 bytes, kt_ds1302.o(.text.kt_ds1302_print_time))
+<BR><BR>[Stack]<UL><LI>Max Depth = 536 + Unknown Stack Size
+<LI>Call Chain = kt_ds1302_print_time &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_reg
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 </UL>
 
-<P><STRONG><a name="[cf]"></a>kt_led_blink_stop</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, kt_led.o(.text.kt_led_blink_stop))
+<P><STRONG><a name="[e1]"></a>kt_ds1302_write_test_time</STRONG> (Thumb, 444 bytes, Stack size 8 bytes, kt_ds1302.o(.text.kt_ds1302_write_test_time))
+<BR><BR>[Stack]<UL><LI>Max Depth = 496 + Unknown Stack Size
+<LI>Call Chain = kt_ds1302_write_test_time &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+<LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;write_byte
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+</UL>
+
+<P><STRONG><a name="[e6]"></a>kt_esp32s3_send_test</STRONG> (Thumb, 64 bytes, Stack size 16 bytes, kt_uart_links.o(.text.kt_esp32s3_send_test))
+<BR><BR>[Stack]<UL><LI>Max Depth = 504 + Unknown Stack Size
+<LI>Call Chain = kt_esp32s3_send_test &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+</UL>
+
+<P><STRONG><a name="[d0]"></a>kt_hw_diag_print_debug_status</STRONG> (Thumb, 292 bytes, Stack size 88 bytes, kt_hw_diag.o(.text.kt_hw_diag_print_debug_status))
+<BR><BR>[Stack]<UL><LI>Max Depth = 576 + Unknown Stack Size
+<LI>Call Chain = kt_hw_diag_print_debug_status &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_overflow_count
+<LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_available
+<LI><a href="#[d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_get_state
+<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_get_error_drop_count
+<LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_get_timeout_drop_count
+<LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
+<LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+</UL>
+
+<P><STRONG><a name="[da]"></a>kt_hw_diag_print_gpio_init_status</STRONG> (Thumb, 144 bytes, Stack size 8 bytes, kt_hw_diag.o(.text.kt_hw_diag_print_gpio_init_status))
+<BR><BR>[Stack]<UL><LI>Max Depth = 496 + Unknown Stack Size
+<LI>Call Chain = kt_hw_diag_print_gpio_init_status &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+</UL>
+
+<P><STRONG><a name="[d6]"></a>kt_hw_diag_print_hardware_resources</STRONG> (Thumb, 288 bytes, Stack size 24 bytes, kt_hw_diag.o(.text.kt_hw_diag_print_hardware_resources))
+<BR><BR>[Stack]<UL><LI>Max Depth = 512 + Unknown Stack Size
+<LI>Call Chain = kt_hw_diag_print_hardware_resources &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+</UL>
+
+<P><STRONG><a name="[dc]"></a>kt_hw_diag_print_seat_occupied_status</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, kt_hw_diag.o(.text.kt_hw_diag_print_seat_occupied_status))
+<BR><BR>[Stack]<UL><LI>Max Depth = 488 + Unknown Stack Size
+<LI>Call Chain = kt_hw_diag_print_seat_occupied_status &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+</UL>
+
+<P><STRONG><a name="[db]"></a>kt_hw_diag_print_seat_raw_levels</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, kt_hw_diag.o(.text.kt_hw_diag_print_seat_raw_levels))
+<BR><BR>[Stack]<UL><LI>Max Depth = 496 + Unknown Stack Size
+<LI>Call Chain = kt_hw_diag_print_seat_raw_levels &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+</UL>
+
+<P><STRONG><a name="[d9]"></a>kt_hw_diag_print_uart_roles</STRONG> (Thumb, 124 bytes, Stack size 16 bytes, kt_hw_diag.o(.text.kt_hw_diag_print_uart_roles))
+<BR><BR>[Stack]<UL><LI>Max Depth = 504 + Unknown Stack Size
+<LI>Call Chain = kt_hw_diag_print_uart_roles &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+</UL>
+
+<P><STRONG><a name="[d8]"></a>kt_hw_diag_read_button_state</STRONG> (Thumb, 80 bytes, Stack size 16 bytes, kt_hw_diag.o(.text.kt_hw_diag_read_button_state))
+<BR><BR>[Stack]<UL><LI>Max Depth = 504 + Unknown Stack Size
+<LI>Call Chain = kt_hw_diag_read_button_state &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_button_is_pressed
+<LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_ReadPin
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+</UL>
+
+<P><STRONG><a name="[d2]"></a>kt_led_blink_start</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, kt_led.o(.text.kt_led_blink_start))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = kt_led_blink_start
+</UL>
+<BR>[Calls]<UL><LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+</UL>
+
+<P><STRONG><a name="[d3]"></a>kt_led_blink_stop</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, kt_led.o(.text.kt_led_blink_stop))
 <BR><BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 </UL>
 
-<P><STRONG><a name="[d2]"></a>kt_led_get_state</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, kt_led.o(.text.kt_led_get_state))
-<BR><BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_print_status
+<P><STRONG><a name="[d7]"></a>kt_led_get_state</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, kt_led.o(.text.kt_led_get_state))
+<BR><BR>[Called By]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_debug_status
 <LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 </UL>
 
-<P><STRONG><a name="[b7]"></a>kt_led_init</STRONG> (Thumb, 56 bytes, Stack size 8 bytes, kt_led.o(.text.kt_led_init))
+<P><STRONG><a name="[ba]"></a>kt_led_init</STRONG> (Thumb, 56 bytes, Stack size 8 bytes, kt_led.o(.text.kt_led_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = kt_led_init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+<BR>[Calls]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 </UL>
-<BR>[Called By]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_io_init
+<BR>[Called By]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_io_init
 </UL>
 
-<P><STRONG><a name="[cb]"></a>kt_led_off</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, kt_led.o(.text.kt_led_off))
-<BR><BR>[Calls]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+<P><STRONG><a name="[cf]"></a>kt_led_off</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, kt_led.o(.text.kt_led_off))
+<BR><BR>[Calls]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 <LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[ca]"></a>kt_led_on</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, kt_led.o(.text.kt_led_on))
-<BR><BR>[Calls]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+<P><STRONG><a name="[ce]"></a>kt_led_on</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, kt_led.o(.text.kt_led_on))
+<BR><BR>[Calls]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 </UL>
 
-<P><STRONG><a name="[ba]"></a>kt_led_task</STRONG> (Thumb, 54 bytes, Stack size 16 bytes, kt_led.o(.text.kt_led_task))
+<P><STRONG><a name="[bd]"></a>kt_led_task</STRONG> (Thumb, 54 bytes, Stack size 16 bytes, kt_led.o(.text.kt_led_task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = kt_led_task &rArr; kt_tick_is_timeout
 </UL>
-<BR>[Calls]<UL><LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_is_timeout
-<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
-<LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_TogglePin
+<BR>[Calls]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_is_timeout
+<LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
+<LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_TogglePin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_io_tasks
 </UL>
 
-<P><STRONG><a name="[cd]"></a>kt_led_toggle</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, kt_led.o(.text.kt_led_toggle))
+<P><STRONG><a name="[d1]"></a>kt_led_toggle</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, kt_led.o(.text.kt_led_toggle))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = kt_led_toggle
 </UL>
-<BR>[Calls]<UL><LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_TogglePin
+<BR>[Calls]<UL><LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_TogglePin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 </UL>
 
-<P><STRONG><a name="[c8]"></a>kt_log_output</STRONG> (Thumb, 336 bytes, Stack size 352 bytes, kt_log.o(.text.kt_log_output))
+<P><STRONG><a name="[cc]"></a>kt_log_output</STRONG> (Thumb, 336 bytes, Stack size 352 bytes, kt_log.o(.text.kt_log_output))
 <BR><BR>[Stack]<UL><LI>Max Depth = 488 + Unknown Stack Size
 <LI>Call Chain = kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vsnprintf
-<LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_tx_string
+<BR>[Calls]<UL><LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_tx_string
 <LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
+<LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vsnprintf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_print_status
-<LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_input_byte
-<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_check_timeout
+<BR>[Called By]<UL><LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_esp32s3_send_test
+<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_zigbee_send_test
+<LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_stepper_stop
+<LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_stepper_reverse_test
+<LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_stepper_forward_test
+<LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_ds1302_write_test_time
+<LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_ds1302_print_time
+<LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_oled_test
+<LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_rc522_read_uid
+<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_rc522_init
+<LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_seat_occupied_status
+<LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_seat_raw_levels
+<LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_gpio_init_status
+<LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_uart_roles
+<LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_read_button_state
+<LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_hardware_resources
+<LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_debug_status
+<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_input_byte
+<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_protocol_check_timeout
 <LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;run_steps
 </UL>
 
-<P><STRONG><a name="[d3]"></a>kt_port_uart_rx_available</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, kt_port_uart.o(.text.kt_port_uart_rx_available))
-<BR><BR>[Calls]<UL><LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_ringbuf_available
+<P><STRONG><a name="[df]"></a>kt_oled_test</STRONG> (Thumb, 612 bytes, Stack size 8 bytes, kt_oled.o(.text.kt_oled_test))
+<BR><BR>[Stack]<UL><LI>Max Depth = 496 + Unknown Stack Size
+<LI>Call Chain = kt_oled_test &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_print_status
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;oled_print
+<LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;oled_write
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 </UL>
 
-<P><STRONG><a name="[af]"></a>kt_port_uart_rx_callback</STRONG> (Thumb, 70 bytes, Stack size 8 bytes, kt_port_uart.o(.text.kt_port_uart_rx_callback))
+<P><STRONG><a name="[f2]"></a>kt_port_uart_rx_available</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, kt_port_uart.o(.text.kt_port_uart_rx_available))
+<BR><BR>[Calls]<UL><LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_ringbuf_available
+</UL>
+<BR>[Called By]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_debug_status
+</UL>
+
+<P><STRONG><a name="[b0]"></a>kt_port_uart_rx_callback</STRONG> (Thumb, 70 bytes, Stack size 8 bytes, kt_port_uart.o(.text.kt_port_uart_rx_callback))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = kt_port_uart_rx_callback &rArr; kt_ringbuf_put
 </UL>
-<BR>[Calls]<UL><LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_ringbuf_put
-<LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Receive_IT
+<BR>[Calls]<UL><LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_ringbuf_put
+<LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Receive_IT
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_RxCpltCallback
-</UL>
-
-<P><STRONG><a name="[d4]"></a>kt_port_uart_rx_overflow_count</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, kt_port_uart.o(.text.kt_port_uart_rx_overflow_count))
-<BR><BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_print_status
+<BR>[Called By]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_RxCpltCallback
 </UL>
 
-<P><STRONG><a name="[de]"></a>kt_port_uart_rx_read</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, kt_port_uart.o(.text.kt_port_uart_rx_read))
-<BR><BR>[Calls]<UL><LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_ringbuf_get
+<P><STRONG><a name="[f3]"></a>kt_port_uart_rx_overflow_count</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, kt_port_uart.o(.text.kt_port_uart_rx_overflow_count))
+<BR><BR>[Called By]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_debug_status
+</UL>
+
+<P><STRONG><a name="[ee]"></a>kt_port_uart_rx_read</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, kt_port_uart.o(.text.kt_port_uart_rx_read))
+<BR><BR>[Calls]<UL><LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_ringbuf_get
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_task
 </UL>
 
-<P><STRONG><a name="[e5]"></a>kt_port_uart_start_receive_it</STRONG> (Thumb, 54 bytes, Stack size 8 bytes, kt_port_uart.o(.text.kt_port_uart_start_receive_it))
+<P><STRONG><a name="[fd]"></a>kt_port_uart_start_receive_it</STRONG> (Thumb, 54 bytes, Stack size 8 bytes, kt_port_uart.o(.text.kt_port_uart_start_receive_it))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = kt_port_uart_start_receive_it
 </UL>
-<BR>[Calls]<UL><LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_ringbuf_init
-<LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Receive_IT
+<BR>[Calls]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_ringbuf_init
+<LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Receive_IT
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[db]"></a>kt_port_uart_tx_string</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, kt_port_uart.o(.text.kt_port_uart_tx_string))
+<P><STRONG><a name="[eb]"></a>kt_port_uart_tx_string</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, kt_port_uart.o(.text.kt_port_uart_tx_string))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = kt_port_uart_tx_string &rArr; HAL_UART_Transmit
 </UL>
-<BR>[Calls]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit
-<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strlen
+<BR>[Calls]<UL><LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit
+<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strlen
 </UL>
-<BR>[Called By]<UL><LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
-<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_print_system_info
+<BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_print_system_info
 </UL>
 
-<P><STRONG><a name="[dd]"></a>kt_protocol_check_timeout</STRONG> (Thumb, 84 bytes, Stack size 24 bytes, kt_protocol.o(.text.kt_protocol_check_timeout))
+<P><STRONG><a name="[ed]"></a>kt_protocol_check_timeout</STRONG> (Thumb, 84 bytes, Stack size 24 bytes, kt_protocol.o(.text.kt_protocol_check_timeout))
 <BR><BR>[Stack]<UL><LI>Max Depth = 512 + Unknown Stack Size
 <LI>Call Chain = kt_protocol_check_timeout &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_task
 </UL>
 
-<P><STRONG><a name="[d6]"></a>kt_protocol_get_error_drop_count</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, kt_protocol.o(.text.kt_protocol_get_error_drop_count))
-<BR><BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_print_status
+<P><STRONG><a name="[f5]"></a>kt_protocol_get_error_drop_count</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, kt_protocol.o(.text.kt_protocol_get_error_drop_count))
+<BR><BR>[Called By]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_debug_status
 </UL>
 
-<P><STRONG><a name="[d5]"></a>kt_protocol_get_timeout_drop_count</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, kt_protocol.o(.text.kt_protocol_get_timeout_drop_count))
-<BR><BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_print_status
+<P><STRONG><a name="[f4]"></a>kt_protocol_get_timeout_drop_count</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, kt_protocol.o(.text.kt_protocol_get_timeout_drop_count))
+<BR><BR>[Called By]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_hw_diag_print_debug_status
 </UL>
 
-<P><STRONG><a name="[d8]"></a>kt_protocol_init</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, kt_protocol.o(.text.kt_protocol_init))
-<BR><BR>[Called By]<UL><LI><a href="#[d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_init
+<P><STRONG><a name="[e8]"></a>kt_protocol_init</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, kt_protocol.o(.text.kt_protocol_init))
+<BR><BR>[Called By]<UL><LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_init
 </UL>
 
-<P><STRONG><a name="[df]"></a>kt_protocol_input_byte</STRONG> (Thumb, 188 bytes, Stack size 16 bytes, kt_protocol.o(.text.kt_protocol_input_byte))
+<P><STRONG><a name="[ef]"></a>kt_protocol_input_byte</STRONG> (Thumb, 188 bytes, Stack size 16 bytes, kt_protocol.o(.text.kt_protocol_input_byte))
 <BR><BR>[Stack]<UL><LI>Max Depth = 504 + Unknown Stack Size
 <LI>Call Chain = kt_protocol_input_byte &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_task
 </UL>
 
-<P><STRONG><a name="[d9]"></a>kt_protocol_set_handler</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, kt_protocol.o(.text.kt_protocol_set_handler))
-<BR><BR>[Called By]<UL><LI><a href="#[d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_init
+<P><STRONG><a name="[e9]"></a>kt_protocol_set_handler</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, kt_protocol.o(.text.kt_protocol_set_handler))
+<BR><BR>[Called By]<UL><LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_init
 </UL>
 
-<P><STRONG><a name="[e1]"></a>kt_ringbuf_available</STRONG> (Thumb, 50 bytes, Stack size 0 bytes, kt_ringbuf.o(.text.kt_ringbuf_available))
-<BR><BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_available
+<P><STRONG><a name="[dd]"></a>kt_rc522_init</STRONG> (Thumb, 424 bytes, Stack size 16 bytes, kt_rc522.o(.text.kt_rc522_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 504 + Unknown Stack Size
+<LI>Call Chain = kt_rc522_init &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rc522_spi_transfer
+<LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 </UL>
 
-<P><STRONG><a name="[e4]"></a>kt_ringbuf_get</STRONG> (Thumb, 72 bytes, Stack size 0 bytes, kt_ringbuf.o(.text.kt_ringbuf_get))
-<BR><BR>[Called By]<UL><LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_read
+<P><STRONG><a name="[de]"></a>kt_rc522_read_uid</STRONG> (Thumb, 264 bytes, Stack size 56 bytes, kt_rc522.o(.text.kt_rc522_read_uid))
+<BR><BR>[Stack]<UL><LI>Max Depth = 544 + Unknown Stack Size
+<LI>Call Chain = kt_rc522_read_uid &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rc522_transceive
+<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rc522_spi_transfer
+<LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
 </UL>
 
-<P><STRONG><a name="[e6]"></a>kt_ringbuf_init</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, kt_ringbuf.o(.text.kt_ringbuf_init))
-<BR><BR>[Called By]<UL><LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_start_receive_it
+<P><STRONG><a name="[f9]"></a>kt_ringbuf_available</STRONG> (Thumb, 50 bytes, Stack size 0 bytes, kt_ringbuf.o(.text.kt_ringbuf_available))
+<BR><BR>[Called By]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_available
 </UL>
 
-<P><STRONG><a name="[e2]"></a>kt_ringbuf_put</STRONG> (Thumb, 70 bytes, Stack size 8 bytes, kt_ringbuf.o(.text.kt_ringbuf_put))
+<P><STRONG><a name="[fc]"></a>kt_ringbuf_get</STRONG> (Thumb, 72 bytes, Stack size 0 bytes, kt_ringbuf.o(.text.kt_ringbuf_get))
+<BR><BR>[Called By]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_read
+</UL>
+
+<P><STRONG><a name="[fe]"></a>kt_ringbuf_init</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, kt_ringbuf.o(.text.kt_ringbuf_init))
+<BR><BR>[Called By]<UL><LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_start_receive_it
+</UL>
+
+<P><STRONG><a name="[fa]"></a>kt_ringbuf_put</STRONG> (Thumb, 70 bytes, Stack size 8 bytes, kt_ringbuf.o(.text.kt_ringbuf_put))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = kt_ringbuf_put
 </UL>
-<BR>[Called By]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_callback
+<BR>[Called By]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_rx_callback
 </UL>
 
-<P><STRONG><a name="[ea]"></a>kt_task_init</STRONG> (Thumb, 116 bytes, Stack size 0 bytes, kt_task.o(.text.kt_task_init))
+<P><STRONG><a name="[e2]"></a>kt_stepper_forward_test</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, kt_stepper.o(.text.kt_stepper_forward_test))
+<BR><BR>[Stack]<UL><LI>Max Depth = 528 + Unknown Stack Size
+<LI>Call Chain = kt_stepper_forward_test &rArr; run_steps &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;run_steps
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+</UL>
+
+<P><STRONG><a name="[e3]"></a>kt_stepper_reverse_test</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, kt_stepper.o(.text.kt_stepper_reverse_test))
+<BR><BR>[Stack]<UL><LI>Max Depth = 528 + Unknown Stack Size
+<LI>Call Chain = kt_stepper_reverse_test &rArr; run_steps &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;run_steps
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+</UL>
+
+<P><STRONG><a name="[e4]"></a>kt_stepper_stop</STRONG> (Thumb, 80 bytes, Stack size 8 bytes, kt_stepper.o(.text.kt_stepper_stop))
+<BR><BR>[Stack]<UL><LI>Max Depth = 496 + Unknown Stack Size
+<LI>Call Chain = kt_stepper_stop &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+</UL>
+
+<P><STRONG><a name="[105]"></a>kt_task_init</STRONG> (Thumb, 116 bytes, Stack size 0 bytes, kt_task.o(.text.kt_task_init))
 <BR><BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[e8]"></a>kt_task_register</STRONG> (Thumb, 94 bytes, Stack size 16 bytes, kt_task.o(.text.kt_task_register))
+<P><STRONG><a name="[103]"></a>kt_task_register</STRONG> (Thumb, 94 bytes, Stack size 16 bytes, kt_task.o(.text.kt_task_register))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = kt_task_register
 </UL>
-<BR>[Calls]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
+<BR>[Calls]<UL><LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[e9]"></a>kt_task_run</STRONG> (Thumb, 92 bytes, Stack size 24 bytes, kt_task.o(.text.kt_task_run))
+<P><STRONG><a name="[104]"></a>kt_task_run</STRONG> (Thumb, 92 bytes, Stack size 24 bytes, kt_task.o(.text.kt_task_run))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = kt_task_run &rArr; kt_tick_is_timeout
 </UL>
-<BR>[Calls]<UL><LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_is_timeout
-<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
+<BR>[Calls]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_is_timeout
+<LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_tick_get_ms
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[c1]"></a>kt_tick_get_ms</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, kt_tick.o(.text.kt_tick_get_ms))
+<P><STRONG><a name="[c5]"></a>kt_tick_get_ms</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, kt_tick.o(.text.kt_tick_get_ms))
 <BR><BR>[Calls]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
-<BR>[Called By]<UL><LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_task
-<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_button_task
-<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_task
-<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_cycle_start
-<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_beep
-<LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_blink_start
-<LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_task_run
-<LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_task_register
+<BR>[Called By]<UL><LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_task
+<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_button_task
+<LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_task
+<LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_cycle_start
+<LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_beep
+<LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_blink_start
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_task_run
+<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_task_register
 </UL>
 
-<P><STRONG><a name="[c2]"></a>kt_tick_is_timeout</STRONG> (Thumb, 22 bytes, Stack size 16 bytes, kt_tick.o(.text.kt_tick_is_timeout))
+<P><STRONG><a name="[c6]"></a>kt_tick_is_timeout</STRONG> (Thumb, 22 bytes, Stack size 16 bytes, kt_tick.o(.text.kt_tick_is_timeout))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = kt_tick_is_timeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
-<BR>[Called By]<UL><LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_task
-<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_button_task
-<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_task
-<LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_task_run
+<BR>[Called By]<UL><LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_buzzer_task
+<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_button_task
+<LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_task
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_task_run
 </UL>
 
-<P><STRONG><a name="[6e]"></a>main</STRONG> (Thumb, 180 bytes, Stack size 64 bytes, main.o(.text.main))
+<P><STRONG><a name="[e5]"></a>kt_zigbee_send_test</STRONG> (Thumb, 64 bytes, Stack size 16 bytes, kt_uart_links.o(.text.kt_zigbee_send_test))
+<BR><BR>[Stack]<UL><LI>Max Depth = 504 + Unknown Stack Size
+<LI>Call Chain = kt_zigbee_send_test &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit
+</UL>
+<BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_cmd_dispatch
+</UL>
+
+<P><STRONG><a name="[6e]"></a>main</STRONG> (Thumb, 188 bytes, Stack size 64 bytes, main.o(.text.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 216 + Unknown Stack Size
 <LI>Call Chain = main &rArr; kt_debug_print_system_info &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_task_run
-<LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_task_register
-<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_task_init
-<LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_off
-<LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_io_init
-<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_start_receive_it
-<LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_print_system_info
-<LI><a href="#[d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_init
-<LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_boot_count_init
-<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART2_UART_Init
-<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_GPIO_Init
-<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_ClockConfig
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_OscConfig
-<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
+<BR>[Calls]<UL><LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_task_run
+<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_task_register
+<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_task_init
+<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_led_off
+<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_io_init
+<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_port_uart_start_receive_it
+<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_print_system_info
+<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_debug_init
+<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_boot_count_init
+<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART3_UART_Init
+<LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART2_UART_Init
+<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART1_UART_Init
+<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_GPIO_Init
+<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_ClockConfig
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_OscConfig
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
 <P><STRONG><a name="[88]"></a>_btod_d2e</STRONG> (Thumb, 62 bytes, Stack size 0 bytes, btod.o(CL$$btod_d2e))
-<BR><BR>[Calls]<UL><LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_d2e_norm_op1
+<BR><BR>[Calls]<UL><LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_d2e_norm_op1
 </UL>
 <BR>[Called By]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
 </UL>
 
-<P><STRONG><a name="[ec]"></a>_d2e_denorm_low</STRONG> (Thumb, 70 bytes, Stack size 0 bytes, btod.o(CL$$btod_d2e_denorm_low))
-<BR><BR>[Called By]<UL><LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_d2e_norm_op1
+<P><STRONG><a name="[107]"></a>_d2e_denorm_low</STRONG> (Thumb, 70 bytes, Stack size 0 bytes, btod.o(CL$$btod_d2e_denorm_low))
+<BR><BR>[Called By]<UL><LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_d2e_norm_op1
 </UL>
 
-<P><STRONG><a name="[eb]"></a>_d2e_norm_op1</STRONG> (Thumb, 96 bytes, Stack size 0 bytes, btod.o(CL$$btod_d2e_norm_op1))
-<BR><BR>[Calls]<UL><LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_d2e_denorm_low
+<P><STRONG><a name="[106]"></a>_d2e_norm_op1</STRONG> (Thumb, 96 bytes, Stack size 0 bytes, btod.o(CL$$btod_d2e_norm_op1))
+<BR><BR>[Calls]<UL><LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_d2e_denorm_low
 </UL>
 <BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_d2e
 </UL>
 
-<P><STRONG><a name="[ed]"></a>__btod_div_common</STRONG> (Thumb, 696 bytes, Stack size 24 bytes, btod.o(CL$$btod_div_common))
+<P><STRONG><a name="[108]"></a>__btod_div_common</STRONG> (Thumb, 696 bytes, Stack size 24 bytes, btod.o(CL$$btod_div_common))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = __btod_div_common
 </UL>
 <BR>[Called By]<UL><LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_ediv
 </UL>
 
-<P><STRONG><a name="[ee]"></a>_e2e</STRONG> (Thumb, 220 bytes, Stack size 24 bytes, btod.o(CL$$btod_e2e))
+<P><STRONG><a name="[109]"></a>_e2e</STRONG> (Thumb, 220 bytes, Stack size 24 bytes, btod.o(CL$$btod_e2e))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = _e2e
 </UL>
 <BR>[Called By]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_emul
@@ -1667,8 +1911,8 @@ Global Symbols
 <P><STRONG><a name="[89]"></a>_btod_ediv</STRONG> (Thumb, 42 bytes, Stack size 28 bytes, btod.o(CL$$btod_ediv))
 <BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = _btod_ediv &rArr; _e2e
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_e2e
-<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__btod_div_common
+<BR>[Calls]<UL><LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_e2e
+<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__btod_div_common
 </UL>
 <BR>[Called By]<UL><LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_etento
 <LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
@@ -1677,14 +1921,14 @@ Global Symbols
 <P><STRONG><a name="[8a]"></a>_btod_emul</STRONG> (Thumb, 42 bytes, Stack size 28 bytes, btod.o(CL$$btod_emul))
 <BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = _btod_emul &rArr; _e2e
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__btod_mult_common
-<LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_e2e
+<BR>[Calls]<UL><LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__btod_mult_common
+<LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_e2e
 </UL>
 <BR>[Called By]<UL><LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_etento
 <LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
 </UL>
 
-<P><STRONG><a name="[ef]"></a>__btod_mult_common</STRONG> (Thumb, 580 bytes, Stack size 16 bytes, btod.o(CL$$btod_mult_common))
+<P><STRONG><a name="[10a]"></a>__btod_mult_common</STRONG> (Thumb, 580 bytes, Stack size 16 bytes, btod.o(CL$$btod_mult_common))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __btod_mult_common
 </UL>
 <BR>[Called By]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_btod_emul
@@ -1702,7 +1946,7 @@ Global Symbols
 <P><STRONG><a name="[68]"></a>_get_lc_numeric</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, lc_numeric_c.o(locale$$code))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = _get_lc_numeric
 </UL>
-<BR>[Calls]<UL><LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strcmp
+<BR>[Calls]<UL><LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strcmp
 </UL>
 <BR>[Called By]<UL><LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_lib_init_lc_numeric_2
 </UL>
@@ -1710,7 +1954,7 @@ Global Symbols
 <P><STRONG><a name="[39]"></a>_get_lc_ctype</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, lc_ctype_c.o(locale$$code))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = _get_lc_ctype
 </UL>
-<BR>[Calls]<UL><LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strcmp
+<BR>[Calls]<UL><LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strcmp
 </UL>
 <BR>[Called By]<UL><LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_lib_init_lc_ctype_2
 </UL>
@@ -1737,20 +1981,99 @@ Global Symbols
 <H3>
 Local Symbols
 </H3>
-<P><STRONG><a name="[a2]"></a>UART_Receive_IT</STRONG> (Thumb, 254 bytes, Stack size 4 bytes, stm32f1xx_hal_uart.o(.text.UART_Receive_IT))
+<P><STRONG><a name="[a3]"></a>UART_Receive_IT</STRONG> (Thumb, 254 bytes, Stack size 4 bytes, stm32f1xx_hal_uart.o(.text.UART_Receive_IT))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = UART_Receive_IT &rArr; HAL_UART_RxCpltCallback &rArr; kt_port_uart_rx_callback &rArr; kt_ringbuf_put
 </UL>
-<BR>[Calls]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UARTEx_RxEventCallback
-<LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_RxCpltCallback
+<BR>[Calls]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UARTEx_RxEventCallback
+<LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_RxCpltCallback
 </UL>
-<BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
+<BR>[Called By]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_IRQHandler
 </UL>
 
 <P><STRONG><a name="[3a]"></a>UART_DMAAbortOnError</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, stm32f1xx_hal_uart.o(.text.UART_DMAAbortOnError))
-<BR><BR>[Calls]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_ErrorCallback
+<BR><BR>[Calls]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_ErrorCallback
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> stm32f1xx_hal_uart.o(.text.HAL_UART_IRQHandler)
 </UL>
+<P><STRONG><a name="[100]"></a>rc522_spi_transfer</STRONG> (Thumb, 272 bytes, Stack size 32 bytes, kt_rc522.o(.text.rc522_spi_transfer))
+<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = rc522_spi_transfer
+</UL>
+<BR>[Calls]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_ReadPin
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+</UL>
+<BR>[Called By]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rc522_transceive
+<LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_rc522_read_uid
+<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_rc522_init
+</UL>
+
+<P><STRONG><a name="[101]"></a>rc522_transceive</STRONG> (Thumb, 694 bytes, Stack size 40 bytes, kt_rc522.o(.text.rc522_transceive))
+<BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = rc522_transceive &rArr; rc522_spi_transfer
+</UL>
+<BR>[Calls]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rc522_spi_transfer
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+</UL>
+<BR>[Called By]<UL><LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_rc522_read_uid
+</UL>
+
+<P><STRONG><a name="[f7]"></a>oled_write</STRONG> (Thumb, 456 bytes, Stack size 24 bytes, kt_oled.o(.text.oled_write))
+<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = oled_write &rArr; i2c_write
+</UL>
+<BR>[Calls]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;i2c_write
+</UL>
+<BR>[Called By]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_oled_test
+<LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;oled_print
+</UL>
+
+<P><STRONG><a name="[f8]"></a>oled_print</STRONG> (Thumb, 170 bytes, Stack size 16 bytes, kt_oled.o(.text.oled_print))
+<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = oled_print &rArr; oled_write &rArr; i2c_write
+</UL>
+<BR>[Calls]<UL><LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;oled_write
+</UL>
+<BR>[Called By]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_oled_test
+</UL>
+
+<P><STRONG><a name="[c0]"></a>i2c_write</STRONG> (Thumb, 360 bytes, Stack size 24 bytes, kt_oled.o(.text.i2c_write))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = i2c_write
+</UL>
+<BR>[Calls]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+</UL>
+<BR>[Called By]<UL><LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;oled_write
+</UL>
+
+<P><STRONG><a name="[f1]"></a>write_byte</STRONG> (Thumb, 264 bytes, Stack size 40 bytes, kt_ds1302.o(.text.write_byte))
+<BR><BR>[Stack]<UL><LI>Max Depth = 84<LI>Call Chain = write_byte &rArr; HAL_GPIO_Init
+</UL>
+<BR>[Calls]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_Init
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+</UL>
+<BR>[Called By]<UL><LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_ds1302_write_test_time
+<LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_reg
+</UL>
+
+<P><STRONG><a name="[f0]"></a>read_reg</STRONG> (Thumb, 322 bytes, Stack size 40 bytes, kt_ds1302.o(.text.read_reg))
+<BR><BR>[Stack]<UL><LI>Max Depth = 124<LI>Call Chain = read_reg &rArr; write_byte &rArr; HAL_GPIO_Init
+</UL>
+<BR>[Calls]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_ReadPin
+<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_Init
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+<LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;write_byte
+</UL>
+<BR>[Called By]<UL><LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_ds1302_print_time
+</UL>
+
+<P><STRONG><a name="[102]"></a>run_steps</STRONG> (Thumb, 212 bytes, Stack size 32 bytes, kt_stepper.o(.text.run_steps))
+<BR><BR>[Stack]<UL><LI>Max Depth = 520 + Unknown Stack Size
+<LI>Call Chain = run_steps &rArr; kt_log_output &rArr; __2snprintf &rArr; _printf_char_common &rArr; __printf
+</UL>
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_log_output
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
+</UL>
+<BR>[Called By]<UL><LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_stepper_reverse_test
+<LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;kt_stepper_forward_test
+</UL>
+
 <P><STRONG><a name="[38]"></a>_printf_input_char</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, _printf_char_common.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> _printf_char_common.o(.text)
 </UL>

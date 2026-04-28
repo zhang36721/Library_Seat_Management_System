@@ -33,6 +33,12 @@
 "stm32f103c8t6_hal_demo\kt_button.o"
 "stm32f103c8t6_hal_demo\kt_buzzer.o"
 "stm32f103c8t6_hal_demo\app_io.o"
+"stm32f103c8t6_hal_demo\kt_rc522.o"
+"stm32f103c8t6_hal_demo\kt_hw_diag.o"
+"stm32f103c8t6_hal_demo\kt_oled.o"
+"stm32f103c8t6_hal_demo\kt_ds1302.o"
+"stm32f103c8t6_hal_demo\kt_stepper.o"
+"stm32f103c8t6_hal_demo\kt_uart_links.o"
 --strict --scatter "stm32f103c8t6_hal_demo\stm32f103c8t6_hal_demo.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
