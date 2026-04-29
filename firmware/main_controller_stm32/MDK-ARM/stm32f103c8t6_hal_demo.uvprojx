@@ -619,6 +619,11 @@
               <FileType>1</FileType>
               <FilePath>..\ktlib\kt_app\app_io.c</FilePath>
             </File>
+            <File>
+              <FileName>main_controller_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_app\main_controller_app.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

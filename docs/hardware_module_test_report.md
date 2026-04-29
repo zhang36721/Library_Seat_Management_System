@@ -1,6 +1,6 @@
-# v0.7.1/v0.8 硬件模块独立验证报告
+# v0.8.2 主控本地刷卡与显示闭环测试报告
 
-本文档只记录 STM32 主控外设模块、seat_node_stm32 座位端采集模块，以及两端 ZigBee 串口透传链路的独立验证。USART2 debug 协议保持独立，不接后端、不接前端、不做完整业务流程。
+本文档记录 STM32 主控外设模块、seat_node_stm32 座位端采集模块、两端 ZigBee 串口透传链路，以及 v0.8.2 主控本地刷卡与显示闭环。USART2 debug 协议保持独立，不接后端、不接前端。
 
 实机结果必须由烧录后的真实硬件测试补充；当前代码侧已提供命令、日志和 Keil 编译产物。
 
@@ -8,7 +8,7 @@
 
 | 项目 | 结果 |
 |------|------|
-| 主控固件版本 | v0.7.1 |
+| 主控固件版本 | v0.8.2 |
 | 座位端固件版本 | v0.8 |
 | 主控 Debug 串口 | USART2，115200，`FF CMD DATA FF` |
 | 座位端 Debug 串口 | USART2，115200，`FF CMD DATA FF` |
@@ -23,9 +23,9 @@
 
 | 模块 | 上电行为 | 预期日志 | 实机结果 |
 |------|----------|----------|----------|
-| RC522 | 初始化软件 SPI，并读取版本寄存器探测 | `RC522 init: OK, version=0x..` 或 `RC522 init: PROBE_FAIL, version=0x..` | 待实机填写 |
-| OLED | 初始化 I2C OLED，显示 `STM32 MAIN` / `v0.7.1` | `OLED init: OK` 或 `OLED init: ACK_FAIL` | 待实机填写 |
-| DS1302 | 读取一次时间并校验 BCD 转换后范围 | `DS1302 init: OK, time=...` 或 `DS1302 init: INVALID_TIME` | 待实机填写 |
+| RC522 | 初始化软件 SPI，并读取版本寄存器探测 | `RC522 init: OK, version=0x..` 或 `RC522 init: PROBE_FAIL, version=0x..` | 已实测可读 UID：`BF A4 A5 1F BCC=A1`；无卡提示 `RC522 no card detected` |
+| OLED | 初始化 I2C OLED，显示 `STM32 MAIN` / `v0.8.2` | `OLED init: OK` 或 `OLED init: ACK_FAIL` | 已实测初始化 OK，屏幕可显示 |
+| DS1302 | 读取一次时间并校验 BCD 转换后范围 | `DS1302 init: OK, time=...` 或 `DS1302 init: INVALID_TIME` | 已实测合法：`2026-04-28 12:59:36` |
 | 步进电机 | 上电默认停止，四路线圈关闭 | `Stepper init: STOP, coils off` | 待实机填写 |
 | ZigBee USART1 | 启动 USART1 RX 中断缓冲 | `USART1 ZigBee UART init: OK`，并提示链路待实测 | 待实机填写 |
 | ESP32S3 USART3 | 确认 USART3 初始化职责 | `USART3 ESP32S3 UART init: OK`，并提示对端待实测 | 待实机填写 |
@@ -48,8 +48,64 @@
 | ZigBee | `FF 81 00 FF` | 打印 USART1 最近接收缓冲 | `ZigBee recent RX: ...` 或提示暂无数据 |
 | ZigBee | `FF 82 00 FF` | USART1 发送 PING 测试帧 | `ZigBee TX: MAIN,PING,1` |
 | ESP32S3 | `FF 90 00 FF` | USART3 发送测试字符串 | `USART3 ESP32S3 test TX: OK` |
+| 主控本地业务 | `FF A0 00 FF` | 打印当前主控业务状态 | 打印模拟座位状态和最近刷卡结果 |
+| 主控本地业务 | `FF A1 00 FF` | 执行一次本地刷卡流程 | 有卡打印 UID/时间/事件，OLED 显示成功；无卡显示失败 |
+| 主控本地业务 | `FF A2 00 FF` | OLED 显示首页 | `KENTO LIB`、时间、S1/S2/S3 模拟状态 |
+| 主控本地业务 | `FF A3 00 FF` | OLED 显示最近一次刷卡结果 | 显示最近成功/失败结果 |
+| 主控本地业务 | `FF A4 00 FF` | 蜂鸣器成功提示 | 80ms 短响 |
+| 主控本地业务 | `FF A5 00 FF` | 蜂鸣器失败提示 | 200ms 短响 |
+| 主控本地业务 | `FF A6 00 FF` | 模拟座位状态变化 | S1/S2/S3 模拟 FREE/OCCUPIED 切换 |
 
-## 4. ZigBee CC2530 透传测试
+## 4. v0.8.2 主控本地刷卡闭环
+
+本阶段不依赖 ZigBee，不依赖 ESP32S3，不接后端和前端。主控本地闭环流程为：
+
+`RC522 读卡 UID -> DS1302 读取当前时间 -> OLED 显示结果 -> 蜂鸣器提示 -> USART2 debug 打印事件`
+
+成功流程预期日志：
+
+```text
+[INFO] CMD 0xA1: Local card flow test
+[INFO] CARD UID: BF A4 A5 1F
+[INFO] TIME: 2026-04-28 12:59:36
+[INFO] CARD EVENT: CHECK_IN_TEST OK
+```
+
+失败流程预期日志：
+
+```text
+[INFO] CMD 0xA1: Local card flow test
+[WARN] RC522 no card detected
+[WARN] CARD EVENT: NO_CARD
+```
+
+OLED 首页：
+
+```text
+KENTO LIB
+TIME 12:59
+S1 FREE
+S2 OCC S3 FREE
+```
+
+OLED 刷卡成功：
+
+```text
+CARD OK
+BFA4A51F
+12:59:36
+```
+
+OLED 刷卡失败：
+
+```text
+CARD FAIL
+NO CARD
+```
+
+Stepper 当前不作为 v0.8.2 阻塞项。当前记录：`FF 70 / FF 71 / FF 72` 命令链路正常，ULN2003 四个指示灯有灯效；电机本体不转，后续复查供电、相序、线序、驱动板和电机接口。
+
+## 5. ZigBee CC2530 透传测试
 
 接线：
 
@@ -69,7 +125,7 @@
 - `FF 81 00 FF` 打印最近一条 USART1 接收行。
 - ZigBee 模块频道、PAN ID、协调器/终端角色、透传参数需要按模块资料或配置工具单独确认。
 
-## 5. seat_node_stm32 v0.8
+## 6. seat_node_stm32 v0.8
 
 座位端第一阶段只做最小功能：STM32 初始化、USART2 debug、USART1 ZigBee、3 路传感器输入、FREE/OCCUPIED 判断和文本透传。
 
@@ -95,7 +151,7 @@
 
 座位端收到主控 `MAIN,PING,1` 时，会在主循环打印 `ZigBee RX: MAIN,PING,1` 并回发 `SN,1,PONG`。
 
-## 6. 待实机填写记录
+## 7. 待实机填写记录
 
 | 模块 | 命令/动作 | 实机日志 | 实机现象 | 结果 |
 |------|-----------|----------|----------|------|
@@ -109,7 +165,11 @@
 | 座位端传感器 | `FF 30/31 00 FF` | 待填写 | 原始电平和 FREE/OCCUPIED 与实物一致 | 待验证 |
 | 座位端 ZigBee TX | `FF 80/81 00 FF` | 待填写 | 主控收到座位状态或 PONG | 待验证 |
 | USART2 独立性 | 任意 ZigBee 收发时执行 debug 命令 | 待填写 | ZigBee 数据不污染 USART2 debug 协议 | 待验证 |
+| 主控本地刷卡成功 | `FF A1 00 FF`，有卡 | 待填写 | OLED 显示 `CARD OK`、UID、时间；蜂鸣器 80ms | 待验证 |
+| 主控本地刷卡失败 | `FF A1 00 FF`，无卡 | 待填写 | OLED 显示 `CARD FAIL` / `NO CARD`；蜂鸣器 200ms | 待验证 |
+| 主控 OLED 首页 | `FF A2 00 FF` | 待填写 | OLED 显示首页和模拟座位状态 | 待验证 |
+| 主控最近刷卡结果 | `FF A3 00 FF` | 待填写 | OLED 显示最近一次刷卡结果 | 待验证 |
 
-## 7. 当前结论
+## 8. 当前结论
 
-当前阶段可以作为 v0.7.1/v0.8 固件候选：主控已具备上电外设自检入口，座位端已具备基础采集与 ZigBee 文本透传命令。最终是否关闭版本，以 Keil Rebuild All 和实机测试结果为准。
+当前阶段可以作为 v0.8.2 固件候选：主控已具备本地刷卡、取时、OLED 显示、蜂鸣器提示和 USART2 事件日志闭环。最终是否关闭版本，以实机 `FF A0` 到 `FF A6` 验收结果为准。

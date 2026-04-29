@@ -44,6 +44,7 @@ static const uint8_t font_5x7[][5] = {
 };
 
 static const uint8_t font_dot[5] = {0x00,0x60,0x60,0x00,0x00};
+static const uint8_t font_colon[5] = {0x00,0x36,0x36,0x00,0x00};
 
 static void oled_delay(void)
 {
@@ -139,6 +140,7 @@ static const uint8_t *font_for(char c)
     if (c >= 'a' && c <= 'z') return font_5x7[1 + c - 'a'];
     if (c >= '0' && c <= '9') return font_5x7[27 + c - '0'];
     if (c == '.') return font_dot;
+    if (c == ':') return font_colon;
     return font_5x7[0];
 }
 
@@ -185,4 +187,18 @@ void kt_oled_test(void)
 {
     (void)kt_oled_init_startup();
     KT_LOG_INFO("OLED test text sent");
+}
+
+void kt_oled_clear(void)
+{
+    oled_clear();
+}
+
+void kt_oled_print_line(uint8_t line, const char *text)
+{
+    if (line > 3U || text == 0) {
+        return;
+    }
+
+    oled_print((uint8_t)(line * 2U), 0, text);
 }

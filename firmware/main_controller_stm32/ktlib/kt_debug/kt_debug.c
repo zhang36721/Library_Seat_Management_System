@@ -136,5 +136,12 @@ void kt_debug_print_help(void)
     KT_LOG_INFO("  FF 81 00 FF  -> USART1 ZigBee recent RX");
     KT_LOG_INFO("  FF 82 00 FF  -> USART1 ZigBee PING TX");
     KT_LOG_INFO("  FF 90 00 FF  -> USART3 ESP32S3 test TX");
+    KT_LOG_INFO("  FF A0 00 FF  -> Main app status");
+    KT_LOG_INFO("  FF A1 00 FF  -> Local card flow test");
+    KT_LOG_INFO("  FF A2 00 FF  -> OLED home");
+    KT_LOG_INFO("  FF A3 00 FF  -> OLED last card result");
+    KT_LOG_INFO("  FF A4 00 FF  -> Buzzer success prompt");
+    KT_LOG_INFO("  FF A5 00 FF  -> Buzzer fail prompt");
+    KT_LOG_INFO("  FF A6 00 FF  -> Toggle simulated seats");
     KT_LOG_INFO("====================");
 }

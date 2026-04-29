@@ -9,6 +9,8 @@ extern "C" {
 
 uint8_t kt_oled_init_startup(void);
 void kt_oled_test(void);
+void kt_oled_clear(void);
+void kt_oled_print_line(uint8_t line, const char *text);
 
 #ifdef __cplusplus
 }

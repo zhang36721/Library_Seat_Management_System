@@ -3,6 +3,7 @@
 #include "kt_log.h"
 #include "kt_debug.h"
 #include "kt_app/app_io.h"
+#include "kt_app/main_controller_app.h"
 #include "kt_modules/kt_hw_diag.h"
 #include "kt_modules/kt_rc522.h"
 #include "kt_modules/kt_oled.h"
@@ -56,6 +57,13 @@ void kt_cmd_init(void)
  *   0x81  0x00    Print USART1 ZigBee recent RX
  *   0x82  0x00    USART1 ZigBee PING TX
  *   0x90  0x00    USART3 ESP32S3 test TX
+ *   0xA0  0x00    Print local main controller app status
+ *   0xA1  0x00    Run local card flow test
+ *   0xA2  0x00    Show OLED home page
+ *   0xA3  0x00    Show OLED last card result
+ *   0xA4  0x00    Buzzer success prompt
+ *   0xA5  0x00    Buzzer fail prompt
+ *   0xA6  0x00    Toggle simulated seat status
  */
 void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
 {
@@ -240,6 +248,41 @@ void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
     case 0x90:
         KT_LOG_INFO("CMD 0x90: USART3 ESP32S3 test TX");
         kt_esp32s3_send_test();
+        break;
+
+    case 0xA0:
+        KT_LOG_INFO("CMD 0xA0: Main app status");
+        main_controller_app_print_status();
+        break;
+
+    case 0xA1:
+        KT_LOG_INFO("CMD 0xA1: Local card flow test");
+        main_controller_app_run_card_flow();
+        break;
+
+    case 0xA2:
+        KT_LOG_INFO("CMD 0xA2: OLED home");
+        main_controller_app_show_home();
+        break;
+
+    case 0xA3:
+        KT_LOG_INFO("CMD 0xA3: OLED last card result");
+        main_controller_app_show_last_card();
+        break;
+
+    case 0xA4:
+        KT_LOG_INFO("CMD 0xA4: Buzzer success prompt");
+        main_controller_app_beep_success();
+        break;
+
+    case 0xA5:
+        KT_LOG_INFO("CMD 0xA5: Buzzer fail prompt");
+        main_controller_app_beep_fail();
+        break;
+
+    case 0xA6:
+        KT_LOG_INFO("CMD 0xA6: Simulate seat status");
+        main_controller_app_toggle_seat_state();
         break;
 
     default:
