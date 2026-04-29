@@ -1,11 +1,14 @@
 <template>
   <div id="app">
-    <router-view />
+    <NavBar v-if="$route.path !== '/login'" />
+    <main :class="{ 'has-nav': $route.path !== '/login' }">
+      <router-view />
+    </main>
   </div>
 </template>
 
 <script setup>
-// 主应用组件
+import NavBar from '@/components/NavBar.vue'
 </script>
 
 <style>
@@ -16,6 +19,14 @@
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   height: 100vh;
+}
+
+main {
+  min-height: calc(100vh - 60px);
+}
+
+main.has-nav {
+  padding: 20px;
 }
 
 * {
