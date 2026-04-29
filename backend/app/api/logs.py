@@ -1,33 +1,50 @@
 """
-刷卡记录 API 路由
+刷卡记录 API 路由（公开）
 """
 
-from fastapi import APIRouter, Query, Depends
-from typing import Optional
+from fastapi import APIRouter, Query
 
 from app.schemas.card_log import CardLogResponse
-from app.schemas.common import APIResponse, PaginatedResponse
-from app.services import CardLogService
-from app.core import get_current_user
+from app.schemas.common import APIResponse
 
 router = APIRouter()
 
 
-@router.get("", response_model=APIResponse[PaginatedResponse[CardLogResponse]])
+@router.get("", response_model=APIResponse[list[CardLogResponse]])
 def list_logs(
-        page: int = Query(default=1, ge=1),
-        page_size: int = Query(default=20, ge=1, le=100),
-        seat_id: Optional[int] = Query(default=None, description="按座位ID筛选"),
-        card_id: Optional[str] = Query(default=None, description="按卡片ID筛选"),
-        action: Optional[str] = Query(default=None, description="按动作筛选 check_in/check_out"),
-        user=Depends(get_current_user)
+        limit: int = Query(default=100, ge=1, le=500, description="返回条数")
 ):
-    """分页查询刷卡记录（需登录）"""
-    items, total = CardLogService.list_logs(
-        page=page, page_size=page_size,
-        seat_id=seat_id, card_id=card_id, action=action
-    )
-    return APIResponse(data=PaginatedResponse(
-        total=total, page=page, page_size=page_size,
-        items=[CardLogResponse(**it) for it in items]
-    ))
+    """获取最近刷卡记录（公开）"""
+    items = _CardLogService.list_recent(limit)
+    return APIResponse(data=[CardLogResponse(**it) for it in items])
+
+
+# ---------- simple in‑module service (avoids importing removed dashboard endpoints) ----------
+
+import json, os
+
+class _CardLogService:
+    DATA_FILE = os.path.join(os.path.dirname(__file__), "..", "..", "runtime_data", "card_logs.json")
+
+    @classmethod
+    def _ensure_file(cls):
+        os.makedirs(os.path.dirname(cls.DATA_FILE), exist_ok=True)
+        if not os.path.exists(cls.DATA_FILE):
+            with open(cls.DATA_FILE, "w", encoding="utf-8") as f:
+                json.dump([], f)
+
+    @classmethod
+    def _read(cls):
+        cls._ensure_file()
+        with open(cls.DATA_FILE, "r", encoding="utf-8") as f:
+            try:
+                return json.load(f)
+            except json.JSONDecodeError:
+                return []
+
+    @classmethod
+    def list_recent(cls, limit: int = 100):
+        all_logs = cls._read()
+        # sort by recorded_at descending
+        all_logs.sort(key=lambda x: x.get("recorded_at", ""), reverse=True)
+        return all_logs[:limit]
