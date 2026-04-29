@@ -277,7 +277,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x10000</Size>
+                <Size>0xf800</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -634,6 +634,11 @@
               <FileType>1</FileType>
               <FilePath>..\ktlib\kt_app\main_card_db.c</FilePath>
             </File>
+            <File>
+              <FileName>main_access_log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_app\main_access_log.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -668,6 +673,11 @@
               <FileName>kt_uart_links.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\ktlib\kt_modules\kt_uart_links.c</FilePath>
+            </File>
+            <File>
+              <FileName>kt_esp32_link.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_modules\kt_esp32_link.c</FilePath>
             </File>
             <File>
               <FileName>kt_modules.c</FileName>

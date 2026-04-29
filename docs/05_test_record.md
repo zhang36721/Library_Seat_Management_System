@@ -133,6 +133,31 @@ FF 60 00 FF
 
 `FF 61 00 FF` 保留为固定测试写入命令：`2026-04-28 12:34:00`。
 
+## v0.8.5 主控本地通行记录与自动刷卡
+
+本阶段不依赖 ZigBee、不依赖 ESP32S3、不接后端和前端，目标是主控本地真实刷卡体验。
+
+| 验收项 | 操作 | 预期结果 | 实机结果 |
+|--------|------|----------|----------|
+| OLED 首页 | 上电 | 显示 `KENTO LIBRARY`、`SWIPE CARD`、卡数、日志数和时间 | 待测 |
+| 自动刷卡 | 已注册卡靠近 RC522 | 无需 `FF A1`，自动显示 `ACCESS OK` 并记录日志 | 待测 |
+| 防重复刷 | 同一张卡持续放在读卡器上 | 不连续重复触发 | 待测 |
+| 拿开再刷 | 拿开卡后再次靠近 | 允许下一次刷卡 | 待测 |
+| 未注册卡 | 未注册卡靠近 RC522 | OLED 显示 `ACCESS DENIED`，电机不动作 | 待测 |
+| 闸门联动 | 已注册卡刷卡成功 | 步进电机开闸、保持、关闸、停止线圈 | 待测 |
+| 打印记录 | `FF C0 00 FF` | 打印最近通行记录或 `ACCESS LOG EMPTY` | 待测 |
+| 清空记录 | `FF C1 00 FF` | 打印 `ACCESS LOG CLEARED` | 待测 |
+| 记录统计 | `FF C2 00 FF` | 打印记录总数、OK 数、DENIED 数 | 待测 |
+| 手动刷卡 | `FF A1 00 FF` | 仍可手动执行本地刷卡测试 | 待测 |
+| 菜单暂停轮询 | 进入 TIME SET / CARD ADD / CARD DEL / 菜单 | 自动刷卡暂停，放卡不会触发 ACCESS DENIED 或正常通行 | 待测 |
+| 退出恢复轮询 | K1 长按返回首页 | 自动刷卡恢复 | 待测 |
+| 掉电保护 | 产生记录后断电重启，再发 `FF C0 00 FF` | 最近 50 条记录从 Flash 恢复 | 待测 |
+| 卡表掉电保护 | 注册 IC 卡后断电重启，再发 `FF B6 00 FF` | 已注册卡列表从 Flash 恢复 | 待测 |
+
+代码侧 Keil Rebuild All 已通过：`0 Error(s), 0 Warning(s)`。最终关闭版本仍以实机验收结果为准。
+
+本地数据持久化说明：已注册卡表和最近 50 条通行记录共同保存到 STM32 内部 Flash `0x0800F800`，boot count 仍使用 `0x0800FC00`。Keil IROM 已预留最后两页，避免程序区覆盖持久化数据。
+
 ### v0.8.2 阶段边界
 
 - 不依赖 ZigBee。
@@ -195,3 +220,30 @@ FF 60 00 FF
 
 ### 4.3 改进建议
 - 待补充
+# v0.9 ESP32S3 Binary Link Test Record
+
+| Test | Operation | Expected result | Result |
+|------|-----------|-----------------|--------|
+| ESP32S3 WiFi | Boot ESP32S3 gateway | Try configured WiFi profiles; print connected SSID/IP/RSSI or offline | Pending |
+| STM32 PING | `FF D0 00 FF` | STM32 sends `PING`, ESP32 replies `PONG` | Pending |
+| WiFi status | `FF D1 00 FF` after ESP32 sends status | STM32 prints WiFi state, SSID, IP, RSSI | Pending |
+| Link status | `FF D2 00 FF` | STM32 prints ESP32 link and WiFi status | Pending |
+| Mock card event | `FF D3 00 FF` | ESP32 parses `CARD_EVENT` and replies `ACK` | Pending |
+| Real card event | Swipe a registered or denied card | Local access still works; ESP32 receives `CARD_EVENT` | Pending |
+| Bad CRC | `FF D5 00 FF` | ESP32 replies `ERR` with CRC reason | Pending |
+| USART2 isolation | Send debug commands while UART3 traffic exists | USART2 `FF CMD DATA FF` remains independent | Pending |
+
+## v0.9.1 ESP32 Active Heartbeat Test Record
+
+| Test | Operation | Expected result | Result |
+|------|-----------|-----------------|--------|
+| Bright LED | ESP32 boot | RGB LED is requested off, or PWR LED is confirmed not software controllable | Pending |
+| GPIO48 conflict | ESP32 UART traffic on GPIO48 | Confirm whether board RGB LED flickers or interferes with UART RX | Pending |
+| Active heartbeat | ESP32 powered | `[HB TX] seq=...` every 3 seconds | Pending |
+| STM32 offline | ESP32 powered while STM32 disconnected | After 3 missed ACKs, ESP32 prints `[STM32] offline` | Pending |
+| STM32 heartbeat ACK | STM32 connected and powered | STM32 replies `HEARTBEAT_ACK`; ESP32 prints `[HB ACK]` | Pending |
+| PC13 pulse | ESP32 heartbeat received | STM32 PC13 pulses for about 50 ms | Pending |
+| Recovery | Connect/reset STM32 after ESP32 offline | ESP32 prints `[STM32] recovered` | Pending |
+| Initial sync | First heartbeat after link capture | ESP32 prints `[SYNC RX] cards=... logs=... time=...` | Pending |
+| FF D2 status | `FF D2 00 FF` | STM32 prints ONLINE/OFFLINE, heartbeat count, WiFi and last RX type | Pending |
+| EOF check | Send malformed frame tail | Parser rejects frame and records EOF/format error | Pending |

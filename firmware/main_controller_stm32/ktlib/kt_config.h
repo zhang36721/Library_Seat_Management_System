@@ -7,11 +7,11 @@
  * Project Information
  *===========================================================================*/
 #define KT_PROJECT_NAME        "Library Seat Management System"
-#define KT_PROJECT_VERSION     "v0.8.4"
+#define KT_PROJECT_VERSION     "v0.8.5"
 #define KT_FW_NAME             "Main Controller STM32"
 #define KT_FIRMWARE_ROLE       KT_FW_NAME
 #define KT_AUTHOR              "Kento"
-#define KT_STUDENT_ID          "TODO_STUDENT_ID"
+#define KT_STUDENT_ID          "191110245"
 
 /*===========================================================================
  * Debug UART Configuration
@@ -42,6 +42,13 @@
  *===========================================================================*/
 #define KT_BOOT_COUNT_FLASH_PAGE_ADDR  0x0800FC00U
 #define KT_BOOT_COUNT_MAGIC            0x4B544243U  /* "KTBC" */
+
+/* The second last 1KB page is reserved for persistent local access logs.
+ * Keep the Keil IROM size at or below 0xF800 so firmware code does not
+ * overlap 0x0800F800-0x0800FFFF.
+ */
+#define MAIN_ACCESS_LOG_FLASH_PAGE_ADDR 0x0800F800U
+#define MAIN_ACCESS_LOG_FLASH_MAGIC     0x4B54414CU  /* "KTAL" */
 
 /*===========================================================================
  * Log System Configuration (used by kt_log.h / kt_log.c)
@@ -135,6 +142,28 @@
 #define KT_ESP32S3_TEST_BAUDRATE 115200
 
 /*===========================================================================
+ * v0.9 STM32 <-> ESP32S3 Binary UART Protocol
+ *===========================================================================*/
+#define KT_BIN_PROTOCOL_VERSION       0x01U
+#define KT_BIN_MAX_PAYLOAD_LEN        128U
+
+#define KT_MSG_PING                   0x01U
+#define KT_MSG_PONG                   0x02U
+#define KT_MSG_ACK                    0x03U
+#define KT_MSG_ERR                    0x04U
+#define KT_MSG_HEARTBEAT              0x05U
+#define KT_MSG_HEARTBEAT_ACK          0x06U
+#define KT_MSG_WIFI_STATUS            0x10U
+#define KT_MSG_CARD_EVENT             0x20U
+#define KT_MSG_ACCESS_LOG             0x21U
+#define KT_MSG_DEVICE_STATUS          0x30U
+#define KT_MSG_BOOT_SYNC              0x31U
+#define KT_MSG_SYNC_ACK               0x32U
+
+#define KT_ESP32_HEARTBEAT_TIMEOUT_MS 10000U
+#define KT_ESP32_LINK_LED_PULSE_MS    50U
+
+/*===========================================================================
  * v0.8.3 Main Controller 8-key Module
  *===========================================================================*/
 #define MAIN_KEY_ACTIVE_LEVEL      GPIO_PIN_RESET
@@ -157,5 +186,14 @@
 #define MAIN_KEY7_PIN              GPIO_PIN_4
 #define MAIN_KEY8_PORT             GPIOC
 #define MAIN_KEY8_PIN              GPIO_PIN_14
+
+/*===========================================================================
+ * v0.8.5 Main Controller Local Access Flow
+ *===========================================================================*/
+#define MAIN_CARD_POLL_PERIOD_MS      50U
+#define MAIN_CARD_REPEAT_GUARD_MS     2500U
+#define MAIN_GATE_HOLD_MS             4000U
+#define MAIN_OLED_IDLE_HOME_MS        3000U
+#define MAIN_ACCESS_LOG_MAX_COUNT     50U
 
 #endif /* KT_CONFIG_H */

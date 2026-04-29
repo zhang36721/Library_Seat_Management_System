@@ -8,6 +8,8 @@ extern "C" {
 #endif
 
 void main_controller_app_print_status(void);
+void main_controller_app_init(void);
+void main_controller_app_task(void);
 void main_controller_app_run_card_flow(void);
 void main_controller_app_show_home(void);
 void main_controller_app_show_last_card(void);
@@ -19,6 +21,10 @@ void main_controller_app_card_add_current(void);
 void main_controller_app_card_del_current(void);
 void main_controller_app_print_card_db(void);
 void main_controller_app_clear_card_db(void);
+void main_controller_app_print_access_log(void);
+void main_controller_app_clear_access_log(void);
+void main_controller_app_print_access_stats(void);
+void main_controller_app_send_last_card_event_to_esp32(void);
 
 #ifdef __cplusplus
 }

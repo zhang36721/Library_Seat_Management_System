@@ -25,14 +25,17 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "kt_debug.h"
+#include "kt_config.h"
 #include "kt_port_uart.h"
 #include "kt_port_gpio.h"
 #include "kt_task/kt_task.h"
 #include "kt_app/app_io.h"
 #include "kt_app/main_keys.h"
+#include "kt_app/main_controller_app.h"
 #include "kt_system/kt_boot_count.h"
 #include "kt_modules/kt_modules.h"
 #include "kt_modules/kt_uart_links.h"
+#include "kt_modules/kt_esp32_link.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -140,6 +143,7 @@ int main(void)
   /* v1.0: App I/O initialization (LED, Button, Buzzer - multi-instance) */
   app_io_init();
   main_keys_init();
+  main_controller_app_init();
   kt_led_off(&app_led);  /* Ensure LED starts off */
 
   /* v1.0: Task scheduler - includes device & app tasks */
@@ -147,6 +151,7 @@ int main(void)
   kt_task_register("debug",     kt_debug_task,       1);
   kt_task_register("app_io",    app_io_tasks,       10);   /* LED blink + button debounce + buzzer */
   kt_task_register("main_keys", main_keys_task,     10);
+  kt_task_register("main_app",  main_controller_app_task, MAIN_CARD_POLL_PERIOD_MS);
 #if APP_HEARTBEAT_LED_ENABLE
   kt_task_register("heartbeat", app_heartbeat_task, 500);
 #endif
@@ -217,6 +222,7 @@ void SystemClock_Config(void)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     kt_zigbee_uart_rx_callback(huart);
+    kt_esp32_link_uart_rx_callback(huart);
     kt_port_uart_rx_callback(huart);
 }
 

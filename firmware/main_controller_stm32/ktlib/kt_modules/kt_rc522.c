@@ -166,7 +166,7 @@ uint8_t kt_rc522_init(void)
     return 0;
 }
 
-uint8_t kt_rc522_read_uid(uint8_t uid[5])
+static uint8_t rc522_read_uid_impl(uint8_t uid[5], uint8_t log_result)
 {
     uint8_t req_cmd = PICC_REQIDL;
     uint8_t anticoll_cmd[2] = { PICC_ANTICOLL, 0x20U };
@@ -176,14 +176,18 @@ uint8_t kt_rc522_read_uid(uint8_t uid[5])
 
     rc522_write_reg(RC522_BIT_FRAMING_REG, 0x07U);
     if (!rc522_transceive(&req_cmd, 1, rx, &rx_len, &valid_bits)) {
-        KT_LOG_WARN("RC522 no card detected");
+        if (log_result) {
+            KT_LOG_WARN("RC522 no card detected");
+        }
         return 0;
     }
 
     rx_len = sizeof(rx);
     rc522_write_reg(RC522_BIT_FRAMING_REG, 0x00U);
     if (!rc522_transceive(anticoll_cmd, 2, rx, &rx_len, &valid_bits) || rx_len < 5U) {
-        KT_LOG_WARN("RC522 UID read failed");
+        if (log_result) {
+            KT_LOG_WARN("RC522 UID read failed");
+        }
         return 0;
     }
 
@@ -192,7 +196,19 @@ uint8_t kt_rc522_read_uid(uint8_t uid[5])
     uid[2] = rx[2];
     uid[3] = rx[3];
     uid[4] = rx[4];
-    KT_LOG_INFO("RC522 UID: %02X %02X %02X %02X BCC=%02X",
-                uid[0], uid[1], uid[2], uid[3], uid[4]);
+    if (log_result) {
+        KT_LOG_INFO("RC522 UID: %02X %02X %02X %02X BCC=%02X",
+                    uid[0], uid[1], uid[2], uid[3], uid[4]);
+    }
     return 1;
+}
+
+uint8_t kt_rc522_read_uid(uint8_t uid[5])
+{
+    return rc522_read_uid_impl(uid, 1U);
+}
+
+uint8_t kt_rc522_read_uid_quiet(uint8_t uid[5])
+{
+    return rc522_read_uid_impl(uid, 0U);
 }

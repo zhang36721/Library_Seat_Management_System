@@ -187,3 +187,19 @@ seat_node_stm32 当前 active level 为 `GPIO_PIN_RESET`，即低电平判断为
 
 - PA4 蜂鸣器与 RC522 NSS/SDA 可能冲突。
 - 旧 ESP32S3 接线文档使用 PA2/PA3，与当前 USART2 debug 规划冲突。
+# v0.9 ESP32S3 UART Binary Link Wiring
+
+| STM32 Main Controller | Direction | ESP32S3 |
+|-----------------------|-----------|---------|
+| PB10 USART3_TX | -> | GPIO48 UART_RX |
+| PB11 USART3_RX | <- | GPIO47 UART_TX |
+| GND | <-> | GND |
+
+USART3 and ESP32S3 UART use `115200 8N1`. USART2 remains the independent STM32
+debug port and must not be shared with ESP32S3. v0.9 uses binary frames ending
+with tail byte `0x0D`.
+
+v0.9.1 note: GPIO48 may also be connected to a board RGB/WS2812 LED on some
+ESP32S3 development boards. Firmware requests GPIO48 low before UART init, but
+if UART traffic still causes LED flicker this is a hardware multiplexing
+conflict and must be confirmed on the real board.

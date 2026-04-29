@@ -5,6 +5,7 @@
 #include "kt_ds1302.h"
 #include "kt_stepper.h"
 #include "kt_uart_links.h"
+#include "kt_esp32_link.h"
 
 void kt_modules_init(void)
 {
@@ -17,11 +18,13 @@ void kt_modules_init(void)
     KT_LOG_INFO("USART1 ZigBee UART init: OK");
     KT_LOG_WARN("ZigBee module/network status: pending real link test");
 
+    kt_esp32_link_init();
     KT_LOG_INFO("USART3 ESP32S3 UART init: OK");
-    KT_LOG_WARN("ESP32S3 peer status: pending real link test");
+    KT_LOG_WARN("ESP32S3 peer status: pending binary link test");
 }
 
 void kt_modules_task(void)
 {
     kt_zigbee_task();
+    kt_esp32_link_task();
 }

@@ -339,6 +339,11 @@ void main_keys_enter_card_del(void)
     show_card_del();
 }
 
+uint8_t main_keys_is_home(void)
+{
+    return (current_screen == MENU_SCREEN_HOME) ? 1U : 0U;
+}
+
 const char *main_key_name(main_key_id_t key)
 {
     if (key >= MAIN_KEY_1 && key <= MAIN_KEY_8) {

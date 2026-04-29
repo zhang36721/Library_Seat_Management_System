@@ -11,6 +11,7 @@
 #include "kt_modules/kt_ds1302.h"
 #include "kt_modules/kt_stepper.h"
 #include "kt_modules/kt_uart_links.h"
+#include "kt_modules/kt_esp32_link.h"
 
 static kt_ds1302_time_t pending_ds1302_time = {
     26U, 4U, 29U, 11U, 28U, 0U
@@ -156,6 +157,15 @@ void kt_cmd_init(void)
  *   0xB5  0x00    Enter card delete UI
  *   0xB6  0x00    Print local registered card list
  *   0xB7  0x00    Clear RAM card list
+ *   0xC0  0x00    Print local access log
+ *   0xC1  0x00    Clear local access log
+ *   0xC2  0x00    Print local access log stats
+ *   0xD0  0x00    Send ESP32 binary PING
+ *   0xD1  0x00    Print ESP32 recent binary RX
+ *   0xD2  0x00    Print ESP32 link status
+ *   0xD3  0x00    Send mock CARD_EVENT to ESP32
+ *   0xD4  0x00    Send latest real CARD_EVENT to ESP32
+ *   0xD5  0x00    Send bad CRC test frame to ESP32
  */
 void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
 {
@@ -447,6 +457,51 @@ void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
     case 0xB7:
         KT_LOG_INFO("CMD 0xB7: Clear local card DB");
         main_controller_app_clear_card_db();
+        break;
+
+    case 0xC0:
+        KT_LOG_INFO("CMD 0xC0: Print access log");
+        main_controller_app_print_access_log();
+        break;
+
+    case 0xC1:
+        KT_LOG_INFO("CMD 0xC1: Clear access log");
+        main_controller_app_clear_access_log();
+        break;
+
+    case 0xC2:
+        KT_LOG_INFO("CMD 0xC2: Access log stats");
+        main_controller_app_print_access_stats();
+        break;
+
+    case 0xD0:
+        KT_LOG_INFO("CMD 0xD0: ESP32 binary PING");
+        kt_esp32_link_send_ping();
+        break;
+
+    case 0xD1:
+        KT_LOG_INFO("CMD 0xD1: ESP32 recent RX");
+        kt_esp32_link_print_recent_rx();
+        break;
+
+    case 0xD2:
+        KT_LOG_INFO("CMD 0xD2: ESP32 link status");
+        kt_esp32_link_print_status();
+        break;
+
+    case 0xD3:
+        KT_LOG_INFO("CMD 0xD3: ESP32 mock CARD_EVENT");
+        kt_esp32_link_send_mock_card_event();
+        break;
+
+    case 0xD4:
+        KT_LOG_INFO("CMD 0xD4: ESP32 latest CARD_EVENT");
+        main_controller_app_send_last_card_event_to_esp32();
+        break;
+
+    case 0xD5:
+        KT_LOG_INFO("CMD 0xD5: ESP32 bad CRC test");
+        kt_esp32_link_send_bad_crc_test();
         break;
 
     default:
