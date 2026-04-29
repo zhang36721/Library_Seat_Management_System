@@ -4,6 +4,7 @@
 #include "kt_debug.h"
 #include "kt_app/app_io.h"
 #include "kt_app/main_controller_app.h"
+#include "kt_app/main_keys.h"
 #include "kt_modules/kt_hw_diag.h"
 #include "kt_modules/kt_rc522.h"
 #include "kt_modules/kt_oled.h"
@@ -147,6 +148,12 @@ void kt_cmd_init(void)
  *   0xA4  0x00    Buzzer success prompt
  *   0xA5  0x00    Buzzer fail prompt
  *   0xA6  0x00    Toggle simulated seat status
+ *   0xB0  0x00    Print 8-key mapping
+ *   0xB1  0x00    Print 8-key raw levels
+ *   0xB2  0x00    Print last key event
+ *   0xB3  0x00    Enter time set UI
+ *   0xB4  0x00    Enter card add UI
+ *   0xB5  0x00    Enter card delete UI
  */
 void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
 {
@@ -398,6 +405,36 @@ void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
     case 0xA6:
         KT_LOG_INFO("CMD 0xA6: Simulate seat status");
         main_controller_app_toggle_seat_state();
+        break;
+
+    case 0xB0:
+        KT_LOG_INFO("CMD 0xB0: Main key mapping");
+        main_keys_print_mapping();
+        break;
+
+    case 0xB1:
+        KT_LOG_INFO("CMD 0xB1: Main key raw levels");
+        main_keys_print_raw_levels();
+        break;
+
+    case 0xB2:
+        KT_LOG_INFO("CMD 0xB2: Last main key event");
+        main_keys_print_last_event();
+        break;
+
+    case 0xB3:
+        KT_LOG_INFO("CMD 0xB3: Enter time set UI");
+        main_keys_enter_time_set();
+        break;
+
+    case 0xB4:
+        KT_LOG_INFO("CMD 0xB4: Enter card add UI");
+        main_keys_enter_card_add();
+        break;
+
+    case 0xB5:
+        KT_LOG_INFO("CMD 0xB5: Enter card delete UI");
+        main_keys_enter_card_del();
         break;
 
     default:

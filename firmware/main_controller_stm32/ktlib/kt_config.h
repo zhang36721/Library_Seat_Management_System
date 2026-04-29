@@ -7,7 +7,7 @@
  * Project Information
  *===========================================================================*/
 #define KT_PROJECT_NAME        "Library Seat Management System"
-#define KT_PROJECT_VERSION     "v0.8.2"
+#define KT_PROJECT_VERSION     "v0.8.3"
 #define KT_FW_NAME             "Main Controller STM32"
 #define KT_FIRMWARE_ROLE       KT_FW_NAME
 #define KT_AUTHOR              "Kento"
@@ -133,5 +133,29 @@
 
 #define KT_ZIGBEE_TEST_BAUDRATE 115200
 #define KT_ESP32S3_TEST_BAUDRATE 115200
+
+/*===========================================================================
+ * v0.8.3 Main Controller 8-key Module
+ *===========================================================================*/
+#define MAIN_KEY_ACTIVE_LEVEL      GPIO_PIN_RESET
+#define MAIN_KEY_DEBOUNCE_MS       20U
+#define MAIN_KEY_LONG_PRESS_MS     800U
+
+#define MAIN_KEY1_PORT             GPIOA
+#define MAIN_KEY1_PIN              GPIO_PIN_1
+#define MAIN_KEY2_PORT             GPIOA
+#define MAIN_KEY2_PIN              GPIO_PIN_8
+#define MAIN_KEY3_PORT             GPIOA
+#define MAIN_KEY3_PIN              GPIO_PIN_11
+#define MAIN_KEY4_PORT             GPIOA
+#define MAIN_KEY4_PIN              GPIO_PIN_12
+#define MAIN_KEY5_PORT             GPIOA
+#define MAIN_KEY5_PIN              GPIO_PIN_15
+#define MAIN_KEY6_PORT             GPIOB
+#define MAIN_KEY6_PIN              GPIO_PIN_3
+#define MAIN_KEY7_PORT             GPIOB
+#define MAIN_KEY7_PIN              GPIO_PIN_4
+#define MAIN_KEY8_PORT             GPIOC
+#define MAIN_KEY8_PIN              GPIO_PIN_14
 
 #endif /* KT_CONFIG_H */

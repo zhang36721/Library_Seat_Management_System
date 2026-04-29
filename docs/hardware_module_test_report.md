@@ -8,13 +8,13 @@
 
 | 项目 | 结果 |
 |------|------|
-| 主控固件版本 | v0.8.2 |
+| 主控固件版本 | v0.8.3 |
 | 座位端固件版本 | v0.8 |
 | 主控 Debug 串口 | USART2，115200，`FF CMD DATA FF` |
 | 座位端 Debug 串口 | USART2，115200，`FF CMD DATA FF` |
 | 主控 ZigBee 串口 | USART1，115200 |
 | 座位端 ZigBee 串口 | USART1，115200 |
-| ESP32S3 测试串口 | 主控 USART3，115200 |
+| ESP32S3 测试串口 | 主控 USART3，115200；ESP32S3 侧 GPIO47 TX / GPIO48 RX |
 | Keil Rebuild All | 主控 0 Error / 0 Warning；座位端 0 Error / 0 Warning |
 
 ## 2. 主控上电自检
@@ -63,6 +63,12 @@
 | 主控本地业务 | `FF A4 00 FF` | 蜂鸣器成功提示 | 80ms 短响 |
 | 主控本地业务 | `FF A5 00 FF` | 蜂鸣器失败提示 | 200ms 短响 |
 | 主控本地业务 | `FF A6 00 FF` | 模拟座位状态变化 | S1/S2/S3 模拟 FREE/OCCUPIED 切换 |
+| 按键 | `FF B0 00 FF` | 打印 8 路独立按键映射 | 打印 K1~K8 与 PA/PB/PC 引脚关系 |
+| 按键 | `FF B1 00 FF` | 打印 K1~K8 原始电平 | 例如 `K2 raw=0 pressed=1` |
+| 按键 | `FF B2 00 FF` | 打印最近一次按键事件 | 例如 `Last key: K2 SHORT` |
+| 菜单 | `FF B3 00 FF` | 进入时间设置界面 | OLED 显示 `TIME SET` |
+| 菜单 | `FF B4 00 FF` | 进入 IC 卡注册界面 | OLED 显示 `CARD ADD` |
+| 菜单 | `FF B5 00 FF` | 进入 IC 卡删除界面 | OLED 显示 `CARD DEL` |
 
 ## 4. v0.8.2 主控本地刷卡闭环
 
@@ -113,7 +119,37 @@ NO CARD
 
 Stepper 当前不作为 v0.8.2 阻塞项。当前记录：`FF 70 / FF 71 / FF 72` 命令链路正常，ULN2003 四个指示灯有灯效；电机本体不转，后续复查供电、相序、线序、驱动板和电机接口。
 
-## 5. ZigBee CC2530 透传测试
+## 5. v0.8.3 8 路独立按键与 OLED 菜单
+
+当前按键实物为 8 位独立按键模块，不是矩阵键盘。模块 VCC 接 STM32 3.3V，GND 接 STM32 GND。K1~K8 均配置为 GPIO 输入上拉，默认低电平按下。
+
+| 按键 | STM32 引脚 | 功能 |
+|------|------------|------|
+| K1 | PA1 | MENU / 进入菜单 / 长按返回 |
+| K2 | PA8 | UP / 数值加 |
+| K3 | PA11 | DOWN / 数值减 |
+| K4 | PA12 | LEFT / 上一个字段 |
+| K5 | PA15 | RIGHT / 下一个字段 |
+| K6 | PB3 | OK / 确认 |
+| K7 | PB4 | CARD ADD / 注册 IC 卡 |
+| K8 | PC14 | CARD DEL / 删除 IC 卡 |
+
+PA15 / PB3 / PB4 已通过关闭 JTAG、保留 SWD 释放。若 PC14 被 32.768k 晶振占用，K8 改用 PC15。
+
+OLED 菜单入口：
+
+```text
+> CARD TEST
+  TIME SET
+  CARD ADD
+  CARD DEL
+```
+
+按键任务在主循环任务调度中每 10ms 扫描一次，消抖 20ms，长按阈值 800ms。不在中断中做按键业务。
+
+ESP32S3 接线规划同步调整：STM32 PB10 USART3_TX -> ESP32S3 GPIO48 UART_RX；STM32 PB11 USART3_RX <- ESP32S3 GPIO47 UART_TX；USART2 debug 保持独立。
+
+## 6. ZigBee CC2530 透传测试
 
 接线：
 
@@ -133,7 +169,7 @@ Stepper 当前不作为 v0.8.2 阻塞项。当前记录：`FF 70 / FF 71 / FF 72
 - `FF 81 00 FF` 打印最近一条 USART1 接收行。
 - ZigBee 模块频道、PAN ID、协调器/终端角色、透传参数需要按模块资料或配置工具单独确认。
 
-## 6. seat_node_stm32 v0.8
+## 7. seat_node_stm32 v0.8
 
 座位端第一阶段只做最小功能：STM32 初始化、USART2 debug、USART1 ZigBee、3 路传感器输入、FREE/OCCUPIED 判断和文本透传。
 
@@ -159,7 +195,7 @@ Stepper 当前不作为 v0.8.2 阻塞项。当前记录：`FF 70 / FF 71 / FF 72
 
 座位端收到主控 `MAIN,PING,1` 时，会在主循环打印 `ZigBee RX: MAIN,PING,1` 并回发 `SN,1,PONG`。
 
-## 7. 待实机填写记录
+## 8. 待实机填写记录
 
 | 模块 | 命令/动作 | 实机日志 | 实机现象 | 结果 |
 |------|-----------|----------|----------|------|
@@ -177,7 +213,12 @@ Stepper 当前不作为 v0.8.2 阻塞项。当前记录：`FF 70 / FF 71 / FF 72
 | 主控本地刷卡失败 | `FF A1 00 FF`，无卡 | 待填写 | OLED 显示 `CARD FAIL` / `NO CARD`；蜂鸣器 200ms | 待验证 |
 | 主控 OLED 首页 | `FF A2 00 FF` | 待填写 | OLED 显示首页和模拟座位状态 | 待验证 |
 | 主控最近刷卡结果 | `FF A3 00 FF` | 待填写 | OLED 显示最近一次刷卡结果 | 待验证 |
+| 按键原始电平 | `FF B1 00 FF` | 待填写 | K1~K8 raw/pressed 与实物一致 | 待验证 |
+| 按键短按事件 | K1~K8 短按后 `FF B2 00 FF` | 待填写 | 可识别 `Kx SHORT` | 待验证 |
+| K1 长按事件 | K1 长按后 `FF B2 00 FF` | 待填写 | 可识别 `K1 LONG` | 待验证 |
+| OLED 菜单 | K1 / K2 / K3 / K4 / K5 / K6 | 待填写 | 可进入菜单、上下选择、切换字段、确认 | 待验证 |
+| IC 卡菜单入口 | K7 / K8 或 `FF B4/B5 00 FF` | 待填写 | 可进入 `CARD ADD` / `CARD DEL` 页面 | 待验证 |
 
-## 8. 当前结论
+## 9. 当前结论
 
-当前阶段可以作为 v0.8.2 固件候选：主控已具备本地刷卡、取时、OLED 显示、蜂鸣器提示和 USART2 事件日志闭环。最终是否关闭版本，以实机 `FF A0` 到 `FF A6` 验收结果为准。
+当前阶段可以作为 v0.8.3 固件候选：主控已具备 8 路独立按键扫描、短按/长按事件、OLED 本地菜单入口，以及 ESP32S3 GPIO47/GPIO48 接线规划。最终是否关闭版本，以实机 `FF B0` 到 `FF B5` 和 K1~K8 验收结果为准。

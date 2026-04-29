@@ -45,6 +45,7 @@ static const uint8_t font_5x7[][5] = {
 
 static const uint8_t font_dot[5] = {0x00,0x60,0x60,0x00,0x00};
 static const uint8_t font_colon[5] = {0x00,0x36,0x36,0x00,0x00};
+static const uint8_t font_gt[5] = {0x41,0x22,0x14,0x08,0x00};
 
 static void oled_delay(void)
 {
@@ -141,6 +142,7 @@ static const uint8_t *font_for(char c)
     if (c >= '0' && c <= '9') return font_5x7[27 + c - '0'];
     if (c == '.') return font_dot;
     if (c == ':') return font_colon;
+    if (c == '>') return font_gt;
     return font_5x7[0];
 }
 

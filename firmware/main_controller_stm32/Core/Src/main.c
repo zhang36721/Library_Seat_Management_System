@@ -29,6 +29,7 @@
 #include "kt_port_gpio.h"
 #include "kt_task/kt_task.h"
 #include "kt_app/app_io.h"
+#include "kt_app/main_keys.h"
 #include "kt_system/kt_boot_count.h"
 #include "kt_modules/kt_modules.h"
 #include "kt_modules/kt_uart_links.h"
@@ -138,12 +139,14 @@ int main(void)
 
   /* v1.0: App I/O initialization (LED, Button, Buzzer - multi-instance) */
   app_io_init();
+  main_keys_init();
   kt_led_off(&app_led);  /* Ensure LED starts off */
 
   /* v1.0: Task scheduler - includes device & app tasks */
   kt_task_init();
   kt_task_register("debug",     kt_debug_task,       1);
   kt_task_register("app_io",    app_io_tasks,       10);   /* LED blink + button debounce + buzzer */
+  kt_task_register("main_keys", main_keys_task,     10);
 #if APP_HEARTBEAT_LED_ENABLE
   kt_task_register("heartbeat", app_heartbeat_task, 500);
 #endif

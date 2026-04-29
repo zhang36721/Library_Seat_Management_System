@@ -151,5 +151,11 @@ void kt_debug_print_help(void)
     KT_LOG_INFO("  FF A4 00 FF  -> Buzzer success prompt");
     KT_LOG_INFO("  FF A5 00 FF  -> Buzzer fail prompt");
     KT_LOG_INFO("  FF A6 00 FF  -> Toggle simulated seats");
+    KT_LOG_INFO("  FF B0 00 FF  -> Main key mapping");
+    KT_LOG_INFO("  FF B1 00 FF  -> Main key raw levels");
+    KT_LOG_INFO("  FF B2 00 FF  -> Last main key event");
+    KT_LOG_INFO("  FF B3 00 FF  -> Enter time set UI");
+    KT_LOG_INFO("  FF B4 00 FF  -> Enter card add UI");
+    KT_LOG_INFO("  FF B5 00 FF  -> Enter card delete UI");
     KT_LOG_INFO("====================");
 }

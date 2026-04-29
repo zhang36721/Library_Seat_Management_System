@@ -1,5 +1,47 @@
 # 测试记录
 
+## v0.8.3 8 路独立按键与 OLED 菜单记录
+
+### 接线确认
+
+当前按键模块实物为 8 位独立按键模块，不是矩阵键盘。模块 VCC 接 STM32 3.3V，GND 接 STM32 GND，K1~K8 分别接独立 GPIO 输入。
+
+| 按键 | STM32 引脚 | 功能 | 验收命令 |
+|------|------------|------|----------|
+| K1 | PA1 | MENU / 进入菜单 / 长按返回 | `FF B1/B2 00 FF` |
+| K2 | PA8 | UP / 数值加 | `FF B1/B2 00 FF` |
+| K3 | PA11 | DOWN / 数值减 | `FF B1/B2 00 FF` |
+| K4 | PA12 | LEFT / 上一个字段 | `FF B1/B2 00 FF` |
+| K5 | PA15 | RIGHT / 下一个字段 | `FF B1/B2 00 FF` |
+| K6 | PB3 | OK / 确认 | `FF B1/B2 00 FF` |
+| K7 | PB4 | CARD ADD / 注册 IC 卡 | `FF B1/B2 00 FF` |
+| K8 | PC14 | CARD DEL / 删除 IC 卡 | `FF B1/B2 00 FF` |
+
+按键默认低电平有效：未按下 raw=1，按下 raw=0。PA15 / PB3 / PB4 已关闭 JTAG、保留 SWD。
+
+### v0.8.3 待验收命令
+
+| 命令 | 验收目标 | 预期结果 |
+|------|----------|----------|
+| `FF B0 00 FF` | 打印按键映射 | K1~K8 映射和功能说明正确 |
+| `FF B1 00 FF` | 打印原始电平 | K1~K8 raw/pressed 与实物按下状态一致 |
+| `FF B2 00 FF` | 打印最近按键事件 | 短按显示 `Kx SHORT`，K1 长按显示 `K1 LONG` |
+| `FF B3 00 FF` | 进入时间设置界面 | OLED 显示 `TIME SET` |
+| `FF B4 00 FF` | 进入 IC 卡注册界面 | OLED 显示 `CARD ADD` |
+| `FF B5 00 FF` | 进入 IC 卡删除界面 | OLED 显示 `CARD DEL` |
+
+### ESP32S3 USART3 接线更新
+
+STM32 主控侧保持 USART3：PB10 为 TX，PB11 为 RX。ESP32S3 侧规划为 GPIO47 UART_TX / GPIO48 UART_RX。
+
+| STM32 主控 | 方向 | ESP32S3 |
+|------------|------|---------|
+| PB10 USART3_TX | -> | GPIO48 UART_RX |
+| PB11 USART3_RX | <- | GPIO47 UART_TX |
+| GND | -> | GND |
+
+USART2 debug 保持独立，不允许 ESP32S3 占用 USART2。
+
 ## v0.8.2 主控本地刷卡与显示闭环记录
 
 ### 已完成实测
