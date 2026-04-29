@@ -114,6 +114,32 @@ void kt_ds1302_write_test_time(void)
     KT_LOG_INFO("DS1302 test time written: 2026-04-28 12:34:00");
 }
 
+uint8_t kt_ds1302_set_time(const kt_ds1302_time_t *time)
+{
+    if (!kt_ds1302_time_is_valid(time)) {
+        KT_LOG_WARN("DS1302 set time rejected: invalid time");
+        return 0;
+    }
+
+    write_reg(DS1302_WP_W, 0x00U);
+    write_reg(DS1302_SEC_W, dec_to_bcd(time->second));
+    write_reg(DS1302_MIN_W, dec_to_bcd(time->minute));
+    write_reg(DS1302_HOUR_W, dec_to_bcd(time->hour));
+    write_reg(DS1302_DATE_W, dec_to_bcd(time->day));
+    write_reg(DS1302_MON_W, dec_to_bcd(time->month));
+    write_reg(DS1302_YEAR_W, dec_to_bcd(time->year));
+    write_reg(DS1302_WP_W, 0x80U);
+
+    KT_LOG_INFO("DS1302 time written: 20%02u-%02u-%02u %02u:%02u:%02u",
+                (unsigned int)time->year,
+                (unsigned int)time->month,
+                (unsigned int)time->day,
+                (unsigned int)time->hour,
+                (unsigned int)time->minute,
+                (unsigned int)time->second);
+    return 1;
+}
+
 void kt_ds1302_read_time(kt_ds1302_time_t *time)
 {
     if (time == 0) {

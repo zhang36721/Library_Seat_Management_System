@@ -129,6 +129,14 @@ void kt_debug_print_help(void)
     KT_LOG_INFO("  FF 50 00 FF  -> OLED test text");
     KT_LOG_INFO("  FF 60 00 FF  -> DS1302 read time");
     KT_LOG_INFO("  FF 61 00 FF  -> DS1302 write test time");
+    KT_LOG_INFO("  FF 62 YY FF  -> DS1302 pending year 20YY");
+    KT_LOG_INFO("  FF 63 MM FF  -> DS1302 pending month");
+    KT_LOG_INFO("  FF 64 DD FF  -> DS1302 pending day");
+    KT_LOG_INFO("  FF 65 hh FF  -> DS1302 pending hour");
+    KT_LOG_INFO("  FF 66 mm FF  -> DS1302 pending minute");
+    KT_LOG_INFO("  FF 67 ss FF  -> DS1302 pending second");
+    KT_LOG_INFO("  FF 68 00 FF  -> DS1302 write pending time");
+    KT_LOG_INFO("  FF 69 00 FF  -> DS1302 print pending time");
     KT_LOG_INFO("  FF 70 00 FF  -> Stepper forward");
     KT_LOG_INFO("  FF 71 00 FF  -> Stepper reverse");
     KT_LOG_INFO("  FF 72 00 FF  -> Stepper stop");

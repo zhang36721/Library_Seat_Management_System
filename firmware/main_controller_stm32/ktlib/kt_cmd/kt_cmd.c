@@ -11,6 +11,81 @@
 #include "kt_modules/kt_stepper.h"
 #include "kt_modules/kt_uart_links.h"
 
+static kt_ds1302_time_t pending_ds1302_time = {
+    26U, 4U, 29U, 11U, 28U, 0U
+};
+
+static void print_pending_ds1302_time(void)
+{
+    KT_LOG_INFO("DS1302 pending time: 20%02u-%02u-%02u %02u:%02u:%02u",
+                (unsigned int)pending_ds1302_time.year,
+                (unsigned int)pending_ds1302_time.month,
+                (unsigned int)pending_ds1302_time.day,
+                (unsigned int)pending_ds1302_time.hour,
+                (unsigned int)pending_ds1302_time.minute,
+                (unsigned int)pending_ds1302_time.second);
+}
+
+static void set_pending_year(uint8_t data)
+{
+    if (data > 99U) {
+        KT_LOG_WARN("Invalid DS1302 year: %02X", data);
+        return;
+    }
+    pending_ds1302_time.year = data;
+    KT_LOG_INFO("DS1302 pending year: 20%02u", (unsigned int)data);
+}
+
+static void set_pending_month(uint8_t data)
+{
+    if (data < 1U || data > 12U) {
+        KT_LOG_WARN("Invalid DS1302 month: %02X", data);
+        return;
+    }
+    pending_ds1302_time.month = data;
+    KT_LOG_INFO("DS1302 pending month: %02u", (unsigned int)data);
+}
+
+static void set_pending_day(uint8_t data)
+{
+    if (data < 1U || data > 31U) {
+        KT_LOG_WARN("Invalid DS1302 day: %02X", data);
+        return;
+    }
+    pending_ds1302_time.day = data;
+    KT_LOG_INFO("DS1302 pending day: %02u", (unsigned int)data);
+}
+
+static void set_pending_hour(uint8_t data)
+{
+    if (data > 23U) {
+        KT_LOG_WARN("Invalid DS1302 hour: %02X", data);
+        return;
+    }
+    pending_ds1302_time.hour = data;
+    KT_LOG_INFO("DS1302 pending hour: %02u", (unsigned int)data);
+}
+
+static void set_pending_minute(uint8_t data)
+{
+    if (data > 59U) {
+        KT_LOG_WARN("Invalid DS1302 minute: %02X", data);
+        return;
+    }
+    pending_ds1302_time.minute = data;
+    KT_LOG_INFO("DS1302 pending minute: %02u", (unsigned int)data);
+}
+
+static void set_pending_second(uint8_t data)
+{
+    if (data > 59U) {
+        KT_LOG_WARN("Invalid DS1302 second: %02X", data);
+        return;
+    }
+    pending_ds1302_time.second = data;
+    KT_LOG_INFO("DS1302 pending second: %02u", (unsigned int)data);
+}
+
 /**
  * @brief Initialize command dispatch
  */
@@ -50,6 +125,14 @@ void kt_cmd_init(void)
  *   0x50  0x00    OLED test text
  *   0x60  0x00    DS1302 read time
  *   0x61  0x00    DS1302 write test time
+ *   0x62  YY      Set pending DS1302 year, 0-99 means 20YY
+ *   0x63  MM      Set pending DS1302 month, 1-12
+ *   0x64  DD      Set pending DS1302 day, 1-31
+ *   0x65  hh      Set pending DS1302 hour, 0-23
+ *   0x66  mm      Set pending DS1302 minute, 0-59
+ *   0x67  ss      Set pending DS1302 second, 0-59
+ *   0x68  0x00    Commit pending DS1302 time
+ *   0x69  0x00    Print pending DS1302 time
  *   0x70  0x00    Stepper forward test
  *   0x71  0x00    Stepper reverse test
  *   0x72  0x00    Stepper stop
@@ -67,8 +150,6 @@ void kt_cmd_init(void)
  */
 void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
 {
-    (void)data;  /* data byte reserved for future use */
-
     switch (cmd) {
 
     case 0x01:
@@ -213,6 +294,40 @@ void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
     case 0x61:
         KT_LOG_INFO("CMD 0x61: DS1302 write test time");
         kt_ds1302_write_test_time();
+        break;
+
+    case 0x62:
+        set_pending_year(data);
+        break;
+
+    case 0x63:
+        set_pending_month(data);
+        break;
+
+    case 0x64:
+        set_pending_day(data);
+        break;
+
+    case 0x65:
+        set_pending_hour(data);
+        break;
+
+    case 0x66:
+        set_pending_minute(data);
+        break;
+
+    case 0x67:
+        set_pending_second(data);
+        break;
+
+    case 0x68:
+        KT_LOG_INFO("CMD 0x68: DS1302 commit pending time");
+        (void)kt_ds1302_set_time(&pending_ds1302_time);
+        break;
+
+    case 0x69:
+        KT_LOG_INFO("CMD 0x69: DS1302 pending time");
+        print_pending_ds1302_time();
         break;
 
     case 0x70:

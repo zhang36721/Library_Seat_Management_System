@@ -18,6 +18,7 @@ typedef struct
 } kt_ds1302_time_t;
 
 void kt_ds1302_write_test_time(void);
+uint8_t kt_ds1302_set_time(const kt_ds1302_time_t *time);
 void kt_ds1302_read_time(kt_ds1302_time_t *time);
 uint8_t kt_ds1302_time_is_valid(const kt_ds1302_time_t *time);
 uint8_t kt_ds1302_init_check(void);
