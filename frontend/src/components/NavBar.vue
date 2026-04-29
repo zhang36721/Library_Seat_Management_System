@@ -1,7 +1,3 @@
-<!--
-  导航栏组件
-  - 根据登录状态和角色显示不同菜单
--->
 <template>
   <el-menu
     mode="horizontal"
@@ -16,7 +12,7 @@
 
     <el-menu-item index="/seats">
       <el-icon><Grid /></el-icon>
-      <span>座位管理</span>
+      <span>座位状态</span>
     </el-menu-item>
 
     <template v-if="auth.isLoggedIn">
@@ -25,19 +21,9 @@
         <span>卡片管理</span>
       </el-menu-item>
 
-      <el-menu-item index="/logs">
+      <el-menu-item index="/records">
         <el-icon><Document /></el-icon>
         <span>刷卡记录</span>
-      </el-menu-item>
-
-      <el-menu-item index="/devices">
-        <el-icon><Monitor /></el-icon>
-        <span>设备状态</span>
-      </el-menu-item>
-
-      <el-menu-item v-if="auth.isAdmin" index="/system">
-        <el-icon><Setting /></el-icon>
-        <span>系统配置</span>
       </el-menu-item>
     </template>
 

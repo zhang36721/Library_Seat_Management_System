@@ -1,6 +1,3 @@
-<!--
-  登录页面
--->
 <template>
   <div class="login-container">
     <el-card class="login-card">
@@ -16,7 +13,7 @@
         @keyup.enter="handleLogin"
       >
         <el-form-item prop="username">
-          <el-input v-model="form.username" placeholder="用户名" prefix-icon="User" />
+          <el-input v-model="form.username" placeholder="用户名" />
         </el-form-item>
 
         <el-form-item prop="password">
@@ -24,7 +21,6 @@
             v-model="form.password"
             type="password"
             placeholder="密码"
-            prefix-icon="Lock"
             show-password
           />
         </el-form-item>
@@ -36,7 +32,7 @@
         </el-form-item>
 
         <p style="text-align: center; color: #999; font-size: 12px;">
-          默认管理员：admin / admin123
+          默认账号：admin / admin123
         </p>
       </el-form>
     </el-card>
