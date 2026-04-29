@@ -157,5 +157,7 @@ void kt_debug_print_help(void)
     KT_LOG_INFO("  FF B3 00 FF  -> Enter time set UI");
     KT_LOG_INFO("  FF B4 00 FF  -> Enter card add UI");
     KT_LOG_INFO("  FF B5 00 FF  -> Enter card delete UI");
+    KT_LOG_INFO("  FF B6 00 FF  -> Print local card DB");
+    KT_LOG_INFO("  FF B7 00 FF  -> Clear local card DB");
     KT_LOG_INFO("====================");
 }

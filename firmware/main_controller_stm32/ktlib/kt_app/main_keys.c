@@ -139,6 +139,8 @@ static void show_card_del(void)
 
 static void handle_ok(void)
 {
+    kt_ds1302_time_t time;
+
     if (current_screen == MENU_SCREEN_MAIN) {
         switch (menu_index) {
         case 0:
@@ -156,11 +158,17 @@ static void handle_ok(void)
             break;
         }
     } else if (current_screen == MENU_SCREEN_TIME_SET) {
-        KT_LOG_INFO("Time Set confirm placeholder");
+        time.year = edit_time[0];
+        time.month = edit_time[1];
+        time.day = edit_time[2];
+        time.hour = edit_time[3];
+        time.minute = edit_time[4];
+        time.second = edit_time[5];
+        main_controller_app_set_time(&time);
     } else if (current_screen == MENU_SCREEN_CARD_ADD) {
-        KT_LOG_INFO("Card Add confirm placeholder");
+        main_controller_app_card_add_current();
     } else if (current_screen == MENU_SCREEN_CARD_DEL) {
-        KT_LOG_INFO("Card Del confirm placeholder");
+        main_controller_app_card_del_current();
     }
 }
 

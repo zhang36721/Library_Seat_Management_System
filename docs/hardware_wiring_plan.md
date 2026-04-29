@@ -147,6 +147,8 @@ seat_node_stm32 当前 active level 为 `GPIO_PIN_RESET`，即低电平判断为
 | 菜单 | `FF B3 00 FF` | 进入时间设置界面 |
 | 菜单 | `FF B4 00 FF` | 进入 IC 卡注册界面 |
 | 菜单 | `FF B5 00 FF` | 进入 IC 卡删除界面 |
+| 本地卡表 | `FF B6 00 FF` | 打印本地已注册卡列表 |
+| 本地卡表 | `FF B7 00 FF` | 清空 RAM 卡表 |
 
 座位端命令：
 

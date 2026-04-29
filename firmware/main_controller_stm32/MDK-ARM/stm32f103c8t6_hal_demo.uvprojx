@@ -629,6 +629,11 @@
               <FileType>1</FileType>
               <FilePath>..\ktlib\kt_app\main_keys.c</FilePath>
             </File>
+            <File>
+              <FileName>main_card_db.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_app\main_card_db.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

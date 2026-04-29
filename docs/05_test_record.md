@@ -1,5 +1,38 @@
 # 测试记录
 
+## v0.8.4 按键菜单功能闭环记录
+
+### 功能范围
+
+v0.8.4 将 v0.8.3 菜单中的 placeholder 补成主控本地功能闭环：Time Set 写入 DS1302，Card Add/Del 操作 RAM 卡表，FF A1 刷卡流程按本地卡表判断是否放行。本阶段仍不依赖 ZigBee、不依赖 ESP32S3、不接后端和前端。
+
+### 新增/完善功能
+
+| 功能 | 操作 | 预期结果 |
+|------|------|----------|
+| 时间设置写入 | TIME SET 界面 K6 短按 | 调用 `kt_ds1302_set_time()`，OLED 显示 `TIME SAVED` 或 `TIME FAIL` |
+| IC 卡注册 | CARD ADD 界面 K6 短按 | 读取 RC522 UID，加入 RAM 卡表；重复卡显示 `EXISTS`，满表显示 `FULL` |
+| IC 卡删除 | CARD DEL 界面 K6 短按 | 读取 RC522 UID，从 RAM 卡表删除；未找到显示 `NOT FOUND` |
+| 本地刷卡判定 | `FF A1 00 FF` | 未注册卡显示 `CARD DENIED`，已注册卡显示 `CARD OK` |
+| 打印卡表 | `FF B6 00 FF` | 打印本地 RAM 卡表 |
+| 清空卡表 | `FF B7 00 FF` | 清空本地 RAM 卡表 |
+
+### 待验收命令
+
+| 命令/操作 | 验收目标 | 预期结果 |
+|-----------|----------|----------|
+| K6 in TIME SET | 写入 DS1302 | OLED 显示 `TIME SAVED`，`FF 60 00 FF` 可读回新时间 |
+| K6 in CARD ADD | 注册当前 IC 卡 | OLED 显示 `CARD ADD / OK / UID` |
+| K6 in CARD ADD，同一张卡 | 重复注册保护 | OLED 显示 `CARD ADD / EXISTS / UID` |
+| K6 in CARD DEL | 删除当前 IC 卡 | OLED 显示 `CARD DEL / OK / UID` |
+| K6 in CARD DEL，未注册卡 | 删除不存在保护 | OLED 显示 `CARD DEL / NOT FOUND / UID` |
+| `FF B6 00 FF` | 打印卡表 | USART2 打印已注册 UID |
+| `FF B7 00 FF` | 清空卡表 | USART2 打印 `Card DB cleared` |
+| `FF A1 00 FF` 未注册卡 | 刷卡拒绝 | OLED 显示 `CARD DENIED`，日志 `CARD EVENT: DENIED` |
+| `FF A1 00 FF` 已注册卡 | 刷卡通过 | OLED 显示 `CARD OK`，日志 `CARD EVENT: CHECK_IN OK` |
+
+RAM 卡表当前容量为 10 张卡，不做 Flash 持久化；断电后卡表清空。
+
 ## v0.8.3 8 路独立按键与 OLED 菜单记录
 
 ### 接线确认

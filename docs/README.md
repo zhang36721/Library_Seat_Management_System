@@ -13,7 +13,7 @@
 | `05_test_record.md` | 测试记录和测试报告 |
 | `hardware_pin_map.md` | STM32 主控硬件引脚资源表 |
 | `hardware_wiring_plan.md` | 主控和座位端接线布局规划 |
-| `hardware_module_test_report.md` | 主控外设、座位端、v0.8.2 本地刷卡闭环和 v0.8.3 按键菜单测试报告 |
+| `hardware_module_test_report.md` | 主控外设、座位端、v0.8.2 本地刷卡、v0.8.3 按键菜单和 v0.8.4 菜单功能闭环测试报告 |
 
 ## 文档维护
 

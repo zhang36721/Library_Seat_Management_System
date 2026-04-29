@@ -35,6 +35,7 @@
 "stm32f103c8t6_hal_demo\app_io.o"
 "stm32f103c8t6_hal_demo\main_controller_app.o"
 "stm32f103c8t6_hal_demo\main_keys.o"
+"stm32f103c8t6_hal_demo\main_card_db.o"
 "stm32f103c8t6_hal_demo\kt_rc522.o"
 "stm32f103c8t6_hal_demo\kt_hw_diag.o"
 "stm32f103c8t6_hal_demo\kt_oled.o"

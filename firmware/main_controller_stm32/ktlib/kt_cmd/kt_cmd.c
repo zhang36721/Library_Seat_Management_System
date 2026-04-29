@@ -154,6 +154,8 @@ void kt_cmd_init(void)
  *   0xB3  0x00    Enter time set UI
  *   0xB4  0x00    Enter card add UI
  *   0xB5  0x00    Enter card delete UI
+ *   0xB6  0x00    Print local registered card list
+ *   0xB7  0x00    Clear RAM card list
  */
 void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
 {
@@ -435,6 +437,16 @@ void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
     case 0xB5:
         KT_LOG_INFO("CMD 0xB5: Enter card delete UI");
         main_keys_enter_card_del();
+        break;
+
+    case 0xB6:
+        KT_LOG_INFO("CMD 0xB6: Print local card DB");
+        main_controller_app_print_card_db();
+        break;
+
+    case 0xB7:
+        KT_LOG_INFO("CMD 0xB7: Clear local card DB");
+        main_controller_app_clear_card_db();
         break;
 
     default:

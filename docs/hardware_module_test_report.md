@@ -1,4 +1,4 @@
-# v0.8.2 主控本地刷卡与显示闭环测试报告
+# v0.8.4 主控本地菜单功能闭环测试报告
 
 本文档记录 STM32 主控外设模块、seat_node_stm32 座位端采集模块、两端 ZigBee 串口透传链路，以及 v0.8.2 主控本地刷卡与显示闭环。USART2 debug 协议保持独立，不接后端、不接前端。
 
@@ -8,7 +8,7 @@
 
 | 项目 | 结果 |
 |------|------|
-| 主控固件版本 | v0.8.3 |
+| 主控固件版本 | v0.8.4 |
 | 座位端固件版本 | v0.8 |
 | 主控 Debug 串口 | USART2，115200，`FF CMD DATA FF` |
 | 座位端 Debug 串口 | USART2，115200，`FF CMD DATA FF` |
@@ -69,6 +69,8 @@
 | 菜单 | `FF B3 00 FF` | 进入时间设置界面 | OLED 显示 `TIME SET` |
 | 菜单 | `FF B4 00 FF` | 进入 IC 卡注册界面 | OLED 显示 `CARD ADD` |
 | 菜单 | `FF B5 00 FF` | 进入 IC 卡删除界面 | OLED 显示 `CARD DEL` |
+| 本地卡表 | `FF B6 00 FF` | 打印本地已注册卡列表 | RAM 卡表最多 10 张卡 |
+| 本地卡表 | `FF B7 00 FF` | 清空 RAM 卡表 | 清空后未注册卡刷卡会被拒绝 |
 
 ## 4. v0.8.2 主控本地刷卡闭环
 
@@ -149,7 +151,25 @@ OLED 菜单入口：
 
 ESP32S3 接线规划同步调整：STM32 PB10 USART3_TX -> ESP32S3 GPIO48 UART_RX；STM32 PB11 USART3_RX <- ESP32S3 GPIO47 UART_TX；USART2 debug 保持独立。
 
-## 6. ZigBee CC2530 透传测试
+## 6. v0.8.4 按键菜单功能闭环
+
+v0.8.4 将菜单 placeholder 补成真实本地功能，不依赖 ZigBee、不依赖 ESP32S3、不接后端和前端。
+
+| 功能 | 操作 | 预期 OLED | 预期日志 |
+|------|------|-----------|----------|
+| 时间设置提交 | TIME SET 界面 K6 | `TIME SAVED` / 日期 / 时间 | `TIME SET: OK` |
+| 时间设置非法 | TIME SET 界面 K6，非法时间 | `TIME FAIL` / `INVALID` | `TIME SET: INVALID_TIME` |
+| 注册卡成功 | CARD ADD 界面 K6 | `CARD ADD` / `OK` / UID | `CARD ADD: OK` |
+| 重复注册 | CARD ADD 界面 K6，同一张卡 | `CARD ADD` / `EXISTS` / UID | `CARD ADD: EXISTS` |
+| 注册无卡 | CARD ADD 界面 K6，无卡 | `CARD ADD` / `NO CARD` | `CARD ADD: NO_CARD` |
+| 删除卡成功 | CARD DEL 界面 K6 | `CARD DEL` / `OK` / UID | `CARD DEL: OK` |
+| 删除未找到 | CARD DEL 界面 K6，未注册卡 | `CARD DEL` / `NOT FOUND` / UID | `CARD DEL: NOT_FOUND` |
+| 刷卡已注册 | `FF A1 00 FF` | `CARD OK` / UID / 时间 | `CARD EVENT: CHECK_IN OK UID=...` |
+| 刷卡未注册 | `FF A1 00 FF` | `CARD DENIED` / UID | `CARD EVENT: DENIED UID=...` |
+
+本地卡表当前为 RAM 表，容量 10 张卡，断电不保留。后续如需要持久化，再迁移到 Flash 或外部存储。
+
+## 7. ZigBee CC2530 透传测试
 
 接线：
 
@@ -169,7 +189,7 @@ ESP32S3 接线规划同步调整：STM32 PB10 USART3_TX -> ESP32S3 GPIO48 UART_R
 - `FF 81 00 FF` 打印最近一条 USART1 接收行。
 - ZigBee 模块频道、PAN ID、协调器/终端角色、透传参数需要按模块资料或配置工具单独确认。
 
-## 7. seat_node_stm32 v0.8
+## 8. seat_node_stm32 v0.8
 
 座位端第一阶段只做最小功能：STM32 初始化、USART2 debug、USART1 ZigBee、3 路传感器输入、FREE/OCCUPIED 判断和文本透传。
 
@@ -195,7 +215,7 @@ ESP32S3 接线规划同步调整：STM32 PB10 USART3_TX -> ESP32S3 GPIO48 UART_R
 
 座位端收到主控 `MAIN,PING,1` 时，会在主循环打印 `ZigBee RX: MAIN,PING,1` 并回发 `SN,1,PONG`。
 
-## 8. 待实机填写记录
+## 9. 待实机填写记录
 
 | 模块 | 命令/动作 | 实机日志 | 实机现象 | 结果 |
 |------|-----------|----------|----------|------|
@@ -218,7 +238,13 @@ ESP32S3 接线规划同步调整：STM32 PB10 USART3_TX -> ESP32S3 GPIO48 UART_R
 | K1 长按事件 | K1 长按后 `FF B2 00 FF` | 待填写 | 可识别 `K1 LONG` | 待验证 |
 | OLED 菜单 | K1 / K2 / K3 / K4 / K5 / K6 | 待填写 | 可进入菜单、上下选择、切换字段、确认 | 待验证 |
 | IC 卡菜单入口 | K7 / K8 或 `FF B4/B5 00 FF` | 待填写 | 可进入 `CARD ADD` / `CARD DEL` 页面 | 待验证 |
+| 时间设置写入 | TIME SET 界面 K6 | 待填写 | `FF 60 00 FF` 可读回新时间 | 待验证 |
+| IC 卡注册 | CARD ADD 界面 K6 | 待填写 | 卡表出现 UID，重复注册提示 EXISTS | 待验证 |
+| IC 卡删除 | CARD DEL 界面 K6 | 待填写 | 卡表删除 UID，未找到提示 NOT FOUND | 待验证 |
+| 卡表打印 | `FF B6 00 FF` | 待填写 | 可打印本地已注册卡列表 | 待验证 |
+| 卡表清空 | `FF B7 00 FF` | 待填写 | 卡表清空 | 待验证 |
+| 卡表刷卡判断 | `FF A1 00 FF` | 待填写 | 未注册 DENIED，已注册 CARD OK | 待验证 |
 
-## 9. 当前结论
+## 10. 当前结论
 
-当前阶段可以作为 v0.8.3 固件候选：主控已具备 8 路独立按键扫描、短按/长按事件、OLED 本地菜单入口，以及 ESP32S3 GPIO47/GPIO48 接线规划。最终是否关闭版本，以实机 `FF B0` 到 `FF B5` 和 K1~K8 验收结果为准。
+当前阶段可以作为 v0.8.4 固件候选：主控已具备时间设置写入、RAM 卡表注册/删除、卡表打印/清空，以及刷卡流程按本地卡表放行或拒绝。最终是否关闭版本，以实机菜单 K6 操作、`FF A1`、`FF B6`、`FF B7` 验收结果为准。
