@@ -574,18 +574,23 @@
               <FileType>1</FileType>
               <FilePath>..\ktlib\kt_system\kt_tick.c</FilePath>
             </File>
-              <File>
-                <FileName>kt_boot_count.c</FileName>
-                <FileType>1</FileType>
-                <FilePath>..\ktlib\kt_system\kt_boot_count.c</FilePath>
-              </File>
-              <File>
-                <FileName>kt_system_health.c</FileName>
-                <FileType>1</FileType>
-                <FilePath>..\ktlib\kt_system\kt_system_health.c</FilePath>
-              </File>
-            </Files>
-          </Group>
+            <File>
+              <FileName>kt_boot_count.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_system\kt_boot_count.c</FilePath>
+            </File>
+            <File>
+              <FileName>kt_system_health.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_system\kt_system_health.c</FilePath>
+            </File>
+            <File>
+              <FileName>kt_watchdog.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_system\kt_watchdog.c</FilePath>
+            </File>
+          </Files>
+        </Group>
         <Group>
           <GroupName>ktlib/ktlib_task</GroupName>
           <Files>

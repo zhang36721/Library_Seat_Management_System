@@ -15,6 +15,8 @@ void kt_system_health_note_zigbee_task(void);
 void kt_system_health_note_flash_save(uint32_t cost_ms);
 void kt_system_health_note_card_flow(uint32_t cost_ms);
 void kt_system_health_note_fault(const char *name);
+uint8_t kt_system_health_is_ok_for_watchdog(void);
+void kt_system_health_print_reset_reason(void);
 void kt_system_health_print(void);
 
 #ifdef __cplusplus

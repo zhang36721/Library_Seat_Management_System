@@ -34,6 +34,7 @@
 #include "kt_app/main_controller_app.h"
 #include "kt_system/kt_boot_count.h"
 #include "kt_system/kt_system_health.h"
+#include "kt_system/kt_watchdog.h"
 #include "kt_modules/kt_modules.h"
 #include "kt_modules/kt_uart_links.h"
 #include "kt_modules/kt_esp32_link.h"
@@ -139,6 +140,8 @@ int main(void)
   kt_boot_count_init();
   kt_debug_init();
   kt_debug_print_system_info();
+  kt_system_health_print_reset_reason();
+  kt_watchdog_init();
   kt_port_uart_start_receive_it();
   kt_modules_init();
 
@@ -172,6 +175,7 @@ int main(void)
     kt_task_run();
     kt_modules_task();
     kt_system_health_note_main_loop();
+    kt_watchdog_task();
   }
   /* USER CODE END 3 */
 }

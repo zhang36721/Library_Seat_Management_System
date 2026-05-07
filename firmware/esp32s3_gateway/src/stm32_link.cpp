@@ -11,6 +11,7 @@ static uint16_t last_heartbeat_seq = 0;
 static uint8_t missed_ack_count = 0;
 static uint32_t last_heartbeat_ms = 0;
 static uint32_t last_ack_ms = 0;
+constexpr uint8_t STM32_MISSED_ACK_OFFLINE_LIMIT = 5;
 
 enum RxState { WAIT_SOF1, WAIT_SOF2, HEADER, PAYLOAD, CRC1, CRC2, EOF_BYTE };
 static RxState rx_state = WAIT_SOF1;
@@ -169,7 +170,7 @@ static void send_heartbeat()
         if (missed_ack_count < 255) {
             missed_ack_count++;
         }
-        if (missed_ack_count >= 3 && !offline_reported) {
+        if (missed_ack_count >= STM32_MISSED_ACK_OFFLINE_LIMIT && !offline_reported) {
             stm32_is_online = false;
             device_state_set_stm32_online(false);
             offline_reported = true;

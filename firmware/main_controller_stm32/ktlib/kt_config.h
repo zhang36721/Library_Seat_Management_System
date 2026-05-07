@@ -71,6 +71,14 @@
 #define KT_LOG_HEARTBEAT_ENABLE 0
 #define KT_LOG_UART_FRAME_ENABLE 0
 
+/*===========================================================================
+ * System watchdog
+ *===========================================================================*/
+#define KT_WATCHDOG_ENABLE              1U
+#define KT_WATCHDOG_PR_VALUE            4U      /* IWDG prescaler /64 */
+#define KT_WATCHDOG_RELOAD_VALUE        4095U   /* about 6.5s at 40kHz LSI */
+#define KT_WATCHDOG_TASK_TIMEOUT_MS     2000U
+
 /* Periodic uptime logs are disabled for concise v0.6.1 hardware validation. */
 #define KT_ENABLE_UPTIME_LOG 0
 

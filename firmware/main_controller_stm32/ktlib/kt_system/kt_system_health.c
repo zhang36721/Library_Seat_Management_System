@@ -17,7 +17,7 @@ static uint32_t fault_count;
 static const char *last_fault_name;
 static uint32_t reset_csr;
 
-static void print_reset_reason(void)
+void kt_system_health_print_reset_reason(void)
 {
     KT_LOG_INFO("reset CSR=0x%08lX", (unsigned long)reset_csr);
     if ((reset_csr & RCC_CSR_IWDGRSTF) != 0U) {
@@ -95,12 +95,39 @@ void kt_system_health_note_fault(const char *name)
     }
 }
 
+uint8_t kt_system_health_is_ok_for_watchdog(void)
+{
+    uint32_t now = kt_tick_get_ms();
+
+    if (last_main_loop_ms == 0U ||
+        last_main_app_ms == 0U ||
+        last_esp32_task_ms == 0U ||
+        last_zigbee_task_ms == 0U) {
+        return 0U;
+    }
+
+    if ((now - last_main_loop_ms) > KT_WATCHDOG_TASK_TIMEOUT_MS) {
+        return 0U;
+    }
+    if ((now - last_main_app_ms) > KT_WATCHDOG_TASK_TIMEOUT_MS) {
+        return 0U;
+    }
+    if ((now - last_esp32_task_ms) > KT_WATCHDOG_TASK_TIMEOUT_MS) {
+        return 0U;
+    }
+    if ((now - last_zigbee_task_ms) > KT_WATCHDOG_TASK_TIMEOUT_MS) {
+        return 0U;
+    }
+
+    return 1U;
+}
+
 void kt_system_health_print(void)
 {
     uint32_t now = kt_tick_get_ms();
 
     KT_LOG_INFO("SYSTEM HEALTH");
-    print_reset_reason();
+    kt_system_health_print_reset_reason();
     KT_LOG_INFO("main_loop_alive=%lu last=%lu age=%lu",
                 (unsigned long)main_loop_alive_count,
                 (unsigned long)last_main_loop_ms,
@@ -134,4 +161,6 @@ void kt_system_health_print(void)
                 (unsigned long)fault_count,
                 (unsigned long)hardfault_count,
                 last_fault_name);
+    KT_LOG_INFO("watchdog health=%s",
+                kt_system_health_is_ok_for_watchdog() ? "OK" : "WAIT/BLOCKED");
 }
