@@ -292,6 +292,10 @@ void kt_zigbee_send_ping(void)
     zigbee_send_payload(ZIGBEE_ADDR_SEAT_NODE, p, sizeof(p));
     KT_LOG_INFO("[ZIGBEE] TX PING seq=%u dst=0x%04X",
                 (unsigned int)p[1], (unsigned int)ZIGBEE_ADDR_SEAT_NODE);
+    KT_LOG_INFO("[ZIGBEE] TX frame: FA %02X %02X 02 01 %02X F5",
+                (unsigned int)(ZIGBEE_ADDR_SEAT_NODE & 0xFFU),
+                (unsigned int)((ZIGBEE_ADDR_SEAT_NODE >> 8U) & 0xFFU),
+                (unsigned int)p[1]);
 }
 
 void kt_zigbee_print_recent_rx(void)

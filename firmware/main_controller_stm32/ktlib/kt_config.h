@@ -166,7 +166,7 @@
  * still drive the motor; the card access gate cycle only reports/simulates the
  * gate state when this is 0.
  */
-#define MAIN_GATE_STEPPER_ENABLE 0U
+#define MAIN_GATE_STEPPER_ENABLE 1U
 #define MAIN_GATE_MOTOR_RUN_MS   800U
 
 #define KT_ZIGBEE_TEST_BAUDRATE 38400
@@ -198,6 +198,8 @@
 #define KT_ESP32_TX_TIMEOUT_MS        30U
 #define KT_ESP32_RX_BYTES_PER_TASK    128U
 #define KT_ESP32_TX_QUEUE_LEN         12U
+#define KT_ESP32_ASCII_PUSH_ENABLE    1U
+#define KT_ESP32_BINARY_PUSH_ENABLE   0U
 
 #define KT_ZIGBEE_RX_BYTES_PER_TASK   32U
 

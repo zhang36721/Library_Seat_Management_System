@@ -1,6 +1,8 @@
 #include "stm32_link.h"
 #include "cloud_client.h"
 #include "device_state.h"
+#include <cstdlib>
+#include <cstring>
 
 static HardwareSerial Stm32Serial(1);
 static uint16_t tx_seq = 1;
@@ -17,6 +19,8 @@ static uint8_t payload[KT_BIN_MAX_PAYLOAD];
 static uint16_t payload_pos = 0;
 static uint16_t payload_len = 0;
 static uint16_t rx_crc = 0;
+static char line_buf[160];
+static size_t line_len = 0;
 
 static bool is_heartbeat_type(uint8_t type);
 
@@ -113,6 +117,174 @@ static const char *access_type_text(uint8_t type)
     if (type == 0) return "CHECK_IN";
     if (type == 1) return "CHECK_OUT";
     return "DENIED";
+}
+
+static bool parse_hex_uid(const char *text, uint8_t *uid)
+{
+    char byte_text[3];
+    char *end_ptr = nullptr;
+
+    if (text == nullptr || uid == nullptr || strlen(text) < 8) {
+        return false;
+    }
+
+    byte_text[2] = '\0';
+    for (uint8_t i = 0; i < 4; ++i) {
+        byte_text[0] = text[i * 2U];
+        byte_text[1] = text[i * 2U + 1U];
+        uid[i] = static_cast<uint8_t>(strtoul(byte_text, &end_ptr, 16));
+        if (end_ptr == byte_text) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static void handle_ascii_status(const char *line)
+{
+    unsigned int card_count = 0;
+    unsigned int log_count = 0;
+    unsigned int ds_valid = 0;
+    unsigned int year = 0;
+    unsigned int month = 0;
+    unsigned int day = 0;
+    unsigned int hour = 0;
+    unsigned int minute = 0;
+    unsigned int second = 0;
+    unsigned int s1 = 2;
+    unsigned int s2 = 2;
+    unsigned int s3 = 2;
+    unsigned int gate = 0;
+    unsigned int result = 0;
+    uint8_t p[20]{};
+
+    int matched = sscanf(line,
+                         "KTSTAT,c=%u,l=%u,d=%u,t=%u-%u-%u %u:%u:%u,s=%u/%u/%u,g=%u,r=%u",
+                         &card_count,
+                         &log_count,
+                         &ds_valid,
+                         &year,
+                         &month,
+                         &day,
+                         &hour,
+                         &minute,
+                         &second,
+                         &s1,
+                         &s2,
+                         &s3,
+                         &gate,
+                         &result);
+    if (matched != 14) {
+        if (UART_VERBOSE_LOG) {
+            Serial.printf("[STM32] bad status line: %s\n", line);
+        }
+        return;
+    }
+
+    p[0] = KT_BIN_VERSION;
+    p[4] = static_cast<uint8_t>(card_count);
+    p[5] = static_cast<uint8_t>(log_count);
+    p[7] = 1;
+    p[8] = ds_valid ? 1 : 0;
+    p[9] = static_cast<uint8_t>(year >= 2000 ? year - 2000 : year);
+    p[10] = static_cast<uint8_t>(month);
+    p[11] = static_cast<uint8_t>(day);
+    p[12] = static_cast<uint8_t>(hour);
+    p[13] = static_cast<uint8_t>(minute);
+    p[14] = static_cast<uint8_t>(second);
+    p[15] = static_cast<uint8_t>(s1);
+    p[16] = static_cast<uint8_t>(s2);
+    p[17] = static_cast<uint8_t>(s3);
+    p[18] = static_cast<uint8_t>(gate);
+    p[19] = static_cast<uint8_t>(result);
+
+    mark_stm32_online();
+    device_state_update_device_status(p, sizeof(p));
+    cloud_client_request_device_status_upload();
+}
+
+static void handle_ascii_card(const char *line)
+{
+    char uid_text[9]{};
+    unsigned int type = 0;
+    unsigned int allowed = 0;
+    unsigned int year = 0;
+    unsigned int month = 0;
+    unsigned int day = 0;
+    unsigned int hour = 0;
+    unsigned int minute = 0;
+    unsigned int second = 0;
+    uint8_t p[12]{};
+
+    int matched = sscanf(line,
+                         "KTCARD,u=%8[0-9A-Fa-f],t=%u,a=%u,tm=%u-%u-%u %u:%u:%u",
+                         uid_text,
+                         &type,
+                         &allowed,
+                         &year,
+                         &month,
+                         &day,
+                         &hour,
+                         &minute,
+                         &second);
+    if (matched != 9 || !parse_hex_uid(uid_text, p)) {
+        if (UART_VERBOSE_LOG) {
+            Serial.printf("[STM32] bad card line: %s\n", line);
+        }
+        return;
+    }
+
+    p[4] = static_cast<uint8_t>(type);
+    p[5] = allowed ? 1 : 0;
+    p[6] = static_cast<uint8_t>(year >= 2000 ? year - 2000 : year);
+    p[7] = static_cast<uint8_t>(month);
+    p[8] = static_cast<uint8_t>(day);
+    p[9] = static_cast<uint8_t>(hour);
+    p[10] = static_cast<uint8_t>(minute);
+    p[11] = static_cast<uint8_t>(second);
+
+    mark_stm32_online();
+    Serial.printf("[CARD] uid=%02X %02X %02X %02X type=%s allowed=%u time=20%02u-%02u-%02u %02u:%02u:%02u\n",
+                  p[0], p[1], p[2], p[3],
+                  access_type_text(p[4]), p[5],
+                  p[6], p[7], p[8], p[9], p[10], p[11]);
+    device_state_add_card_event(p, sizeof(p));
+    CardEvent event;
+    if (device_state_get_latest_card_event(event)) {
+        cloud_client_request_card_event_upload(event);
+    }
+}
+
+static void handle_ascii_line(const char *line)
+{
+    if (line == nullptr) {
+        return;
+    }
+    if (strncmp(line, "KTSTAT,", 7) == 0) {
+        handle_ascii_status(line);
+    } else if (strncmp(line, "KTCARD,", 7) == 0) {
+        handle_ascii_card(line);
+    }
+}
+
+static void parse_ascii_byte(uint8_t b)
+{
+    if (b == '\r') {
+        return;
+    }
+    if (b == '\n') {
+        line_buf[line_len] = '\0';
+        if (line_len > 0) {
+            handle_ascii_line(line_buf);
+        }
+        line_len = 0;
+        return;
+    }
+    if (line_len + 1U >= sizeof(line_buf)) {
+        line_len = 0;
+        return;
+    }
+    line_buf[line_len++] = static_cast<char>(b);
 }
 
 static bool is_heartbeat_type(uint8_t type)
@@ -274,7 +446,12 @@ void stm32_link_begin()
 static void drain_rx()
 {
     while (Stm32Serial.available() > 0) {
-        parse_byte(static_cast<uint8_t>(Stm32Serial.read()));
+        uint8_t b = static_cast<uint8_t>(Stm32Serial.read());
+        if (line_len > 0U || b == 'K') {
+            parse_ascii_byte(b);
+        } else if (b == KT_BIN_SOF1 || rx_state != WAIT_SOF1) {
+            parse_byte(b);
+        }
     }
 }
 

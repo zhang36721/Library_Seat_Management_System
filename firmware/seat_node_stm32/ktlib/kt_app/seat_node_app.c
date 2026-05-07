@@ -17,7 +17,8 @@ typedef enum {
     ZB_ADDR_H,
     ZB_LEN,
     ZB_DATA,
-    ZB_TAIL
+    ZB_TAIL,
+    ZB_RAW_DATA
 } zb_parse_state_t;
 
 static volatile uint8_t zb_rx_byte;
@@ -594,6 +595,18 @@ static void zigbee_parse_byte(uint8_t b)
             zb_parse_addr = 0U;
             zb_parse_len = 0U;
             zb_parse_index = 0U;
+        } else if (b == ZB_PAYLOAD_PING || b == ZB_PAYLOAD_PONG) {
+            zb_parse_addr = ZIGBEE_ADDR_SELF;
+            zb_parse_len = 2U;
+            zb_parse_index = 1U;
+            zb_parse_payload[0] = b;
+            zb_parse_state = ZB_RAW_DATA;
+        } else if (b == ZB_PAYLOAD_SEAT_STATUS) {
+            zb_parse_addr = ZIGBEE_ADDR_SELF;
+            zb_parse_len = 4U;
+            zb_parse_index = 1U;
+            zb_parse_payload[0] = b;
+            zb_parse_state = ZB_RAW_DATA;
         }
         break;
     case ZB_ADDR_L:
@@ -627,6 +640,13 @@ static void zigbee_parse_byte(uint8_t b)
             zb_tail_error++;
         }
         zb_parse_state = ZB_WAIT_HEAD;
+        break;
+    case ZB_RAW_DATA:
+        zb_parse_payload[zb_parse_index++] = b;
+        if (zb_parse_index >= zb_parse_len) {
+            zigbee_handle_payload(zb_parse_addr, zb_parse_payload, zb_parse_len);
+            zb_parse_state = ZB_WAIT_HEAD;
+        }
         break;
     default:
         zb_parse_state = ZB_WAIT_HEAD;

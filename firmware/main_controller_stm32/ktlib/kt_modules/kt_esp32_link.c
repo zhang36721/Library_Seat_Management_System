@@ -9,6 +9,7 @@
 #include "kt_system/kt_tick.h"
 #include "kt_system/kt_system_health.h"
 #include "usart.h"
+#include <stdio.h>
 #include <string.h>
 
 #define BIN_SOF1 0xA5U
@@ -17,7 +18,9 @@
 #define BIN_MAX_FRAME_LEN (8U + KT_BIN_MAX_PAYLOAD_LEN + 3U)
 #define ESP32_RX_RING_SIZE 256U
 #define ESP32_DEVICE_STATUS_PERIOD_MS 5000U
-#define ESP32_TX_FRAME_MAX_LEN BIN_MAX_FRAME_LEN
+#define ESP32_TX_FRAME_MAX_LEN 160U
+#define ESP32_ASCII_STATUS_TYPE 0xF0U
+#define ESP32_ASCII_CARD_TYPE   0xF1U
 
 typedef enum {
     RX_WAIT_SOF1 = 0,
@@ -137,6 +140,8 @@ static const char *msg_type_text(uint8_t type)
     case KT_MSG_DEVICE_STATUS: return "DEVICE_STATUS";
     case KT_MSG_BOOT_SYNC: return "BOOT_SYNC";
     case KT_MSG_SYNC_ACK: return "SYNC_ACK";
+    case ESP32_ASCII_STATUS_TYPE: return "ASCII_STATUS";
+    case ESP32_ASCII_CARD_TYPE: return "ASCII_CARD";
     default: return "UNKNOWN";
     }
 }
@@ -144,6 +149,27 @@ static const char *msg_type_text(uint8_t type)
 static uint8_t is_heartbeat_type(uint8_t type)
 {
     return (type == KT_MSG_HEARTBEAT || type == KT_MSG_HEARTBEAT_ACK) ? 1U : 0U;
+}
+
+static uint8_t tx_queue_push(uint8_t type, const uint8_t *frame, uint16_t len);
+
+static void send_ascii_line(uint8_t type, const char *line)
+{
+    uint16_t len;
+
+    if (line == 0) {
+        return;
+    }
+
+    len = (uint16_t)strlen(line);
+    if (len == 0U || len > ESP32_TX_FRAME_MAX_LEN) {
+        tx_drop_count++;
+        return;
+    }
+
+    if (tx_queue_push(type, (const uint8_t *)line, len) == 0U) {
+        KT_LOG_WARN("ESP32 TX queue full: %s", msg_type_text(type));
+    }
 }
 
 static uint8_t tx_queue_push(uint8_t type, const uint8_t *frame, uint16_t len)
@@ -261,6 +287,7 @@ static void send_frame(uint8_t type, const uint8_t *data, uint16_t len, uint8_t 
 static void enqueue_device_status_now(void)
 {
     uint8_t p[20] = {0};
+    char line[128];
     kt_ds1302_time_t now;
 
     kt_ds1302_read_time(&now);
@@ -286,7 +313,28 @@ static void enqueue_device_status_now(void)
     p[17] = main_controller_app_get_seat_state(2U);
     p[18] = main_controller_app_get_gate_state();
     p[19] = main_controller_app_get_last_card_result();
+#if (KT_ESP32_ASCII_PUSH_ENABLE != 0U)
+    (void)snprintf(line, sizeof(line),
+                   "KTSTAT,c=%u,l=%u,d=%u,t=20%02u-%02u-%02u %02u:%02u:%02u,s=%u/%u/%u,g=%u,r=%u\n",
+                   (unsigned int)p[4],
+                   (unsigned int)p[5],
+                   (unsigned int)p[8],
+                   (unsigned int)p[9],
+                   (unsigned int)p[10],
+                   (unsigned int)p[11],
+                   (unsigned int)p[12],
+                   (unsigned int)p[13],
+                   (unsigned int)p[14],
+                   (unsigned int)p[15],
+                   (unsigned int)p[16],
+                   (unsigned int)p[17],
+                   (unsigned int)p[18],
+                   (unsigned int)p[19]);
+    send_ascii_line(ESP32_ASCII_STATUS_TYPE, line);
+#endif
+#if (KT_ESP32_BINARY_PUSH_ENABLE != 0U)
     send_frame(KT_MSG_DEVICE_STATUS, p, sizeof(p), 0U);
+#endif
     last_device_status_ms = kt_tick_get_ms();
     device_status_dirty = 0U;
 #if (KT_LOG_VERBOSE_ENABLE != 0)
@@ -657,6 +705,7 @@ void kt_esp32_link_send_card_event(const uint8_t uid[4],
                                    const kt_ds1302_time_t *time)
 {
     uint8_t p[13];
+    char line[96];
 
     if (uid == 0 || time == 0) {
         return;
@@ -672,7 +721,26 @@ void kt_esp32_link_send_card_event(const uint8_t uid[4],
     p[10] = time->minute;
     p[11] = time->second;
     p[12] = 0U;
+#if (KT_ESP32_ASCII_PUSH_ENABLE != 0U)
+    (void)snprintf(line, sizeof(line),
+                   "KTCARD,u=%02X%02X%02X%02X,t=%u,a=%u,tm=20%02u-%02u-%02u %02u:%02u:%02u\n",
+                   (unsigned int)uid[0],
+                   (unsigned int)uid[1],
+                   (unsigned int)uid[2],
+                   (unsigned int)uid[3],
+                   (unsigned int)access_type,
+                   (unsigned int)(allowed ? 1U : 0U),
+                   (unsigned int)time->year,
+                   (unsigned int)time->month,
+                   (unsigned int)time->day,
+                   (unsigned int)time->hour,
+                   (unsigned int)time->minute,
+                   (unsigned int)time->second);
+    send_ascii_line(ESP32_ASCII_CARD_TYPE, line);
+#endif
+#if (KT_ESP32_BINARY_PUSH_ENABLE != 0U)
     send_frame(KT_MSG_CARD_EVENT, p, 12U, 0U);
+#endif
 }
 
 void kt_esp32_link_send_mock_card_event(void)
