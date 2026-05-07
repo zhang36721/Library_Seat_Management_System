@@ -161,7 +161,12 @@
 #define KT_STEPPER_STEP_DELAY_MS 8U
 #define KT_STEPPER_GATE_STEPS    200U
 #define KT_STEPPER_WAVE_DRIVE_ENABLE 1U
-#define MAIN_GATE_STEPPER_ENABLE 1U
+/*
+ * Keep automatic access flow stable first. Manual FF 70/71/72 stepper tests
+ * still drive the motor; the card access gate cycle only reports/simulates the
+ * gate state when this is 0.
+ */
+#define MAIN_GATE_STEPPER_ENABLE 0U
 #define MAIN_GATE_MOTOR_RUN_MS   800U
 
 #define KT_ZIGBEE_TEST_BAUDRATE 38400
