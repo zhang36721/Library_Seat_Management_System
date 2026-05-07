@@ -12,6 +12,7 @@
 #include "kt_modules/kt_stepper.h"
 #include "kt_modules/kt_uart_links.h"
 #include "kt_modules/kt_esp32_link.h"
+#include "kt_system/kt_system_health.h"
 
 static kt_ds1302_time_t pending_ds1302_time = {
     26U, 4U, 29U, 11U, 28U, 0U
@@ -157,9 +158,9 @@ void kt_cmd_init(void)
  *   0xB5  0x00    Enter card delete UI
  *   0xB6  0x00    Print local registered card list
  *   0xB7  0x00    Clear RAM card list
- *   0xC0  0x00    Print local access log
- *   0xC1  0x00    Clear local access log
- *   0xC2  0x00    Print local access log stats
+ *   0xC0  0x00    Print current-boot RAM access log
+ *   0xC1  0x00    Clear current-boot RAM access log
+ *   0xC2  0x00    Print current-boot RAM access log stats
  *   0xD0  0x00    Send ESP32 binary PING
  *   0xD1  0x00    Print ESP32 recent binary RX
  *   0xD2  0x00    Print ESP32 link status
@@ -379,6 +380,27 @@ void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
         kt_zigbee_send_ping();
         break;
 
+    case 0x83:
+        KT_LOG_INFO("CMD 0x83: USART1 ZigBee link info + ping");
+        kt_zigbee_print_link_info();
+        kt_zigbee_send_ping();
+        break;
+
+    case 0x84:
+        KT_LOG_INFO("CMD 0x84: USART1 ZigBee statistics");
+        kt_zigbee_print_link_info();
+        break;
+
+    case 0x85:
+        KT_LOG_INFO("CMD 0x85: Clear USART1 ZigBee statistics");
+        kt_zigbee_clear_stats();
+        break;
+
+    case 0x86:
+        KT_LOG_INFO("CMD 0x86: USART1 ZigBee binary PING");
+        kt_zigbee_send_ping();
+        break;
+
     case 0x90:
         KT_LOG_INFO("CMD 0x90: USART3 ESP32S3 test TX");
         kt_esp32s3_send_test();
@@ -396,6 +418,7 @@ void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
 
     case 0xA2:
         KT_LOG_INFO("CMD 0xA2: OLED home");
+        main_keys_set_home_state();
         main_controller_app_show_home();
         break;
 
@@ -460,17 +483,17 @@ void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
         break;
 
     case 0xC0:
-        KT_LOG_INFO("CMD 0xC0: Print access log");
+        KT_LOG_INFO("CMD 0xC0: Print RAM access log");
         main_controller_app_print_access_log();
         break;
 
     case 0xC1:
-        KT_LOG_INFO("CMD 0xC1: Clear access log");
+        KT_LOG_INFO("CMD 0xC1: Clear RAM access log");
         main_controller_app_clear_access_log();
         break;
 
     case 0xC2:
-        KT_LOG_INFO("CMD 0xC2: Access log stats");
+        KT_LOG_INFO("CMD 0xC2: RAM access log stats");
         main_controller_app_print_access_stats();
         break;
 
@@ -502,6 +525,11 @@ void kt_cmd_dispatch(uint8_t cmd, uint8_t data)
     case 0xD5:
         KT_LOG_INFO("CMD 0xD5: ESP32 bad CRC test");
         kt_esp32_link_send_bad_crc_test();
+        break;
+
+    case 0xE0:
+        KT_LOG_INFO("CMD 0xE0: System health");
+        kt_system_health_print();
         break;
 
     default:

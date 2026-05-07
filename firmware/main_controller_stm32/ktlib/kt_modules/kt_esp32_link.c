@@ -4,8 +4,10 @@
 #include "kt_app/app_io.h"
 #include "kt_app/main_access_log.h"
 #include "kt_app/main_card_db.h"
+#include "kt_app/main_controller_app.h"
 #include "kt_components/kt_ringbuf.h"
 #include "kt_system/kt_tick.h"
+#include "kt_system/kt_system_health.h"
 #include "usart.h"
 #include <string.h>
 
@@ -14,6 +16,8 @@
 #define BIN_EOF  0x0DU
 #define BIN_MAX_FRAME_LEN (8U + KT_BIN_MAX_PAYLOAD_LEN + 3U)
 #define ESP32_RX_RING_SIZE 256U
+#define ESP32_DEVICE_STATUS_PERIOD_MS 30000U
+#define ESP32_TX_FRAME_MAX_LEN BIN_MAX_FRAME_LEN
 
 typedef enum {
     RX_WAIT_SOF1 = 0,
@@ -32,10 +36,25 @@ typedef struct {
     uint8_t payload[KT_BIN_MAX_PAYLOAD_LEN];
 } esp32_frame_t;
 
+typedef struct {
+    uint8_t type;
+    uint16_t len;
+    uint8_t bytes[ESP32_TX_FRAME_MAX_LEN];
+} esp32_tx_item_t;
+
 static volatile uint8_t rx_byte;
 static kt_ringbuf_t rx_ring;
 static uint8_t rx_ring_storage[ESP32_RX_RING_SIZE];
 static volatile uint32_t rx_overflow_count;
+static esp32_tx_item_t tx_queue[KT_ESP32_TX_QUEUE_LEN];
+static uint8_t tx_head;
+static uint8_t tx_tail;
+static uint8_t tx_count;
+static uint32_t tx_drop_count;
+static uint32_t tx_busy_count;
+static uint32_t tx_fail_count;
+static uint8_t last_tx_type;
+static HAL_StatusTypeDef last_tx_result;
 static esp32_rx_state_t rx_state = RX_WAIT_SOF1;
 static uint8_t header[6];
 static uint8_t header_pos;
@@ -55,6 +74,8 @@ static int8_t wifi_rssi;
 static uint32_t last_rx_ms;
 static uint32_t last_tx_ms;
 static uint32_t last_heartbeat_ms;
+static uint32_t last_device_status_ms;
+static uint8_t device_status_dirty;
 static uint32_t link_led_on_ms;
 static uint8_t link_led_active;
 static esp32_frame_t recent_frame;
@@ -120,6 +141,28 @@ static uint8_t is_heartbeat_type(uint8_t type)
     return (type == KT_MSG_HEARTBEAT || type == KT_MSG_HEARTBEAT_ACK) ? 1U : 0U;
 }
 
+static uint8_t tx_queue_push(uint8_t type, const uint8_t *frame, uint16_t len)
+{
+    if (len > ESP32_TX_FRAME_MAX_LEN) {
+        tx_drop_count++;
+        return 0U;
+    }
+    if (tx_count >= KT_ESP32_TX_QUEUE_LEN) {
+        tx_drop_count++;
+        return 0U;
+    }
+
+    tx_queue[tx_head].type = type;
+    tx_queue[tx_head].len = len;
+    memcpy(tx_queue[tx_head].bytes, frame, len);
+    tx_head++;
+    if (tx_head >= KT_ESP32_TX_QUEUE_LEN) {
+        tx_head = 0U;
+    }
+    tx_count++;
+    return 1U;
+}
+
 static void send_frame(uint8_t type, const uint8_t *data, uint16_t len, uint8_t corrupt_crc)
 {
     uint8_t frame[BIN_MAX_FRAME_LEN];
@@ -153,14 +196,15 @@ static void send_frame(uint8_t type, const uint8_t *data, uint16_t len, uint8_t 
     pos += 2U;
     frame[pos++] = BIN_EOF;
 
-    if (HAL_UART_Transmit(&huart3, frame, pos, KT_UART_TX_TIMEOUT_MS) == HAL_OK) {
-        last_tx_ms = kt_tick_get_ms();
+    if (tx_queue_push(type, frame, pos) != 0U) {
+#if (KT_LOG_UART_FRAME_ENABLE != 0)
         if (!is_heartbeat_type(type)) {
-            KT_LOG_INFO("ESP32 TX: %s seq=%u", msg_type_text(type), (unsigned int)seq);
+            KT_LOG_INFO("ESP32 TX queued: %s seq=%u", msg_type_text(type), (unsigned int)seq);
         }
+#endif
     } else {
         if (!is_heartbeat_type(type)) {
-            KT_LOG_WARN("ESP32 TX failed: %s", msg_type_text(type));
+            KT_LOG_WARN("ESP32 TX queue full: %s", msg_type_text(type));
         }
     }
 }
@@ -174,9 +218,9 @@ static void send_ack_for(uint16_t ack_seq, uint8_t ack_type, uint8_t msg_type)
     send_frame(msg_type, p, sizeof(p), 0U);
 }
 
-static void send_device_status(void)
+static void enqueue_device_status_now(void)
 {
-    uint8_t p[15] = {0};
+    uint8_t p[20] = {0};
     kt_ds1302_time_t now;
 
     kt_ds1302_read_time(&now);
@@ -197,9 +241,25 @@ static void send_device_status(void)
         p[13] = now.minute;
         p[14] = now.second;
     }
+    p[15] = main_controller_app_get_seat_state(0U);
+    p[16] = main_controller_app_get_seat_state(1U);
+    p[17] = main_controller_app_get_seat_state(2U);
+    p[18] = main_controller_app_get_gate_state();
+    p[19] = main_controller_app_get_last_card_result();
     send_frame(KT_MSG_DEVICE_STATUS, p, sizeof(p), 0U);
-    KT_LOG_INFO("ESP32 TX: DEVICE_STATUS cards=%u logs=%u",
-                (unsigned int)p[4], (unsigned int)p[5]);
+    last_device_status_ms = kt_tick_get_ms();
+    device_status_dirty = 0U;
+#if (KT_LOG_VERBOSE_ENABLE != 0)
+    KT_LOG_INFO("ESP32 TX: DEVICE_STATUS cards=%u logs=%u seats=%u/%u/%u gate=%u",
+                (unsigned int)p[4], (unsigned int)p[5],
+                (unsigned int)p[15], (unsigned int)p[16], (unsigned int)p[17],
+                (unsigned int)p[18]);
+#endif
+}
+
+void kt_esp32_link_send_device_status(void)
+{
+    device_status_dirty = 1U;
 }
 
 static void pulse_link_led(void)
@@ -254,7 +314,7 @@ static void handle_heartbeat(uint16_t seq, const uint8_t *data, uint16_t len)
             recovered_count++;
         }
         ever_online = 1U;
-        send_device_status();
+        kt_esp32_link_send_device_status();
     }
 }
 
@@ -279,6 +339,7 @@ static void handle_frame(uint8_t type, uint16_t seq, const uint8_t *data, uint16
         KT_LOG_INFO("ESP32 RX: PONG seq=%u wifi=%u", (unsigned int)seq, (unsigned int)wifi_state);
     } else if (type == KT_MSG_ACK) {
         link_ok = 1U;
+#if (KT_LOG_UART_FRAME_ENABLE != 0)
         if (len >= 3U) {
             if (!is_heartbeat_type(data[2])) {
                 KT_LOG_INFO("ESP32 RX: ACK ack_seq=%u type=%s",
@@ -288,6 +349,7 @@ static void handle_frame(uint8_t type, uint16_t seq, const uint8_t *data, uint16
         } else {
             KT_LOG_INFO("ESP32 RX: ACK seq=%u", (unsigned int)seq);
         }
+#endif
     } else if (type == KT_MSG_ERR) {
         link_ok = 0U;
         if (len >= 4U) {
@@ -301,8 +363,10 @@ static void handle_frame(uint8_t type, uint16_t seq, const uint8_t *data, uint16
     } else if (type == KT_MSG_WIFI_STATUS) {
         handle_wifi_status(data, len);
     } else {
+#if (KT_LOG_UART_FRAME_ENABLE != 0)
         KT_LOG_INFO("ESP32 RX: %s seq=%u len=%u",
                     msg_type_text(type), (unsigned int)seq, (unsigned int)len);
+#endif
     }
 }
 
@@ -328,7 +392,13 @@ static void parse_byte(uint8_t b)
         }
         break;
     case RX_WAIT_SOF2:
-        rx_state = (b == BIN_SOF2) ? RX_HEADER : RX_WAIT_SOF1;
+        if (b == BIN_SOF2) {
+            rx_state = RX_HEADER;
+        } else if (b == BIN_SOF1) {
+            rx_state = RX_WAIT_SOF2;
+        } else {
+            rx_state = RX_WAIT_SOF1;
+        }
         header_pos = 0U;
         break;
     case RX_HEADER:
@@ -390,6 +460,14 @@ void kt_esp32_link_init(void)
     reset_rx();
     kt_ringbuf_init(&rx_ring, rx_ring_storage, ESP32_RX_RING_SIZE);
     rx_overflow_count = 0U;
+    tx_head = 0U;
+    tx_tail = 0U;
+    tx_count = 0U;
+    tx_drop_count = 0U;
+    tx_busy_count = 0U;
+    tx_fail_count = 0U;
+    last_tx_type = 0U;
+    last_tx_result = HAL_OK;
     recent_valid = 0U;
     link_ok = 0U;
     ever_online = 0U;
@@ -402,6 +480,8 @@ void kt_esp32_link_init(void)
     wifi_rssi = 0;
     wifi_ssid[0] = '\0';
     memset(wifi_ip, 0, sizeof(wifi_ip));
+    last_device_status_ms = 0U;
+    device_status_dirty = 0U;
     (void)HAL_UART_Receive_IT(&huart3, (uint8_t *)&rx_byte, 1U);
 }
 
@@ -418,9 +498,34 @@ void kt_esp32_link_uart_rx_callback(UART_HandleTypeDef *huart)
 void kt_esp32_link_task(void)
 {
     uint8_t b;
+    uint8_t rx_budget = KT_ESP32_RX_BYTES_PER_TASK;
+    esp32_tx_item_t *item;
+    HAL_StatusTypeDef st;
 
-    while (kt_ringbuf_get(&rx_ring, &b) == 0) {
+    while (rx_budget > 0U && kt_ringbuf_get(&rx_ring, &b) == 0) {
         parse_byte(b);
+        rx_budget--;
+    }
+
+    if (tx_count > 0U &&
+        (last_tx_ms == 0U || kt_tick_is_timeout(last_tx_ms, KT_ESP32_TX_GAP_MS))) {
+        if (huart3.gState == HAL_UART_STATE_READY) {
+            item = &tx_queue[tx_tail];
+            st = HAL_UART_Transmit(&huart3, item->bytes, item->len, KT_ESP32_TX_TIMEOUT_MS);
+            last_tx_type = item->type;
+            last_tx_result = st;
+            last_tx_ms = kt_tick_get_ms();
+            if (st != HAL_OK) {
+                tx_fail_count++;
+            }
+            tx_tail++;
+            if (tx_tail >= KT_ESP32_TX_QUEUE_LEN) {
+                tx_tail = 0U;
+            }
+            tx_count--;
+        } else {
+            tx_busy_count++;
+        }
     }
 
     if (link_led_active && kt_tick_is_timeout(link_led_on_ms, KT_ESP32_LINK_LED_PULSE_MS)) {
@@ -432,6 +537,16 @@ void kt_esp32_link_task(void)
         kt_tick_is_timeout(last_heartbeat_ms, KT_ESP32_HEARTBEAT_TIMEOUT_MS)) {
         link_ok = 0U;
     }
+
+    if (device_status_dirty &&
+        (last_device_status_ms == 0U ||
+         kt_tick_is_timeout(last_device_status_ms, KT_ESP32_DEVICE_STATUS_MIN_MS))) {
+        enqueue_device_status_now();
+    } else if (link_ok && kt_tick_is_timeout(last_device_status_ms, ESP32_DEVICE_STATUS_PERIOD_MS)) {
+        device_status_dirty = 1U;
+    }
+
+    kt_system_health_note_esp32_task();
 }
 
 void kt_esp32_link_send_ping(void)
@@ -520,4 +635,12 @@ void kt_esp32_link_print_status(void)
     KT_LOG_INFO("ESP32 last tx=%lu ms last rx=%lu ms",
                 (unsigned long)last_tx_ms,
                 (unsigned long)last_rx_ms);
+    KT_LOG_INFO("ESP32 tx queue: pending=%u drop=%lu busy=%lu fail=%lu",
+                (unsigned int)tx_count,
+                (unsigned long)tx_drop_count,
+                (unsigned long)tx_busy_count,
+                (unsigned long)tx_fail_count);
+    KT_LOG_INFO("ESP32 last tx type=%s result=%d",
+                msg_type_text(last_tx_type),
+                (int)last_tx_result);
 }

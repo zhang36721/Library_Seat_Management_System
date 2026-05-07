@@ -1,4 +1,6 @@
 #include "stm32_link.h"
+#include "cloud_client.h"
+#include "device_state.h"
 
 static HardwareSerial Stm32Serial(1);
 static uint16_t tx_seq = 1;
@@ -113,6 +115,11 @@ static void handle_card_event(uint16_t seq, const uint8_t *p, uint16_t len)
                   p[0], p[1], p[2], p[3],
                   access_type_text(p[4]), p[5],
                   p[6], p[7], p[8], p[9], p[10], p[11]);
+    device_state_add_card_event(p, len);
+    CardEvent event;
+    if (device_state_get_latest_card_event(event)) {
+        cloud_client_request_card_event_upload(event);
+    }
     send_ack(seq, KT_MSG_CARD_EVENT);
 }
 
@@ -128,10 +135,11 @@ static void handle_ack(const uint8_t *p, uint16_t len)
         heartbeat_waiting_ack = false;
         missed_ack_count = 0;
         stm32_is_online = true;
+        device_state_set_stm32_online(true);
         offline_reported = false;
         last_ack_ms = millis();
         (void)recovered;
-    } else {
+    } else if (UART_VERBOSE_LOG) {
         Serial.printf("[UART RX] ACK seq=%u type=%s\n", ack_seq, kt_msg_type_name(ack_type));
     }
 }
@@ -142,9 +150,13 @@ static void handle_device_status(uint8_t type, const uint8_t *p, uint16_t len)
         send_err(0, type, KT_ERR_LEN_ERR);
         return;
     }
-    Serial.printf("[SYNC RX] cards=%u logs=%u time=20%02u-%02u-%02u %02u:%02u:%02u rc522=%s\n",
-                  p[4], p[5], p[9], p[10], p[11], p[12], p[13], p[14],
-                  p[7] ? "OK" : "PENDING");
+    if (UART_VERBOSE_LOG) {
+        Serial.printf("[SYNC RX] cards=%u logs=%u time=20%02u-%02u-%02u %02u:%02u:%02u rc522=%s\n",
+                      p[4], p[5], p[9], p[10], p[11], p[12], p[13], p[14],
+                      p[7] ? "OK" : "PENDING");
+    }
+    device_state_update_device_status(p, len);
+    cloud_client_request_device_status_upload();
 }
 
 static void send_heartbeat()
@@ -155,6 +167,7 @@ static void send_heartbeat()
         }
         if (missed_ack_count >= 3 && !offline_reported) {
             stm32_is_online = false;
+            device_state_set_stm32_online(false);
             offline_reported = true;
         }
     }
@@ -167,11 +180,12 @@ static void send_heartbeat()
     last_heartbeat_seq = send_frame(KT_MSG_HEARTBEAT, p, sizeof(p));
     heartbeat_waiting_ack = true;
     last_heartbeat_ms = millis();
+    device_state_note_heartbeat();
 }
 
 static void handle_frame(uint8_t type, uint16_t seq, const uint8_t *p, uint16_t len)
 {
-    if (!is_heartbeat_type(type)) {
+    if (UART_VERBOSE_LOG && !is_heartbeat_type(type)) {
         Serial.printf("[UART RX] type=%s seq=%u crc=OK\n", kt_msg_type_name(type), seq);
     }
     if (type == KT_MSG_PING) {
@@ -204,7 +218,13 @@ static void parse_byte(uint8_t b)
         if (b == KT_BIN_SOF1) rx_state = WAIT_SOF2;
         break;
     case WAIT_SOF2:
-        rx_state = (b == KT_BIN_SOF2) ? HEADER : WAIT_SOF1;
+        if (b == KT_BIN_SOF2) {
+            rx_state = HEADER;
+        } else if (b == KT_BIN_SOF1) {
+            rx_state = WAIT_SOF2;
+        } else {
+            rx_state = WAIT_SOF1;
+        }
         header_pos = 0;
         break;
     case HEADER:
@@ -257,6 +277,7 @@ static void parse_byte(uint8_t b)
 
 void stm32_link_begin()
 {
+    Stm32Serial.setRxBufferSize(1024);
     Stm32Serial.begin(115200, SERIAL_8N1, 48, 47);
     Serial.println("[UART] STM32 link on RX=GPIO48 TX=GPIO47 baud=115200");
 }

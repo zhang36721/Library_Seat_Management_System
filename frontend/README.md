@@ -1,86 +1,86 @@
-# Vue3 前端
+﻿# Vue3 鍓嶇
 
-基于 Vue 3 的图书馆座位管理系统前端界面。
+鍩轰簬 Vue 3 鐨勫浘涔﹂搴т綅绠＄悊绯荤粺鍓嶇鐣岄潰銆?
 
-## 技术栈
+## 鎶€鏈爤
 
-- **框架**: Vue 3 (Composition API)
-- **构建工具**: Vite
-- **UI 组件库**: Element Plus
-- **状态管理**: Pinia
-- **路由**: Vue Router 4
-- **HTTP 客户端**: Axios
-- **图表**: ECharts
+- **妗嗘灦**: Vue 3 (Composition API)
+- **鏋勫缓宸ュ叿**: Vite
+- **UI 缁勪欢搴?*: Element Plus
+- **鐘舵€佺鐞?*: Pinia
+- **璺敱**: Vue Router 4
+- **HTTP 瀹㈡埛绔?*: Axios
+- **鍥捐〃**: ECharts
 
-## 目录结构
+## 鐩綍缁撴瀯
 
 ```
 frontend/
-├── public/           # 静态资源
-├── src/
-│   ├── api/          # API 请求封装
-│   ├── assets/       # 资源文件（图片、样式等）
-│   ├── components/   # 公共组件
-│   ├── views/        # 页面组件
-│   ├── router/       # 路由配置
-│   └── stores/       # Pinia 状态管理
-└── README.md         # 本文件
+鈹溾攢鈹€ public/           # 闈欐€佽祫婧?
+鈹溾攢鈹€ src/
+鈹?  鈹溾攢鈹€ api/          # API 璇锋眰灏佽
+鈹?  鈹溾攢鈹€ assets/       # 璧勬簮鏂囦欢锛堝浘鐗囥€佹牱寮忕瓑锛?
+鈹?  鈹溾攢鈹€ components/   # 鍏叡缁勪欢
+鈹?  鈹溾攢鈹€ views/        # 椤甸潰缁勪欢
+鈹?  鈹溾攢鈹€ router/       # 璺敱閰嶇疆
+鈹?  鈹斺攢鈹€ stores/       # Pinia 鐘舵€佺鐞?
+鈹斺攢鈹€ README.md         # 鏈枃浠?
 ```
 
-## 快速开始
+## 蹇€熷紑濮?
 
-### 1. 安装依赖
+### 1. 瀹夎渚濊禆
 
 ```bash
 npm install
-# 或
+# 鎴?
 pnpm install
-# 或
+# 鎴?
 yarn install
 ```
 
-### 2. 配置环境变量
+### 2. 閰嶇疆鐜鍙橀噺
 
-复制 `.env.example` 为 `.env.local` 并修改配置：
+澶嶅埗 `.env.example` 涓?`.env.local` 骞朵慨鏀归厤缃細
 
 ```bash
 cp .env.example .env.local
 ```
 
-### 3. 启动开发服务器
+### 3. 鍚姩寮€鍙戞湇鍔″櫒
 
 ```bash
 npm run dev
-# 或
+# 鎴?
 pnpm dev
-# 或
+# 鎴?
 yarn dev
 ```
 
-访问 http://localhost:5173
+璁块棶 http://localhost:15173
 
-### 4. 构建生产版本
+### 4. 鏋勫缓鐢熶骇鐗堟湰
 
 ```bash
 npm run build
-# 或
+# 鎴?
 pnpm build
-# 或
+# 鎴?
 yarn build
 ```
 
-## 主要页面
+## 涓昏椤甸潰
 
-- **登录页**: 用户登录
-- **座位管理**: 管理员查看和管理座位
-- **座位预约**: 用户预约座位
-- **统计报表**: 数据统计和可视化
-- **系统设置**: 系统参数配置
+- **鐧诲綍椤?*: 鐢ㄦ埛鐧诲綍
+- **搴т綅绠＄悊**: 绠＄悊鍛樻煡鐪嬪拰绠＄悊搴т綅
+- **搴т綅棰勭害**: 鐢ㄦ埛棰勭害搴т綅
+- **缁熻鎶ヨ〃**: 鏁版嵁缁熻鍜屽彲瑙嗗寲
+- **绯荤粺璁剧疆**: 绯荤粺鍙傛暟閰嶇疆
 
-## 开发规范
+## 寮€鍙戣鑼?
 
-- 使用 Composition API
-- 组件采用 `<script setup>` 语法
-- 使用 TypeScript（可选）
-- 遵循 Vue 3 最佳实践
-- 组件命名使用 PascalCase
+- 浣跨敤 Composition API
+- 缁勪欢閲囩敤 `<script setup>` 璇硶
+- 浣跨敤 TypeScript锛堝彲閫夛級
+- 閬靛惊 Vue 3 鏈€浣冲疄璺?
+- 缁勪欢鍛藉悕浣跨敤 PascalCase

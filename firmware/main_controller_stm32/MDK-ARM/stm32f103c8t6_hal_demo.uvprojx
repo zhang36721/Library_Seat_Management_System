@@ -18,7 +18,7 @@
           <Vendor>STMicroelectronics</Vendor>
           <PackID>Keil.STM32F1xx_DFP.2.4.1</PackID>
           <PackURL>https://www.keil.com/pack/</PackURL>
-          <Cpu>IRAM(0x20000000-0x20004FFF) IROM(0x8000000-0x800FFFF) CLOCK(8000000) CPUTYPE("Cortex-M3") TZ</Cpu>
+          <Cpu>IRAM(0x20000000-0x20004FFF) IROM(0x8000000-0x800F7FF) CLOCK(8000000) CPUTYPE("Cortex-M3") TZ</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
           <FlashDriverDll></FlashDriverDll>
@@ -252,7 +252,7 @@
               <IROM>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x10000</Size>
+                <Size>0xf800</Size>
               </IROM>
               <XRAM>
                 <Type>0</Type>
@@ -574,13 +574,18 @@
               <FileType>1</FileType>
               <FilePath>..\ktlib\kt_system\kt_tick.c</FilePath>
             </File>
-            <File>
-              <FileName>kt_boot_count.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\ktlib\kt_system\kt_boot_count.c</FilePath>
-            </File>
-          </Files>
-        </Group>
+              <File>
+                <FileName>kt_boot_count.c</FileName>
+                <FileType>1</FileType>
+                <FilePath>..\ktlib\kt_system\kt_boot_count.c</FilePath>
+              </File>
+              <File>
+                <FileName>kt_system_health.c</FileName>
+                <FileType>1</FileType>
+                <FilePath>..\ktlib\kt_system\kt_system_health.c</FilePath>
+              </File>
+            </Files>
+          </Group>
         <Group>
           <GroupName>ktlib/ktlib_task</GroupName>
           <Files>
@@ -673,6 +678,11 @@
               <FileName>kt_uart_links.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\ktlib\kt_modules\kt_uart_links.c</FilePath>
+            </File>
+            <File>
+              <FileName>kt_zigbee.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ktlib\kt_zigbee\kt_zigbee.c</FilePath>
             </File>
             <File>
               <FileName>kt_esp32_link.c</FileName>

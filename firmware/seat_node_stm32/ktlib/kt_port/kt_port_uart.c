@@ -1,4 +1,5 @@
 #include "kt_port_uart.h"
+#include "kt_config.h"
 #include <string.h>
 
 /* Single-byte receive buffer for UART2 interrupt reception */
@@ -20,7 +21,7 @@ void kt_port_uart_set_rx_callback(kt_uart_rx_callback_t cb)
  */
 void kt_port_uart_tx_byte(uint8_t byte)
 {
-    HAL_UART_Transmit(&huart2, &byte, 1, HAL_MAX_DELAY);
+    (void)HAL_UART_Transmit(&huart2, &byte, 1, (uint32_t)KT_UART_TX_TIMEOUT_MS);
 }
 
 /**
@@ -34,7 +35,10 @@ int kt_port_uart_tx_string(const char *str)
     if (str == NULL) {
         return HAL_ERROR;
     }
-    status = HAL_UART_Transmit(&huart2, (uint8_t *)str, strlen(str), HAL_MAX_DELAY);
+    status = HAL_UART_Transmit(&huart2,
+                               (uint8_t *)str,
+                               strlen(str),
+                               (uint32_t)KT_UART_TX_TIMEOUT_MS);
     return (int)status;
 }
 

@@ -5,6 +5,8 @@
 #include "wifi_manager.h"
 #include <Arduino.h>
 
+#define UART_VERBOSE_LOG 0
+
 void stm32_link_begin();
 void stm32_link_task();
 void stm32_link_send_wifi_status(const WifiStatus &status);

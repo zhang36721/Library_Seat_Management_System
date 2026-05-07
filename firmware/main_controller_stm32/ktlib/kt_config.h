@@ -19,7 +19,7 @@
 #define KT_DEBUG_UART_BAUDRATE 115200
 #define KT_DEBUG_UART           USART2
 
-#define KT_USART1_ROLE          "ZigBee test UART, 115200"
+#define KT_USART1_ROLE          "ZigBee CC2530 point-to-point UART, 38400"
 #define KT_USART2_ROLE          "Debug UART, 115200, FF CMD DATA FF protocol"
 #define KT_USART3_ROLE          "ESP32S3 test UART, 115200"
 
@@ -34,6 +34,9 @@
 /* UART TX Timeout - max blocking time per transmit call */
 #define KT_UART_TX_TIMEOUT_MS     100
 
+#define ZIGBEE_ADDR_SELF       0x0000U
+#define ZIGBEE_ADDR_SEAT_NODE  0x301EU
+
 /*===========================================================================
  * Persistent Boot Count
  *
@@ -43,12 +46,20 @@
 #define KT_BOOT_COUNT_FLASH_PAGE_ADDR  0x0800FC00U
 #define KT_BOOT_COUNT_MAGIC            0x4B544243U  /* "KTBC" */
 
-/* The second last 1KB page is reserved for persistent local access logs.
+/* The second last 1KB page is reserved for registered card database.
  * Keep the Keil IROM size at or below 0xF800 so firmware code does not
  * overlap 0x0800F800-0x0800FFFF.
  */
-#define MAIN_ACCESS_LOG_FLASH_PAGE_ADDR 0x0800F800U
-#define MAIN_ACCESS_LOG_FLASH_MAGIC     0x4B54414CU  /* "KTAL" */
+#define MAIN_CARD_DB_FLASH_PAGE_ADDR    0x0800F800U
+#define MAIN_CARD_DB_FLASH_MAGIC        0x4B544344U  /* "KTCD" */
+
+/* v1.3 stability policy:
+ * Card DB is configuration data and is allowed to persist in Flash.
+ * Access logs are business data and are RAM only; cloud/backend is the
+ * long-term record source.
+ */
+#define MAIN_CARD_DB_FLASH_ENABLE       1U
+#define MAIN_ACCESS_LOG_FLASH_ENABLE    0U
 
 /*===========================================================================
  * Log System Configuration (used by kt_log.h / kt_log.c)
@@ -56,6 +67,9 @@
 #define KT_LOG_ENABLE       1
 #define KT_LOG_LEVEL        0   /* 0=DEBUG, 1=INFO, 2=WARN, 3=ERR, 4=NONE */
 #define KT_LOG_BUFFER_SIZE  128
+#define KT_LOG_VERBOSE_ENABLE 0
+#define KT_LOG_HEARTBEAT_ENABLE 0
+#define KT_LOG_UART_FRAME_ENABLE 0
 
 /* Periodic uptime logs are disabled for concise v0.6.1 hardware validation. */
 #define KT_ENABLE_UPTIME_LOG 0
@@ -136,9 +150,13 @@
 #define KT_STEPPER_IN3_PIN      GPIO_PIN_14
 #define KT_STEPPER_IN4_PORT     GPIOB
 #define KT_STEPPER_IN4_PIN      GPIO_PIN_15
-#define KT_STEPPER_STEP_DELAY_MS 3U
+#define KT_STEPPER_STEP_DELAY_MS 8U
+#define KT_STEPPER_GATE_STEPS    200U
+#define KT_STEPPER_WAVE_DRIVE_ENABLE 1U
+#define MAIN_GATE_STEPPER_ENABLE 1U
+#define MAIN_GATE_MOTOR_RUN_MS   800U
 
-#define KT_ZIGBEE_TEST_BAUDRATE 115200
+#define KT_ZIGBEE_TEST_BAUDRATE 38400
 #define KT_ESP32S3_TEST_BAUDRATE 115200
 
 /*===========================================================================
@@ -162,6 +180,15 @@
 
 #define KT_ESP32_HEARTBEAT_TIMEOUT_MS 10000U
 #define KT_ESP32_LINK_LED_PULSE_MS    50U
+#define KT_ESP32_DEVICE_STATUS_MIN_MS 1000U
+#define KT_ESP32_TX_GAP_MS            20U
+#define KT_ESP32_TX_TIMEOUT_MS        30U
+#define KT_ESP32_RX_BYTES_PER_TASK    64U
+#define KT_ESP32_TX_QUEUE_LEN         8U
+
+#define KT_ZIGBEE_RX_BYTES_PER_TASK   32U
+
+#define APP_CARD_PROFILE_ENABLE       0U
 
 /*===========================================================================
  * v0.8.3 Main Controller 8-key Module
@@ -192,7 +219,7 @@
  *===========================================================================*/
 #define MAIN_CARD_POLL_PERIOD_MS      50U
 #define MAIN_CARD_REPEAT_GUARD_MS     2500U
-#define MAIN_GATE_HOLD_MS             4000U
+#define MAIN_GATE_HOLD_MS             3000U
 #define MAIN_OLED_IDLE_HOME_MS        3000U
 #define MAIN_ACCESS_LOG_MAX_COUNT     50U
 

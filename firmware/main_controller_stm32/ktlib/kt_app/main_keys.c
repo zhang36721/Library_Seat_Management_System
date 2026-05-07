@@ -339,6 +339,11 @@ void main_keys_enter_card_del(void)
     show_card_del();
 }
 
+void main_keys_set_home_state(void)
+{
+    current_screen = MENU_SCREEN_HOME;
+}
+
 uint8_t main_keys_is_home(void)
 {
     return (current_screen == MENU_SCREEN_HOME) ? 1U : 0U;

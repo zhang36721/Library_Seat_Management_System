@@ -33,6 +33,7 @@
 #include "kt_app/main_keys.h"
 #include "kt_app/main_controller_app.h"
 #include "kt_system/kt_boot_count.h"
+#include "kt_system/kt_system_health.h"
 #include "kt_modules/kt_modules.h"
 #include "kt_modules/kt_uart_links.h"
 #include "kt_modules/kt_esp32_link.h"
@@ -134,6 +135,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
+  kt_system_health_init();
   kt_boot_count_init();
   kt_debug_init();
   kt_debug_print_system_info();
@@ -169,6 +171,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
     kt_modules_task();
     kt_task_run();
+    kt_system_health_note_main_loop();
   }
   /* USER CODE END 3 */
 }
@@ -236,10 +239,14 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
+  uint32_t i;
+  kt_system_health_note_fault("ERROR_HANDLER");
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
+  for (i = 0; i < 6000000U; i++) {
+    __NOP();
   }
+  NVIC_SystemReset();
   /* USER CODE END Error_Handler_Debug */
 }
 

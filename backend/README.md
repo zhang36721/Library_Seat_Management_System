@@ -1,102 +1,102 @@
-# Python 后端服务
+﻿# Python 鍚庣鏈嶅姟
 
-基于 FastAPI 的图书馆座位管理系统后端服务。
+鍩轰簬 FastAPI 鐨勫浘涔﹂搴т綅绠＄悊绯荤粺鍚庣鏈嶅姟銆?
 
-## 技术栈
+## 鎶€鏈爤
 
-- **框架**: FastAPI
-- **数据存储**: JSON 文件（轻量级，无需数据库）
-- **验证**: Pydantic
+- **妗嗘灦**: FastAPI
+- **鏁版嵁瀛樺偍**: JSON 鏂囦欢锛堣交閲忕骇锛屾棤闇€鏁版嵁搴擄級
+- **楠岃瘉**: Pydantic
 
-## 目录结构
+## 鐩綍缁撴瀯
 
 ```
 backend/
-├── app/
-│   ├── api/          # API 路由
-│   ├── models/       # 数据模型（JSON 文件操作）
-│   ├── schemas/      # Pydantic 模型
-│   ├── services/     # 业务逻辑
-│   └── core/         # 核心配置
-├── data_templates/   # JSON 数据模板（可提交到 Git）
-├── runtime_data/     # 运行时数据（不提交到 Git）
-├── main.py           # 应用入口
-├── requirements.txt  # 依赖
-└── README.md         # 本文件
+鈹溾攢鈹€ app/
+鈹?  鈹溾攢鈹€ api/          # API 璺敱
+鈹?  鈹溾攢鈹€ models/       # 鏁版嵁妯″瀷锛圝SON 鏂囦欢鎿嶄綔锛?
+鈹?  鈹溾攢鈹€ schemas/      # Pydantic 妯″瀷
+鈹?  鈹溾攢鈹€ services/     # 涓氬姟閫昏緫
+鈹?  鈹斺攢鈹€ core/         # 鏍稿績閰嶇疆
+鈹溾攢鈹€ data_templates/   # JSON 鏁版嵁妯℃澘锛堝彲鎻愪氦鍒?Git锛?
+鈹溾攢鈹€ runtime_data/     # 杩愯鏃舵暟鎹紙涓嶆彁浜ゅ埌 Git锛?
+鈹溾攢鈹€ main.py           # 搴旂敤鍏ュ彛
+鈹溾攢鈹€ requirements.txt  # 渚濊禆
+鈹斺攢鈹€ README.md         # 鏈枃浠?
 ```
 
-## 数据存储方案
+## 鏁版嵁瀛樺偍鏂规
 
-### JSON 文件存储
-- 当前版本使用 JSON 文件作为轻量数据表
-- 无需安装和配置数据库，降低部署复杂度
-- 适合当前 3 个座位的小规模场景
+### JSON 鏂囦欢瀛樺偍
+- 褰撳墠鐗堟湰浣跨敤 JSON 鏂囦欢浣滀负杞婚噺鏁版嵁琛?
+- 鏃犻渶瀹夎鍜岄厤缃暟鎹簱锛岄檷浣庨儴缃插鏉傚害
+- 閫傚悎褰撳墠 3 涓骇浣嶇殑灏忚妯″満鏅?
 
-### 数据模板（data_templates/）
-- 可提交到 GitHub 的示例 JSON 模板
-- 包含数据结构定义和示例数据
-- 用于初始化新环境
+### 鏁版嵁妯℃澘锛坉ata_templates/锛?
+- 鍙彁浜ゅ埌 GitHub 鐨勭ず渚?JSON 妯℃澘
+- 鍖呭惈鏁版嵁缁撴瀯瀹氫箟鍜岀ず渚嬫暟鎹?
+- 鐢ㄤ簬鍒濆鍖栨柊鐜
 
-### 运行时数据（runtime_data/）
-- 本地或云端真实运行数据
-- **不提交到 GitHub**
-- 通过环境变量 `DATA_DIR` 指定实际数据目录
-- 云端建议路径：`/var/lib/library_seat/data/`
+### 杩愯鏃舵暟鎹紙runtime_data/锛?
+- 鏈湴鎴栦簯绔湡瀹炶繍琛屾暟鎹?
+- **涓嶆彁浜ゅ埌 GitHub**
+- 閫氳繃鐜鍙橀噺 `DATA_DIR` 鎸囧畾瀹為檯鏁版嵁鐩綍
+- 浜戠寤鸿璺緞锛歚/var/lib/library_seat/data/`
 
-## 主要功能
+## 涓昏鍔熻兘
 
-- 接收 ESP32S3 上传的座位状态和刷卡事件
-- 读取 JSON 数据文件
-- 更新 seat 状态
-- 追加 card_logs 刷卡记录
-- 提供 Web 前端查询接口
-- 提供设备状态查询接口
+- 鎺ユ敹 ESP32S3 涓婁紶鐨勫骇浣嶇姸鎬佸拰鍒峰崱浜嬩欢
+- 璇诲彇 JSON 鏁版嵁鏂囦欢
+- 鏇存柊 seat 鐘舵€?
+- 杩藉姞 card_logs 鍒峰崱璁板綍
+- 鎻愪緵 Web 鍓嶇鏌ヨ鎺ュ彛
+- 鎻愪緵璁惧鐘舵€佹煡璇㈡帴鍙?
 
-## 快速开始
+## 蹇€熷紑濮?
 
-### 1. 安装依赖
+### 1. 瀹夎渚濊禆
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. 配置环境变量
+### 2. 閰嶇疆鐜鍙橀噺
 
-复制 `.env.example` 为 `.env` 并修改配置：
+澶嶅埗 `.env.example` 涓?`.env` 骞朵慨鏀归厤缃細
 
 ```bash
 cp .env.example .env
 ```
 
-配置 `DATA_DIR` 指定 JSON 数据目录。
+閰嶇疆 `DATA_DIR` 鎸囧畾 JSON 鏁版嵁鐩綍銆?
 
-### 3. 初始化数据
+### 3. 鍒濆鍖栨暟鎹?
 
-首次运行时，后端会自动从 `data_templates/` 复制模板文件到此目录。
+棣栨杩愯鏃讹紝鍚庣浼氳嚜鍔ㄤ粠 `data_templates/` 澶嶅埗妯℃澘鏂囦欢鍒版鐩綍銆?
 
-### 4. 启动服务
+### 4. 鍚姩鏈嶅姟
 
 ```bash
-# 开发模式
-uvicorn main:app --reload
+# 寮€鍙戞ā寮?
+python -m uvicorn backend.main:app --reload --port 18080
 
-# 生产模式
-uvicorn main:app --host 0.0.0.0 --port 8000
+# 鐢熶骇妯″紡
+python -m uvicorn backend.main:app --host 0.0.0.0 --port 18080
 ```
 
-## API 文档
+## API 鏂囨。
 
-启动服务后访问：
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
+鍚姩鏈嶅姟鍚庤闂細
+- Swagger UI: http://localhost:18080/docs
+- ReDoc: http://localhost:18080/redoc
 
-## 开发规范
+## 寮€鍙戣鑼?
 
-- 遵循 PEP 8 代码风格
-- 使用类型注解
-- 编写单元测试
-- API 遵循 RESTful 规范
+- 閬靛惊 PEP 8 浠ｇ爜椋庢牸
+- 浣跨敤绫诲瀷娉ㄨВ
+- 缂栧啓鍗曞厓娴嬭瘯
+- API 閬靛惊 RESTful 瑙勮寖
 
-## 后期扩展
+## 鍚庢湡鎵╁睍
 
-如果数据量变大，可迁移到 SQLite 或 MySQL 数据库。
+濡傛灉鏁版嵁閲忓彉澶э紝鍙縼绉诲埌 SQLite 鎴?MySQL 鏁版嵁搴撱€

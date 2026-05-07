@@ -16,6 +16,7 @@ void kt_esp32_link_uart_rx_callback(UART_HandleTypeDef *huart);
 void kt_esp32_link_send_ping(void);
 void kt_esp32_link_send_bad_crc_test(void);
 void kt_esp32_link_send_mock_card_event(void);
+void kt_esp32_link_send_device_status(void);
 void kt_esp32_link_send_card_event(const uint8_t uid[4],
                                    uint8_t access_type,
                                    uint8_t allowed,

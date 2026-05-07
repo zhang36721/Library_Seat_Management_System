@@ -5,8 +5,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import router as api_router
-from app.core.config import settings
+try:
+    from app.api import router as api_router
+    from app.api.iot import router as iot_router
+    from app.core.config import settings
+except ModuleNotFoundError:
+    from backend.app.api import router as api_router
+    from backend.app.api.iot import router as iot_router
+    from backend.app.core.config import settings
 
 
 def create_app() -> FastAPI:
@@ -25,13 +31,14 @@ def create_app() -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.CORS_ORIGINS,
-        allow_credentials=True,
+        allow_credentials=settings.CORS_ALLOW_CREDENTIALS,
         allow_methods=["*"],
         allow_headers=["*"],
     )
     
     # 注册路由
     app.include_router(api_router, prefix=settings.API_V1_PREFIX)
+    app.include_router(iot_router, prefix="/api/iot", tags=["iot"])
     
     @app.get("/")
     def root():
@@ -57,8 +64,8 @@ app = create_app()
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True
+        "backend.main:app",
+        host=settings.HOST,
+        port=settings.PORT,
+        reload=settings.DEBUG
     )

@@ -33,6 +33,7 @@ void main_keys_print_last_event(void);
 void main_keys_enter_time_set(void);
 void main_keys_enter_card_add(void);
 void main_keys_enter_card_del(void);
+void main_keys_set_home_state(void);
 uint8_t main_keys_is_home(void);
 const char *main_key_name(main_key_id_t key);
 const char *main_key_event_name(main_key_event_type_t event);

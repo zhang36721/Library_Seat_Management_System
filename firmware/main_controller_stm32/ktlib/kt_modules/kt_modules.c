@@ -25,6 +25,7 @@ void kt_modules_init(void)
 
 void kt_modules_task(void)
 {
+    kt_stepper_task();
     kt_zigbee_task();
     kt_esp32_link_task();
 }

@@ -143,6 +143,10 @@ void kt_debug_print_help(void)
     KT_LOG_INFO("  FF 80 00 FF  -> USART1 ZigBee test TX");
     KT_LOG_INFO("  FF 81 00 FF  -> USART1 ZigBee recent RX");
     KT_LOG_INFO("  FF 82 00 FF  -> USART1 ZigBee PING TX");
+    KT_LOG_INFO("  FF 83 00 FF  -> USART1 ZigBee link info + ping");
+    KT_LOG_INFO("  FF 84 00 FF  -> USART1 ZigBee statistics");
+    KT_LOG_INFO("  FF 85 00 FF  -> Clear ZigBee statistics");
+    KT_LOG_INFO("  FF 86 00 FF  -> ZigBee binary PING");
     KT_LOG_INFO("  FF 90 00 FF  -> USART3 ESP32S3 test TX");
     KT_LOG_INFO("  FF A0 00 FF  -> Main app status");
     KT_LOG_INFO("  FF A1 00 FF  -> Local card flow test");

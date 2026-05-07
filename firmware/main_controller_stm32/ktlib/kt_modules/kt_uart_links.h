@@ -10,6 +10,8 @@ extern "C" {
 void kt_zigbee_send_test(void);
 void kt_zigbee_send_ping(void);
 void kt_zigbee_print_recent_rx(void);
+void kt_zigbee_print_link_info(void);
+void kt_zigbee_clear_stats(void);
 void kt_zigbee_uart_start_receive_it(void);
 void kt_zigbee_uart_rx_callback(UART_HandleTypeDef *huart);
 void kt_zigbee_task(void);

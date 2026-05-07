@@ -1,27 +1,36 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 
-export default defineConfig({
-  plugins: [vue()],
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, 'src')
-    }
-  },
-  server: {
-    port: 5173,
-    host: '0.0.0.0',
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+
+  return {
+    base: env.VITE_PUBLIC_BASE_PATH || '/',
+    plugins: [vue()],
+    resolve: {
+      alias: {
+        '@': resolve(__dirname, 'src')
       }
+    },
+    server: {
+      port: 15173,
+      host: '0.0.0.0',
+      proxy: {
+        '/api': {
+          target: 'http://localhost:18080',
+          changeOrigin: true
+        }
+      }
+    },
+    preview: {
+      port: 15174,
+      host: '0.0.0.0'
+    },
+    build: {
+      outDir: 'dist',
+      assetsDir: 'static',
+      sourcemap: false
     }
-  },
-  build: {
-    outDir: 'dist',
-    assetsDir: 'static',
-    sourcemap: false
   }
 })

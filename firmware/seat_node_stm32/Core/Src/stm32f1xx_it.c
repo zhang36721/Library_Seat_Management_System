@@ -51,6 +51,15 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static void fault_reset_after_delay(void)
+{
+  __disable_irq();
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+  for (volatile uint32_t i = 0; i < 200000UL; ++i) {
+    __NOP();
+  }
+  NVIC_SystemReset();
+}
 
 /* USER CODE END 0 */
 
@@ -70,6 +79,7 @@ extern UART_HandleTypeDef huart1;
 void NMI_Handler(void)
 {
   /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
+  fault_reset_after_delay();
 
   /* USER CODE END NonMaskableInt_IRQn 0 */
   /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
@@ -85,6 +95,7 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
+  fault_reset_after_delay();
 
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
@@ -100,6 +111,7 @@ void HardFault_Handler(void)
 void MemManage_Handler(void)
 {
   /* USER CODE BEGIN MemoryManagement_IRQn 0 */
+  fault_reset_after_delay();
 
   /* USER CODE END MemoryManagement_IRQn 0 */
   while (1)
@@ -115,6 +127,7 @@ void MemManage_Handler(void)
 void BusFault_Handler(void)
 {
   /* USER CODE BEGIN BusFault_IRQn 0 */
+  fault_reset_after_delay();
 
   /* USER CODE END BusFault_IRQn 0 */
   while (1)
@@ -130,6 +143,7 @@ void BusFault_Handler(void)
 void UsageFault_Handler(void)
 {
   /* USER CODE BEGIN UsageFault_IRQn 0 */
+  fault_reset_after_delay();
 
   /* USER CODE END UsageFault_IRQn 0 */
   while (1)

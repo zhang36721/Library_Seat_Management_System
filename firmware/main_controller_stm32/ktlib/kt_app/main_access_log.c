@@ -2,11 +2,14 @@
 #include "main_card_db.h"
 #include "kt_config.h"
 #include "kt_log.h"
+#include "kt_system/kt_tick.h"
+#include "kt_system/kt_system_health.h"
 #include "stm32f1xx_hal.h"
 #include <string.h>
 
 #define ACCESS_LOG_FLASH_VERSION  2U
 #define ACCESS_LOG_FLASH_WORDS    256U
+#define ACCESS_LOG_FLASH_SAVE_DELAY_MS 5000U
 
 typedef struct {
     uint8_t used;
@@ -14,6 +17,7 @@ typedef struct {
     uint8_t in_library;
 } main_access_presence_t;
 
+#if (MAIN_ACCESS_LOG_FLASH_ENABLE != 0U)
 typedef struct {
     uint32_t index;
     uint8_t uid[4];
@@ -28,19 +32,24 @@ typedef struct {
     uint32_t next_index;
     uint8_t record_start;
     uint8_t record_count;
-    uint8_t card_count;
-    uint8_t reserved;
-    main_card_record_t cards[MAIN_CARD_MAX_COUNT];
+    uint8_t reserved0;
+    uint8_t reserved1;
     main_access_flash_record_t records[MAIN_ACCESS_LOG_MAX_COUNT];
 } main_access_flash_image_t;
+#endif
 
 static main_access_record_t records[MAIN_ACCESS_LOG_MAX_COUNT];
 static main_access_presence_t presence[MAIN_CARD_MAX_COUNT];
 static uint8_t record_start;
 static uint8_t record_count;
 static uint32_t next_index = 1U;
+static uint8_t flash_dirty;
+static uint32_t flash_dirty_ms;
+#if (MAIN_ACCESS_LOG_FLASH_ENABLE != 0U)
+static uint32_t flash_save_words[ACCESS_LOG_FLASH_WORDS];
 
 typedef char access_log_flash_size_check[(sizeof(main_access_flash_image_t) <= 1024U) ? 1 : -1];
+#endif
 
 static uint8_t uid_equal(const uint8_t a[4], const uint8_t b[4])
 {
@@ -75,6 +84,7 @@ static main_access_presence_t *find_presence(const uint8_t uid[4], uint8_t creat
     return 0;
 }
 
+#if (MAIN_ACCESS_LOG_FLASH_ENABLE != 0U)
 static void rebuild_presence_from_records(void)
 {
     uint8_t i;
@@ -92,23 +102,23 @@ static void rebuild_presence_from_records(void)
         }
     }
 }
+#endif
 
+#if (MAIN_ACCESS_LOG_FLASH_ENABLE != 0U)
 static void access_log_flash_save(void)
 {
     FLASH_EraseInitTypeDef erase = {0};
     uint32_t page_error = 0U;
     uint32_t i;
-    uint32_t words[ACCESS_LOG_FLASH_WORDS];
-    main_access_flash_image_t *image = (main_access_flash_image_t *)words;
+    uint32_t start_ms = kt_tick_get_ms();
+    main_access_flash_image_t *image = (main_access_flash_image_t *)flash_save_words;
 
-    memset(words, 0xFF, sizeof(words));
+    memset(flash_save_words, 0xFF, sizeof(flash_save_words));
     image->magic = MAIN_ACCESS_LOG_FLASH_MAGIC;
     image->version = ACCESS_LOG_FLASH_VERSION;
     image->next_index = next_index;
     image->record_start = record_start;
     image->record_count = record_count;
-    image->card_count = main_card_db_count();
-    main_card_db_export(image->cards);
 
     for (i = 0; i < MAIN_ACCESS_LOG_MAX_COUNT; i++) {
         image->records[i].index = records[i].index;
@@ -127,7 +137,7 @@ static void access_log_flash_save(void)
         for (i = 0; i < ACCESS_LOG_FLASH_WORDS; i++) {
             if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD,
                                   MAIN_ACCESS_LOG_FLASH_PAGE_ADDR + (i * 4U),
-                                  words[i]) != HAL_OK) {
+                                  flash_save_words[i]) != HAL_OK) {
                 KT_LOG_WARN("ACCESS LOG FLASH WRITE FAIL");
                 break;
             }
@@ -136,10 +146,23 @@ static void access_log_flash_save(void)
         KT_LOG_WARN("ACCESS LOG FLASH ERASE FAIL");
     }
     HAL_FLASH_Lock();
+    kt_system_health_note_flash_save(kt_tick_get_ms() - start_ms);
 }
+#endif
 
 void main_access_log_init(void)
 {
+#if (MAIN_ACCESS_LOG_FLASH_ENABLE == 0U)
+    memset(records, 0, sizeof(records));
+    memset(presence, 0, sizeof(presence));
+    record_start = 0U;
+    record_count = 0U;
+    next_index = 1U;
+    flash_dirty = 0U;
+    flash_dirty_ms = 0U;
+    KT_LOG_WARN("ACCESS LOG FLASH DISABLED: RAM only");
+    return;
+#else
     uint8_t i;
     const main_access_flash_image_t *image =
         (const main_access_flash_image_t *)MAIN_ACCESS_LOG_FLASH_PAGE_ADDR;
@@ -149,18 +172,17 @@ void main_access_log_init(void)
     record_start = 0U;
     record_count = 0U;
     next_index = 1U;
+    flash_dirty = 0U;
+    flash_dirty_ms = 0U;
 
     if (image->magic != MAIN_ACCESS_LOG_FLASH_MAGIC ||
         image->version != ACCESS_LOG_FLASH_VERSION ||
         image->record_count > MAIN_ACCESS_LOG_MAX_COUNT ||
-        image->record_start >= MAIN_ACCESS_LOG_MAX_COUNT ||
-        image->card_count > MAIN_CARD_MAX_COUNT) {
-        main_card_db_clear();
-        KT_LOG_INFO("LOCAL STORE FLASH EMPTY");
+        image->record_start >= MAIN_ACCESS_LOG_MAX_COUNT) {
+        KT_LOG_INFO("ACCESS LOG FLASH EMPTY");
         return;
     }
 
-    main_card_db_import(image->cards);
     record_start = image->record_start;
     record_count = image->record_count;
     next_index = image->next_index;
@@ -177,17 +199,43 @@ void main_access_log_init(void)
     }
 
     rebuild_presence_from_records();
-    KT_LOG_INFO("LOCAL STORE FLASH LOADED: cards=%u/%u logs=%u/%u",
-                (unsigned int)main_card_db_count(),
-                (unsigned int)MAIN_CARD_MAX_COUNT,
+    KT_LOG_INFO("ACCESS LOG FLASH LOADED: logs=%u/%u",
                 (unsigned int)record_count,
                 (unsigned int)MAIN_ACCESS_LOG_MAX_COUNT);
+#endif
 }
 
 void main_access_log_flush(void)
 {
+#if (MAIN_ACCESS_LOG_FLASH_ENABLE == 0U)
+    flash_dirty = 0U;
+    flash_dirty_ms = 0U;
+    KT_LOG_WARN("ACCESS LOG FLASH DISABLED: flush skipped");
+    return;
+#else
+    flash_dirty = 0U;
     access_log_flash_save();
     KT_LOG_INFO("LOCAL STORE FLASH SAVED");
+#endif
+}
+
+void main_access_log_task(uint8_t allow_flash_write)
+{
+#if (MAIN_ACCESS_LOG_FLASH_ENABLE == 0U)
+    (void)allow_flash_write;
+    return;
+#else
+    if (flash_dirty == 0U || allow_flash_write == 0U) {
+        return;
+    }
+
+    if (!kt_tick_is_timeout(flash_dirty_ms, ACCESS_LOG_FLASH_SAVE_DELAY_MS)) {
+        return;
+    }
+
+    flash_dirty = 0U;
+    access_log_flash_save();
+#endif
 }
 
 const char *main_access_log_type_text(main_access_type_t type)
@@ -240,7 +288,10 @@ void main_access_log_add(const uint8_t uid[4],
     records[slot].type = type;
     records[slot].allowed = allowed ? 1U : 0U;
     records[slot].time = *time;
-    access_log_flash_save();
+#if (MAIN_ACCESS_LOG_FLASH_ENABLE != 0U)
+    flash_dirty = 1U;
+    flash_dirty_ms = kt_tick_get_ms();
+#endif
 }
 
 void main_access_log_clear(void)
@@ -250,8 +301,14 @@ void main_access_log_clear(void)
     record_start = 0U;
     record_count = 0U;
     next_index = 1U;
+    flash_dirty = 0U;
+#if (MAIN_ACCESS_LOG_FLASH_ENABLE != 0U)
     access_log_flash_save();
-    KT_LOG_INFO("ACCESS LOG CLEARED");
+#else
+    flash_dirty_ms = 0U;
+    KT_LOG_WARN("FLASH PERSIST DISABLED");
+#endif
+    KT_LOG_INFO("RAM ACCESS LOG CLEARED");
 }
 
 uint8_t main_access_log_count(void)
@@ -264,11 +321,12 @@ void main_access_log_print_all(void)
     uint8_t i;
 
     if (record_count == 0U) {
-        KT_LOG_INFO("ACCESS LOG EMPTY");
+        KT_LOG_INFO("RAM ACCESS LOG EMPTY");
+        KT_LOG_WARN("FLASH PERSIST DISABLED");
         return;
     }
 
-    KT_LOG_INFO("ACCESS LOG COUNT: %u/%u",
+    KT_LOG_INFO("RAM ACCESS LOG COUNT: %u/%u",
                 (unsigned int)record_count,
                 (unsigned int)MAIN_ACCESS_LOG_MAX_COUNT);
 
@@ -308,9 +366,10 @@ void main_access_log_print_stats(void)
         }
     }
 
-    KT_LOG_INFO("ACCESS LOG COUNT: %u/%u",
+    KT_LOG_INFO("RAM ACCESS LOG COUNT: %u/%u",
                 (unsigned int)record_count,
                 (unsigned int)MAIN_ACCESS_LOG_MAX_COUNT);
-    KT_LOG_INFO("ACCESS OK: %u", (unsigned int)allowed);
-    KT_LOG_INFO("ACCESS DENIED: %u", (unsigned int)denied);
+    KT_LOG_INFO("RAM ACCESS OK: %u", (unsigned int)allowed);
+    KT_LOG_INFO("RAM ACCESS DENIED: %u", (unsigned int)denied);
+    KT_LOG_WARN("FLASH PERSIST DISABLED");
 }

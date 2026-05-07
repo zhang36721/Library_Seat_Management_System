@@ -27,6 +27,7 @@ void main_access_log_add(const uint8_t uid[4],
                          uint8_t allowed,
                          const kt_ds1302_time_t *time);
 void main_access_log_init(void);
+void main_access_log_task(uint8_t allow_flash_write);
 void main_access_log_flush(void);
 void main_access_log_clear(void);
 void main_access_log_print_all(void);

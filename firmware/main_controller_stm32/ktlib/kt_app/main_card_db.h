@@ -27,6 +27,7 @@ typedef struct {
 
 main_card_add_result_t main_card_db_add(const uint8_t uid[4]);
 main_card_del_result_t main_card_db_remove(const uint8_t uid[4]);
+void main_card_db_init(void);
 uint8_t main_card_db_contains(const uint8_t uid[4]);
 uint8_t main_card_db_count(void);
 void main_card_db_export(main_card_record_t records[MAIN_CARD_MAX_COUNT]);

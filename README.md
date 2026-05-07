@@ -1,167 +1,116 @@
-# 基于 ZigBee 的图书馆座位管理系统
+﻿# 图书馆座位管理系统
 
-基于 ZigBee 无线通信的图书馆座位管理系统，实现 3 路座位状态检测、RFID 刷卡签到和自动化管理功能。
+基于 STM32 主控、座位端 STM32、CC2530 ZigBee、ESP32S3 网关、FastAPI 后端和 Vue Web 前端的图书馆座位管理演示系统。
 
-## v0.7.1/v0.8 当前阶段范围
+当前版本重点是稳定演示：本地刷卡、OLED/蜂鸣器/闸门反馈、座位状态采集、ESP32 主动上报、Web 展示。暂不做登录、用户权限、预约业务和数据库持久化。
 
-v0.7.1 继续整理和验证 STM32 主控硬件层：上电初始化、外设自检、USART2 debug 命令、ZigBee USART1 收发测试。v0.8 开始 seat_node_stm32 座位端基础采集与 ZigBee 串口透传验证。本阶段仍不做后端、前端、ESP32S3 上传、ZigBee 正式业务协议或完整业务闭环。
+主控 STM32 当前采用拆分持久化策略：注册卡表写入 STM32 Flash，断电不丢；最近通行记录只保留在本次上电 RAM 中，最终刷卡记录以后端/云端数据为准。
 
-串口职责固定如下：
-
-| 串口 | 职责 | 当前状态 |
-|------|------|----------|
-| USART1 | ZigBee CC2530 串口透传测试 | 主控/座位端测试通道，不接业务协议 |
-| USART2 | Debug 调试串口，115200，继续使用 `FF CMD DATA FF` 协议 | 当前唯一调试命令通道 |
-| USART3 | ESP32S3 通信预留 | 主控测试发送，不与 USART2 debug 共用 |
-
-ESP32S3 后续协议必须独立于当前 USART2 debug 协议；旧接线文档中 ESP32S3 使用 PA2/PA3 的描述已在 `docs/hardware_pin_map.md` 标记为冲突待确认。
-
-硬件文档：
-
-- 硬件资源表：[docs/hardware_pin_map.md](docs/hardware_pin_map.md)
-- 接线布局规划：[docs/hardware_wiring_plan.md](docs/hardware_wiring_plan.md)
-- 主控外设模块测试报告：[docs/hardware_module_test_report.md](docs/hardware_module_test_report.md)
-
-推荐启动输出示例：
+## 系统架构
 
 ```text
-=== System Boot ===
-Project : Library Seat Management System
-Firmware: Main Controller STM32
-Version : v0.7.1
-Build   : Apr 28 2026 18:20:00
-Author  : Kento
-Student : TODO_STUDENT_ID
-Boot    : 3
-Debug   : USART2 115200, FF CMD DATA FF
-===================
+座位端 STM32 -> CC2530 ZigBee -> STM32 主控 -> ESP32S3 -> FastAPI 后端 -> Vue Web
+                         |                 |
+                         |                 +-> OLED / 蜂鸣器 / 闸门 / RC522 / DS1302
+                         +-> USART2 debug   +-> USART2 debug
 ```
 
-v0.7.1 主控外设自检推荐输出补充：
+| 层级 | 组成 | 当前职责 |
+| --- | --- | --- |
+| STM32 主控 | STM32F103C8T6 | 刷卡、本地卡表、通行记录、OLED、蜂鸣器、闸门、座位状态汇总 |
+| 座位端 | STM32F103C8T6 | HX711/红外/电平检测、座位 LED、ZigBee 上报 |
+| ZigBee | CC2530 两端 | USART1 38400 二进制点对点通信 |
+| ESP32S3 | 网关 | USART3 二进制协议、WiFi、HTTP 主动上报 |
+| 后端 | FastAPI | 内存保存最新设备状态和最近刷卡记录 |
+| 前端 | Vue 3 + Vite | 中文演示控制台 |
 
-```text
-[INFO] RC522 init: OK
-[INFO] OLED init: OK
-[INFO] DS1302 init: OK, time=2026-04-28 12:34:xx
-[INFO] Stepper init: STOP, coils off
-[INFO] USART1 ZigBee UART init: OK
-[WARN] ZigBee module/network status: pending real link test
-[INFO] USART3 ESP32S3 UART init: OK
-[WARN] ESP32S3 peer status: pending real link test
+## 端口说明
+
+| 服务 | 端口 | 说明 |
+| --- | --- | --- |
+| 后端 FastAPI | 18080 | ESP32 主动上报和 Web 读取数据 |
+| 前端 Vite dev | 15173 | 演示页面 |
+| 前端 preview | 15174 | 构建后预览 |
+| STM32 Debug | USART2 115200 | `FF CMD DATA FF` |
+| ZigBee | USART1 38400 | `FA ADDR_L ADDR_H LEN DATA F5` |
+| ESP32 链路 | USART3 115200 | `A5 5A ... CRC 0D` |
+
+ESP32 的后端地址不能写 `localhost` 或 `127.0.0.1`，必须写后端电脑局域网 IP，例如：
+
+```cpp
+constexpr const char *SERVER_BASE_URL_301 = "http://192.168.141.236:18080";
 ```
 
-ZigBee CC2530 接线要点：主控 PA9 USART1_TX 接 ZigBee P1.7 RX，PA10 USART1_RX 接 ZigBee P1.6 TX，3.3V 供电，共地，P2.0 接 GND 保持唤醒。`FF 80 00 FF` 只能证明 STM32 USART1 发送成功，不能证明 ZigBee 入网或对端收到。
+## 启动方式
 
-座位传感器未配置时，`FF 30 00 FF` 推荐输出：
+1. 启动后端：
 
-```text
-[INFO] CMD 0x30: Seat raw level
-[WARN] Seat sensor pins not configured (kt_cmd.c:90)
-[INFO] Set APP_SEAT_SENSOR_PINS_CONFIRMED=1 after wiring confirmed
-```
+   ```powershell
+   python -m uvicorn backend.main:app --host 0.0.0.0 --port 18080
+   ```
 
-`FF 31 00 FF` 推荐输出：
+2. 启动前端：
 
-```text
-[INFO] CMD 0x31: Seat status
-[WARN] Seat sensor pins not configured (kt_cmd.c:110)
-```
+   ```powershell
+   cd frontend
+   npm run dev -- --host 0.0.0.0 --port 15173
+   ```
 
-## 项目简介
+3. STM32 主控上电。
+4. 座位端 STM32 上电。
+5. ESP32S3 上电。
+6. 浏览器打开：
 
-本系统通过座位检测端 STM32 统一采集 3 个座位的红外和压力传感器数据，经 ZigBee 无线传输至主控管理端，结合 RFID 刷卡进行身份验证，并通过 ESP32S3 将数据上传至后端服务器，提供 Web 管理界面。
+   ```text
+   http://localhost:15173/
+   ```
 
-## 硬件组成
+## 演示流程
 
-### 主控芯片
-| 模块 | 数量 | 用途 |
-|------|------|------|
-| STM32F103C8T6 最小系统板 | 2 | 一个作为座位检测端，一个作为主控管理端 |
+1. Web 显示后端服务正常。
+2. ESP32S3 每 2 秒上报 heartbeat，Web 显示 ESP32 网关在线。
+3. STM32 主控上电后，Web 显示 STM32 主控在线。
+4. Web 显示 3 个座位状态和闸门状态。
+5. 刷已注册卡：OLED 显示通过，蜂鸣器快速响一声，闸门开关，Web 出现通过记录。
+6. 刷未注册卡：OLED 显示拒绝，蜂鸣器三连响，闸门不动作，Web 出现拒绝记录。
+7. 断开 ESP32S3：Web 约 10 秒后显示连接丢失。
+8. 恢复 ESP32S3：Web 自动恢复在线。
 
-### 座位检测端硬件
-| 模块 | 数量 | 用途 |
-|------|------|------|
-| 红外感应模块 + 重量压力传感器 + HX711AD | 3 | 检测 3 个座位是否占用 |
-| CC2530 ZigBee 串口透传模块 | 1 | 发送座位状态到主控端 |
+## 关键调试命令
 
-### 主控管理端硬件
-| 模块 | 数量 | 用途 |
-|------|------|------|
-| 0.96 寸 OLED IIC 屏 | 1 | 显示时间、座位状态、刷卡状态 |
-| DS1302 时钟模块 | 1 | 提供实时时间，记录进出时间 |
-| RC522 RFID 模块 | 1 | 识别 IC 卡 |
-| IC 白卡 / 钥匙扣 | 5 | 用户刷卡介质 |
-| 28BYJ-48 步进电机 | 1 | 模拟闸机开关 |
-| ULN2003 驱动板 | 1 | 驱动步进电机 |
-| 有源蜂鸣器模块 | 1 | 刷卡成功、失败、座位已满提醒 |
-| 独立按键模块 | 4~6 | 时间设置、参数调整、卡片注册/删除 |
-| CC2530 ZigBee 串口透传模块 | 1 | 接收座位检测端数据 |
+| 命令 | 功能 |
+| --- | --- |
+| `FF A0 00 FF` | 打印主控业务状态 |
+| `FF A1 00 FF` | 手动执行一次刷卡流程测试 |
+| `FF B0 00 FF` | 打印 8 路按键映射 |
+| `FF B1 00 FF` | 打印 8 路按键原始电平 |
+| `FF C0 00 FF` | 打印本次上电 RAM 通行记录 |
+| `FF D2 00 FF` | 打印 ESP32 链路状态和队列统计 |
+| `FF 84 00 FF` | 打印 ZigBee 二进制链路统计 |
+| `FF 86 00 FF` | 发送 ZigBee 二进制 PING |
+| `FF E0 00 FF` | 打印系统健康统计 |
 
-### 通信与网关
-| 模块 | 数量 | 用途 |
-|------|------|------|
-| ESP32S3 | 1 | WiFi 上传数据到 Web 后端 |
+## 文档入口
 
-### 调试与搭建
-| 模块 | 数量 | 用途 |
-|------|------|------|
-| DAPLINK 下载器 | 1 | STM32 下载和调试 |
-| USB 转 TTL 模块 | 1~2 | 串口调试 |
-| 杜邦线套装 | 1 | 模块连接 |
-| 面包板 / 洞洞板 | 1 | 硬件搭建 |
+| 文档 | 说明 |
+| --- | --- |
+| [docs/01_project_overview.md](docs/01_project_overview.md) | 项目总览 |
+| [docs/02_software_architecture.md](docs/02_software_architecture.md) | 软件架构 |
+| [docs/03_protocol_and_data_flow.md](docs/03_protocol_and_data_flow.md) | 协议与数据流 |
+| [docs/04_hardware_wiring.md](docs/04_hardware_wiring.md) | 硬件接线入口 |
+| [docs/05_test_record.md](docs/05_test_record.md) | 测试记录 |
+| [docs/06_demo_guide.md](docs/06_demo_guide.md) | 演示指南 |
+| [docs/07_cloud_deploy.md](docs/07_cloud_deploy.md) | 云服务器部署指南 |
+| [hardware/wiring/main_controller_wiring.md](hardware/wiring/main_controller_wiring.md) | STM32 主控接线图 |
+| [hardware/wiring/seat_node_wiring.md](hardware/wiring/seat_node_wiring.md) | 座位端接线图 |
+| [hardware/wiring/esp32s3_wiring.md](hardware/wiring/esp32s3_wiring.md) | ESP32S3 接线图 |
 
-## 技术栈
+## 当前限制
 
-### 嵌入式开发
-- **MCU**: STM32F103C8T6
-- **通信协议**: UART、IIC、SPI、GPIO
-- **无线通信**: ZigBee 串口透传（CC2530）
-- **WiFi 上传**: ESP32S3
+云服务器部署时，本系统入口为 `https://www.kento.top/library-seat/`，避免占用现有项目的根路径和登录页。
 
-### 软件开发
-- **前端**: Vue 3 + Vite + 原生 CSS / 自定义组件
-- **后端**: Python FastAPI
-- **数据存储**: JSON 文件（轻量级，无需数据库）
-- **部署**: Nginx + Uvicorn + Systemd
-
-## 数据存储说明
-
-### 当前方案：JSON 文件存储
-- 后端使用多个 JSON 文件作为轻量数据表
-- 无需安装和配置数据库，降低部署复杂度
-- 适合当前 3 个座位的小规模场景
-
-### 数据安全
-- **GitHub 仓库**: 只管理代码和 JSON 模板（`data_templates/`）
-- **本地/云端数据**: 真实运行数据不提交到 Git
-- **云端数据路径**: 建议放在 `/var/lib/library_seat/data/`
-- **环境变量**: 后端通过 `DATA_DIR` 指定 JSON 数据目录
-- **更新策略**: 服务器 `git pull` 只更新代码，不覆盖真实 JSON 数据
-
-### 后期扩展
-如果数据量变大，可迁移到 SQLite 或 MySQL 数据库。
-
-## 功能模块
-
-- **3 路座位占用检测**: 红外 + 压力传感器双重检测
-- **ZigBee 无线传输**: 座位检测端与主控端通信
-- **RFID 刷卡识别**: RC522 模块识别用户身份
-- **DS1302 记录时间**: 记录进出时间
-- **OLED 实时显示**: 显示座位状态和刷卡信息
-- **步进电机模拟闸机**: 刷卡成功后自动控制
-- **蜂鸣器提醒**: 刷卡成功、失败、座位已满提醒
-- **ESP32S3 数据上传**: 上传座位状态和刷卡事件到后端
-- **Vue3 Web 界面**: 查看座位状态和刷卡记录
-- **JSON 文件存储**: 轻量数据表，无需数据库
-
-## 目录说明
-
-| 目录 | 说明 |
-|------|------|
-| `docs/` | 项目文档 |
-| `hardware/` | 硬件设计资料 |
-| `firmware/` | 嵌入式固件代码 |
-| `backend/` | Python 后端代码 |
-| `frontend/` | Vue3 前端代码 |
-| `tools/` | 开发工具脚本 |
-| `deployment/` | 服务器部署配置 |
+1. STM32 主控注册卡表会写入 Flash；通行记录为 RAM only，断电后清空。
+2. 后端状态和刷卡记录以内存保存为主，重启后会清空。
+3. ZigBee 点对点链路仍需继续观察丢包统计和现场供电稳定性。
+4. ESP32S3 PlatformIO 编译需要在安装 PlatformIO 的电脑上执行。
+5. 目前不做登录、用户系统、预约系统和云端数据库。

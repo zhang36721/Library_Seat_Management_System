@@ -174,11 +174,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
-  while (1)
-  {
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+  for (volatile uint32_t i = 0; i < 200000UL; ++i) {
+    __NOP();
   }
+  NVIC_SystemReset();
+  while (1) {}
   /* USER CODE END Error_Handler_Debug */
 }
 

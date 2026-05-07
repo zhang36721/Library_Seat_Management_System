@@ -100,8 +100,15 @@ void kt_debug_print_help(void)
     KT_LOG_INFO("  FF 24 00 FF  -> Print USART roles");
     KT_LOG_INFO("  FF 30 00 FF  -> Read raw sensor levels");
     KT_LOG_INFO("  FF 31 00 FF  -> Print FREE/OCCUPIED");
+    KT_LOG_INFO("  FF 32 00 FF  -> HX711 tare empty seat");
+    KT_LOG_INFO("  FF 33 NN FF  -> HX711 calibrate, NN*10g");
+    KT_LOG_INFO("  FF 34 00 FF  -> Print HX711 weight in grams");
+    KT_LOG_INFO("  FF 35 00 FF  -> Print seat LED map");
+    KT_LOG_INFO("  FF 36 00 FF  -> Refresh/print seat LED state");
     KT_LOG_INFO("  FF 80 00 FF  -> Send ZigBee seat status");
     KT_LOG_INFO("  FF 81 00 FF  -> Send ZigBee PONG");
+    KT_LOG_INFO("  FF 82 00 FF  -> Print ZigBee link info");
+    KT_LOG_INFO("  FF 83 00 FF  -> Send ZigBee PONG test");
 }
 
 /**
@@ -155,11 +162,55 @@ void kt_debug_execute_command(uint8_t cmd, uint8_t value)
         seat_node_print_status();
         break;
 
+    case 0x32:
+        if (value == 0x00) {
+            seat_node_tare_hx711();
+        } else {
+            KT_LOG_WARN("Unknown value for CMD 0x32: 0x%02X", value);
+        }
+        break;
+
+    case 0x33:
+        seat_node_calibrate_hx711(value);
+        break;
+
+    case 0x34:
+        if (value == 0x00) {
+            seat_node_print_hx711_weight();
+        } else {
+            KT_LOG_WARN("Unknown value for CMD 0x34: 0x%02X", value);
+        }
+        break;
+
+    case 0x35:
+        if (value == 0x00) {
+            seat_node_print_led_map();
+        } else {
+            KT_LOG_WARN("Unknown value for CMD 0x35: 0x%02X", value);
+        }
+        break;
+
+    case 0x36:
+        if (value == 0x00) {
+            seat_node_refresh_and_print_leds();
+        } else {
+            KT_LOG_WARN("Unknown value for CMD 0x36: 0x%02X", value);
+        }
+        break;
+
     case 0x80:
         seat_node_send_zigbee_status();
         break;
 
     case 0x81:
+        seat_node_send_zigbee_pong();
+        break;
+
+    case 0x82:
+        seat_node_print_zigbee_info();
+        break;
+
+    case 0x83:
         seat_node_send_zigbee_pong();
         break;
 

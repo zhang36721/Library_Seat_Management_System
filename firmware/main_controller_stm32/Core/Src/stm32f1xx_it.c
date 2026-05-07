@@ -22,6 +22,7 @@
 #include "stm32f1xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "kt_system/kt_system_health.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,6 +52,22 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static void fault_outputs_safe_off(void)
+{
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
+}
+
+static void fault_reset_after_delay(const char *name)
+{
+  volatile uint32_t i;
+  kt_system_health_note_fault(name);
+  fault_outputs_safe_off();
+  for (i = 0; i < 6000000U; i++) {
+    __NOP();
+  }
+  NVIC_SystemReset();
+}
 
 /* USER CODE END 0 */
 
@@ -74,9 +91,7 @@ void NMI_Handler(void)
 
   /* USER CODE END NonMaskableInt_IRQn 0 */
   /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
-   while (1)
-  {
-  }
+  fault_reset_after_delay("NMI");
   /* USER CODE END NonMaskableInt_IRQn 1 */
 }
 
@@ -86,6 +101,7 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
+  fault_reset_after_delay("HARDFAULT");
 
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
@@ -101,6 +117,7 @@ void HardFault_Handler(void)
 void MemManage_Handler(void)
 {
   /* USER CODE BEGIN MemoryManagement_IRQn 0 */
+  fault_reset_after_delay("MEMFAULT");
 
   /* USER CODE END MemoryManagement_IRQn 0 */
   while (1)
@@ -116,6 +133,7 @@ void MemManage_Handler(void)
 void BusFault_Handler(void)
 {
   /* USER CODE BEGIN BusFault_IRQn 0 */
+  fault_reset_after_delay("BUSFAULT");
 
   /* USER CODE END BusFault_IRQn 0 */
   while (1)
@@ -131,6 +149,7 @@ void BusFault_Handler(void)
 void UsageFault_Handler(void)
 {
   /* USER CODE BEGIN UsageFault_IRQn 0 */
+  fault_reset_after_delay("USAGEFAULT");
 
   /* USER CODE END UsageFault_IRQn 0 */
   while (1)
