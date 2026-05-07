@@ -28,6 +28,7 @@ device_status: dict[str, Any] = {
     },
     "last_heartbeat_at": None,
     "last_heartbeat_at_ms": 0,
+    "last_stm32_frame_at_ms": 0,
     "esp_uptime_ms": 0,
 }
 card_events: list[dict[str, Any]] = []
@@ -43,6 +44,13 @@ def now_iso() -> str:
 
 def esp32_online() -> bool:
     last_ms = int(device_status.get("last_heartbeat_at_ms") or 0)
+    return last_ms > 0 and now_ms() - last_ms < DEVICE_OFFLINE_TIMEOUT_MS
+
+
+def stm32_online() -> bool:
+    last_ms = int(device_status.get("last_stm32_frame_at_ms") or 0)
+    if bool(device_status.get("stm32_online", False)):
+        return True
     return last_ms > 0 and now_ms() - last_ms < DEVICE_OFFLINE_TIMEOUT_MS
 
 
@@ -77,10 +85,12 @@ async def post_heartbeat(payload: dict[str, Any]):
 
 @router.post("/device-status")
 async def post_device_status(payload: dict[str, Any]):
+    frame_ms = now_ms()
     device_status.update(
         {
             "device_id": payload.get("device_id", device_status["device_id"]),
-            "stm32_online": bool(payload.get("stm32_online", device_status["stm32_online"])),
+            "stm32_online": bool(payload.get("stm32_online", True)),
+            "last_stm32_frame_at_ms": frame_ms,
             "card_count": payload.get("card_count", device_status["card_count"]),
             "log_count": payload.get("log_count", device_status["log_count"]),
             "ds1302_valid": bool(payload.get("ds1302_valid", device_status["ds1302_valid"])),
@@ -96,6 +106,8 @@ async def post_device_status(payload: dict[str, Any]):
 
 @router.post("/card-event")
 async def post_card_event(payload: dict[str, Any]):
+    device_status["stm32_online"] = True
+    device_status["last_stm32_frame_at_ms"] = now_ms()
     event = {
         "device_id": payload.get("device_id", device_status["device_id"]),
         "uid": payload.get("uid", ""),
@@ -114,8 +126,10 @@ async def post_card_event(payload: dict[str, Any]):
 
 @router.get("/status")
 async def get_status():
+    stm32_is_online = stm32_online()
     return {
         **device_status,
+        "stm32_online": stm32_is_online,
         "esp_online": esp32_online(),
         "esp32_online": esp32_online(),
         "seats": current_seats(),

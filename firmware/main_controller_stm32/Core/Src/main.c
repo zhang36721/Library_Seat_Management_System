@@ -153,7 +153,7 @@ int main(void)
   kt_task_register("debug",     kt_debug_task,       1);
   kt_task_register("app_io",    app_io_tasks,       10);   /* LED blink + button debounce + buzzer */
   kt_task_register("main_keys", main_keys_task,     10);
-  kt_task_register("main_app",  main_controller_app_task, MAIN_CARD_POLL_PERIOD_MS);
+  kt_task_register("main_app",  main_controller_app_task, MAIN_APP_TASK_PERIOD_MS);
 #if APP_HEARTBEAT_LED_ENABLE
   kt_task_register("heartbeat", app_heartbeat_task, 500);
 #endif
@@ -169,8 +169,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    kt_modules_task();
     kt_task_run();
+    kt_modules_task();
     kt_system_health_note_main_loop();
   }
   /* USER CODE END 3 */

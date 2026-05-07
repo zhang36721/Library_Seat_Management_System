@@ -49,6 +49,7 @@ static uint8_t gate_motor_started;
 static uint8_t fail_beep_active;
 static uint8_t fail_beep_remaining;
 static uint32_t fail_beep_next_ms;
+static uint32_t last_card_poll_ms;
 
 #if (APP_CARD_PROFILE_ENABLE != 0U)
 #define CARD_PROFILE_MS() kt_tick_get_ms()
@@ -430,6 +431,7 @@ void main_controller_app_init(void)
     result_screen_active = 0U;
     fail_beep_active = 0U;
     fail_beep_remaining = 0U;
+    last_card_poll_ms = 0U;
     main_controller_app_show_home();
 }
 
@@ -462,6 +464,12 @@ void main_controller_app_task(void)
         card_wait_remove = 0U;
         return;
     }
+
+    if (last_card_poll_ms != 0U &&
+        !kt_tick_is_timeout(last_card_poll_ms, MAIN_CARD_POLL_PERIOD_MS)) {
+        return;
+    }
+    last_card_poll_ms = now;
 
     if (kt_rc522_read_uid_quiet(uid)) {
         if (card_wait_remove) {

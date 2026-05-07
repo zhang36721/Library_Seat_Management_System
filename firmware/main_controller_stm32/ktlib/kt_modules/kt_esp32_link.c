@@ -163,6 +163,35 @@ static uint8_t tx_queue_push(uint8_t type, const uint8_t *frame, uint16_t len)
     return 1U;
 }
 
+static uint8_t tx_queue_push_front(uint8_t type, const uint8_t *frame, uint16_t len)
+{
+    if (len > ESP32_TX_FRAME_MAX_LEN) {
+        tx_drop_count++;
+        return 0U;
+    }
+
+    if (tx_count >= KT_ESP32_TX_QUEUE_LEN) {
+        tx_tail++;
+        if (tx_tail >= KT_ESP32_TX_QUEUE_LEN) {
+            tx_tail = 0U;
+        }
+        tx_count--;
+        tx_drop_count++;
+    }
+
+    if (tx_tail == 0U) {
+        tx_tail = KT_ESP32_TX_QUEUE_LEN - 1U;
+    } else {
+        tx_tail--;
+    }
+
+    tx_queue[tx_tail].type = type;
+    tx_queue[tx_tail].len = len;
+    memcpy(tx_queue[tx_tail].bytes, frame, len);
+    tx_count++;
+    return 1U;
+}
+
 static void send_frame(uint8_t type, const uint8_t *data, uint16_t len, uint8_t corrupt_crc)
 {
     uint8_t frame[BIN_MAX_FRAME_LEN];
@@ -196,7 +225,9 @@ static void send_frame(uint8_t type, const uint8_t *data, uint16_t len, uint8_t 
     pos += 2U;
     frame[pos++] = BIN_EOF;
 
-    if (tx_queue_push(type, frame, pos) != 0U) {
+    if (((type == KT_MSG_HEARTBEAT_ACK) ?
+         tx_queue_push_front(type, frame, pos) :
+         tx_queue_push(type, frame, pos)) != 0U) {
 #if (KT_LOG_UART_FRAME_ENABLE != 0)
         if (!is_heartbeat_type(type)) {
             KT_LOG_INFO("ESP32 TX queued: %s seq=%u", msg_type_text(type), (unsigned int)seq);

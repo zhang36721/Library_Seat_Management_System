@@ -23,6 +23,16 @@ static uint16_t rx_crc = 0;
 
 static bool is_heartbeat_type(uint8_t type);
 
+static void mark_stm32_online()
+{
+    heartbeat_waiting_ack = false;
+    missed_ack_count = 0;
+    stm32_is_online = true;
+    device_state_set_stm32_online(true);
+    offline_reported = false;
+    last_ack_ms = millis();
+}
+
 static uint16_t send_frame(uint8_t type, const uint8_t *data, uint16_t len)
 {
     uint8_t frame[8 + KT_BIN_MAX_PAYLOAD + 3];
@@ -131,14 +141,7 @@ static void handle_ack(const uint8_t *p, uint16_t len)
     uint16_t ack_seq = kt_get_u16_le(p);
     uint8_t ack_type = p[2];
     if (ack_type == KT_MSG_HEARTBEAT && ack_seq == last_heartbeat_seq) {
-        bool recovered = !stm32_is_online;
-        heartbeat_waiting_ack = false;
-        missed_ack_count = 0;
-        stm32_is_online = true;
-        device_state_set_stm32_online(true);
-        offline_reported = false;
-        last_ack_ms = millis();
-        (void)recovered;
+        mark_stm32_online();
     } else if (UART_VERBOSE_LOG) {
         Serial.printf("[UART RX] ACK seq=%u type=%s\n", ack_seq, kt_msg_type_name(ack_type));
     }
@@ -150,6 +153,7 @@ static void handle_device_status(uint8_t type, const uint8_t *p, uint16_t len)
         send_err(0, type, KT_ERR_LEN_ERR);
         return;
     }
+    mark_stm32_online();
     if (UART_VERBOSE_LOG) {
         Serial.printf("[SYNC RX] cards=%u logs=%u time=20%02u-%02u-%02u %02u:%02u:%02u rc522=%s\n",
                       p[4], p[5], p[9], p[10], p[11], p[12], p[13], p[14],
@@ -189,10 +193,12 @@ static void handle_frame(uint8_t type, uint16_t seq, const uint8_t *p, uint16_t 
         Serial.printf("[UART RX] type=%s seq=%u crc=OK\n", kt_msg_type_name(type), seq);
     }
     if (type == KT_MSG_PING) {
+        mark_stm32_online();
         send_pong(seq);
     } else if (type == KT_MSG_HEARTBEAT_ACK || type == KT_MSG_ACK) {
         handle_ack(p, len);
     } else if (type == KT_MSG_CARD_EVENT) {
+        mark_stm32_online();
         handle_card_event(seq, p, len);
     } else if (type == KT_MSG_DEVICE_STATUS || type == KT_MSG_BOOT_SYNC) {
         handle_device_status(type, p, len);
@@ -282,15 +288,22 @@ void stm32_link_begin()
     Serial.println("[UART] STM32 link on RX=GPIO48 TX=GPIO47 baud=115200");
 }
 
+static void drain_rx()
+{
+    while (Stm32Serial.available() > 0) {
+        parse_byte(static_cast<uint8_t>(Stm32Serial.read()));
+    }
+}
+
 void stm32_link_task()
 {
+    drain_rx();
+
     if (millis() - last_heartbeat_ms >= 3000UL) {
         send_heartbeat();
     }
 
-    while (Stm32Serial.available() > 0) {
-        parse_byte(static_cast<uint8_t>(Stm32Serial.read()));
-    }
+    drain_rx();
 }
 
 bool stm32_link_online()

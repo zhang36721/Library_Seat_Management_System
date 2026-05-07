@@ -181,10 +181,10 @@
 #define KT_ESP32_HEARTBEAT_TIMEOUT_MS 10000U
 #define KT_ESP32_LINK_LED_PULSE_MS    50U
 #define KT_ESP32_DEVICE_STATUS_MIN_MS 1000U
-#define KT_ESP32_TX_GAP_MS            20U
+#define KT_ESP32_TX_GAP_MS            5U
 #define KT_ESP32_TX_TIMEOUT_MS        30U
-#define KT_ESP32_RX_BYTES_PER_TASK    64U
-#define KT_ESP32_TX_QUEUE_LEN         8U
+#define KT_ESP32_RX_BYTES_PER_TASK    128U
+#define KT_ESP32_TX_QUEUE_LEN         12U
 
 #define KT_ZIGBEE_RX_BYTES_PER_TASK   32U
 
@@ -194,7 +194,7 @@
  * v0.8.3 Main Controller 8-key Module
  *===========================================================================*/
 #define MAIN_KEY_ACTIVE_LEVEL      GPIO_PIN_RESET
-#define MAIN_KEY_DEBOUNCE_MS       20U
+#define MAIN_KEY_DEBOUNCE_MS       10U
 #define MAIN_KEY_LONG_PRESS_MS     800U
 
 #define MAIN_KEY1_PORT             GPIOA
@@ -217,7 +217,8 @@
 /*===========================================================================
  * v0.8.5 Main Controller Local Access Flow
  *===========================================================================*/
-#define MAIN_CARD_POLL_PERIOD_MS      50U
+#define MAIN_APP_TASK_PERIOD_MS       10U
+#define MAIN_CARD_POLL_PERIOD_MS      100U
 #define MAIN_CARD_REPEAT_GUARD_MS     2500U
 #define MAIN_GATE_HOLD_MS             3000U
 #define MAIN_OLED_IDLE_HOME_MS        3000U
