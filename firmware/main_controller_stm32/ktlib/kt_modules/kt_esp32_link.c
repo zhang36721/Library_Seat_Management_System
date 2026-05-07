@@ -16,7 +16,7 @@
 #define BIN_EOF  0x0DU
 #define BIN_MAX_FRAME_LEN (8U + KT_BIN_MAX_PAYLOAD_LEN + 3U)
 #define ESP32_RX_RING_SIZE 256U
-#define ESP32_DEVICE_STATUS_PERIOD_MS 30000U
+#define ESP32_DEVICE_STATUS_PERIOD_MS 5000U
 #define ESP32_TX_FRAME_MAX_LEN BIN_MAX_FRAME_LEN
 
 typedef enum {
@@ -258,15 +258,6 @@ static void send_frame(uint8_t type, const uint8_t *data, uint16_t len, uint8_t 
     }
 }
 
-static void send_ack_for(uint16_t ack_seq, uint8_t ack_type, uint8_t msg_type)
-{
-    uint8_t p[3];
-
-    put_u16_le(p, ack_seq);
-    p[2] = ack_type;
-    send_frame(msg_type, p, sizeof(p), 0U);
-}
-
 static void enqueue_device_status_now(void)
 {
     uint8_t p[20] = {0};
@@ -346,6 +337,7 @@ static void handle_wifi_status(const uint8_t *data, uint16_t len)
 static void handle_heartbeat(uint16_t seq, const uint8_t *data, uint16_t len)
 {
     uint8_t was_online = link_ok;
+    (void)seq;
 
     heartbeat_count++;
     last_heartbeat_ms = kt_tick_get_ms();
@@ -356,7 +348,6 @@ static void handle_heartbeat(uint16_t seq, const uint8_t *data, uint16_t len)
     }
 
     pulse_link_led();
-    send_ack_for(seq, KT_MSG_HEARTBEAT, KT_MSG_HEARTBEAT_ACK);
 
     if (!ever_online || !was_online) {
         if (ever_online) {
@@ -465,7 +456,9 @@ static void parse_byte(uint8_t b)
         if (header_pos >= 6U) {
             payload_len = get_u16_le(&header[4]);
             if (header[0] != KT_BIN_PROTOCOL_VERSION || payload_len > KT_BIN_MAX_PAYLOAD_LEN) {
+#if (KT_LOG_UART_FRAME_ENABLE != 0)
                 KT_LOG_WARN("ESP32 RX format error");
+#endif
                 reset_rx();
             } else {
                 payload_pos = 0U;
@@ -491,7 +484,9 @@ static void parse_byte(uint8_t b)
     case RX_EOF:
         if (b != BIN_EOF) {
             eof_error_count++;
+#if (KT_LOG_UART_FRAME_ENABLE != 0)
             KT_LOG_WARN("ESP32 RX EOF fail: 0x%02X", b);
+#endif
             reset_rx();
             break;
         }
@@ -504,7 +499,9 @@ static void parse_byte(uint8_t b)
             seq = get_u16_le(&header[2]);
             handle_frame(header[1], seq, payload, payload_len);
         } else {
+#if (KT_LOG_UART_FRAME_ENABLE != 0)
             KT_LOG_WARN("ESP32 RX CRC fail");
+#endif
         }
         reset_rx();
         break;
@@ -628,7 +625,8 @@ void kt_esp32_link_task(void)
         (last_device_status_ms == 0U ||
          kt_tick_is_timeout(last_device_status_ms, KT_ESP32_DEVICE_STATUS_MIN_MS))) {
         enqueue_device_status_now();
-    } else if (link_ok && kt_tick_is_timeout(last_device_status_ms, ESP32_DEVICE_STATUS_PERIOD_MS)) {
+    } else if (last_device_status_ms == 0U ||
+        kt_tick_is_timeout(last_device_status_ms, ESP32_DEVICE_STATUS_PERIOD_MS)) {
         device_status_dirty = 1U;
     }
 

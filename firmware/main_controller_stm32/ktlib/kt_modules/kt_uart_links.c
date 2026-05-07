@@ -20,7 +20,8 @@ typedef enum {
     ZB_ADDR_H,
     ZB_LEN,
     ZB_DATA,
-    ZB_TAIL
+    ZB_TAIL,
+    ZB_RAW_DATA
 } zigbee_rx_state_t;
 
 static volatile uint8_t zigbee_rx_byte;
@@ -109,9 +110,13 @@ static void zigbee_handle_payload(uint16_t addr, const uint8_t *data, uint8_t le
                  ((data[2] == 0U) ? 1U : 0U) +
                  ((data[3] == 0U) ? 1U : 0U);
 
+#if (KT_LOG_VERBOSE_ENABLE != 0)
     KT_LOG_INFO("[ZIGBEE] RX SEAT: S1=%u S2=%u S3=%u FREE=%u",
                 (unsigned int)data[1], (unsigned int)data[2], (unsigned int)data[3],
                 (unsigned int)free_count);
+#else
+    (void)free_count;
+#endif
     if (main_controller_app_update_seat_states(data[1], data[2], data[3]) != 0U) {
         KT_LOG_INFO("[ZIGBEE] Seats updated");
     }
@@ -126,6 +131,18 @@ static void zigbee_parse_byte(uint8_t b)
             zb_addr = 0U;
             zb_len = 0U;
             zb_index = 0U;
+        } else if (b == ZIGBEE_PAYLOAD_SEAT_STATUS) {
+            zb_addr = ZIGBEE_ADDR_SELF;
+            zb_len = 4U;
+            zb_index = 1U;
+            zb_payload[0] = b;
+            zb_state = ZB_RAW_DATA;
+        } else if (b == ZIGBEE_PAYLOAD_PING || b == ZIGBEE_PAYLOAD_PONG) {
+            zb_addr = ZIGBEE_ADDR_SELF;
+            zb_len = 2U;
+            zb_index = 1U;
+            zb_payload[0] = b;
+            zb_state = ZB_RAW_DATA;
         }
         break;
     case ZB_ADDR_L:
@@ -159,6 +176,13 @@ static void zigbee_parse_byte(uint8_t b)
             zigbee_tail_error++;
         }
         zb_state = ZB_WAIT_HEAD;
+        break;
+    case ZB_RAW_DATA:
+        zb_payload[zb_index++] = b;
+        if (zb_index >= zb_len) {
+            zigbee_handle_payload(zb_addr, zb_payload, zb_len);
+            zb_state = ZB_WAIT_HEAD;
+        }
         break;
     default:
         zb_state = ZB_WAIT_HEAD;

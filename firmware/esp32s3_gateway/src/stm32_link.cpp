@@ -5,13 +5,9 @@
 static HardwareSerial Stm32Serial(1);
 static uint16_t tx_seq = 1;
 static bool stm32_is_online = false;
-static bool heartbeat_waiting_ack = false;
 static bool offline_reported = false;
-static uint16_t last_heartbeat_seq = 0;
-static uint8_t missed_ack_count = 0;
-static uint32_t last_heartbeat_ms = 0;
-static uint32_t last_ack_ms = 0;
-constexpr uint8_t STM32_MISSED_ACK_OFFLINE_LIMIT = 5;
+static uint32_t last_valid_stm32_rx_ms = 0;
+constexpr uint32_t STM32_RX_OFFLINE_TIMEOUT_MS = 15000UL;
 
 enum RxState { WAIT_SOF1, WAIT_SOF2, HEADER, PAYLOAD, CRC1, CRC2, EOF_BYTE };
 static RxState rx_state = WAIT_SOF1;
@@ -26,12 +22,14 @@ static bool is_heartbeat_type(uint8_t type);
 
 static void mark_stm32_online()
 {
-    heartbeat_waiting_ack = false;
-    missed_ack_count = 0;
+    const bool was_online = stm32_is_online;
     stm32_is_online = true;
     device_state_set_stm32_online(true);
     offline_reported = false;
-    last_ack_ms = millis();
+    last_valid_stm32_rx_ms = millis();
+    if (!was_online) {
+        Serial.println("[STM32] online");
+    }
 }
 
 static uint16_t send_frame(uint8_t type, const uint8_t *data, uint16_t len)
@@ -61,6 +59,7 @@ static uint16_t send_frame(uint8_t type, const uint8_t *data, uint16_t len)
 
 static void send_ack(uint16_t ack_seq, uint8_t ack_type)
 {
+#if UART_VERBOSE_LOG
     uint8_t p[3];
     kt_put_u16_le(p, ack_seq);
     p[2] = ack_type;
@@ -68,16 +67,18 @@ static void send_ack(uint16_t ack_seq, uint8_t ack_type)
     if (!is_heartbeat_type(ack_type)) {
         Serial.printf("[UART TX] ACK seq=%u type=%s\n", ack_seq, kt_msg_type_name(ack_type));
     }
+#else
+    (void)ack_seq;
+    (void)ack_type;
+#endif
 }
 
 static void send_err(uint16_t err_seq, uint8_t err_type, uint8_t reason)
 {
-    uint8_t p[4];
-    kt_put_u16_le(p, err_seq);
-    p[2] = err_type;
-    p[3] = reason;
-    (void)send_frame(KT_MSG_ERR, p, sizeof(p));
-    Serial.printf("[UART TX] ERR seq=%u reason=%u\n", err_seq, reason);
+    if (UART_VERBOSE_LOG) {
+        Serial.printf("[UART RX] drop bad frame seq=%u type=%s reason=%u\n",
+                      err_seq, kt_msg_type_name(err_type), reason);
+    }
 }
 
 static void send_pong(uint16_t ping_seq)
@@ -93,6 +94,8 @@ static void send_pong(uint16_t ping_seq)
 
 void stm32_link_send_wifi_status(const WifiStatus &status)
 {
+    (void)status;
+#if UART_VERBOSE_LOG
     uint8_t p[39]{};
     p[0] = status.connected ? 1 : 0;
     p[1] = static_cast<uint8_t>(status.rssi);
@@ -102,6 +105,7 @@ void stm32_link_send_wifi_status(const WifiStatus &status)
     memcpy(&p[35], status.ip, 4);
     (void)send_frame(KT_MSG_WIFI_STATUS, p, sizeof(p));
     Serial.printf("[UART TX] type=WIFI_STATUS state=%u ssid=%s\n", p[0], status.ssid.c_str());
+#endif
 }
 
 static const char *access_type_text(uint8_t type)
@@ -141,9 +145,7 @@ static void handle_ack(const uint8_t *p, uint16_t len)
     }
     uint16_t ack_seq = kt_get_u16_le(p);
     uint8_t ack_type = p[2];
-    if (ack_type == KT_MSG_HEARTBEAT && ack_seq == last_heartbeat_seq) {
-        mark_stm32_online();
-    } else if (UART_VERBOSE_LOG) {
+    if (UART_VERBOSE_LOG) {
         Serial.printf("[UART RX] ACK seq=%u type=%s\n", ack_seq, kt_msg_type_name(ack_type));
     }
 }
@@ -162,30 +164,6 @@ static void handle_device_status(uint8_t type, const uint8_t *p, uint16_t len)
     }
     device_state_update_device_status(p, len);
     cloud_client_request_device_status_upload();
-}
-
-static void send_heartbeat()
-{
-    if (heartbeat_waiting_ack) {
-        if (missed_ack_count < 255) {
-            missed_ack_count++;
-        }
-        if (missed_ack_count >= STM32_MISSED_ACK_OFFLINE_LIMIT && !offline_reported) {
-            stm32_is_online = false;
-            device_state_set_stm32_online(false);
-            offline_reported = true;
-        }
-    }
-
-    WifiStatus status = wifi_manager_status();
-    uint8_t p[6];
-    kt_put_u32_le(p, millis());
-    p[4] = status.connected ? 1 : 0;
-    p[5] = static_cast<uint8_t>(status.rssi);
-    last_heartbeat_seq = send_frame(KT_MSG_HEARTBEAT, p, sizeof(p));
-    heartbeat_waiting_ack = true;
-    last_heartbeat_ms = millis();
-    device_state_note_heartbeat();
 }
 
 static void handle_frame(uint8_t type, uint16_t seq, const uint8_t *p, uint16_t len)
@@ -262,7 +240,9 @@ static void parse_byte(uint8_t b)
     case EOF_BYTE: {
         uint16_t seq = kt_get_u16_le(&header[2]);
         if (b != KT_BIN_EOF) {
+#if UART_VERBOSE_LOG
             Serial.printf("[UART RX] EOF_FAIL seq=%u eof=0x%02X\n", seq, b);
+#endif
             send_err(seq, header[1], KT_ERR_FORMAT_ERR);
             reset_rx();
             break;
@@ -273,7 +253,9 @@ static void parse_byte(uint8_t b)
         if (calc == rx_crc) {
             handle_frame(header[1], seq, payload, payload_len);
         } else {
+#if UART_VERBOSE_LOG
             Serial.printf("[UART RX] CRC_FAIL seq=%u\n", seq);
+#endif
             send_err(seq, header[1], KT_ERR_CRC_FAIL);
         }
         reset_rx();
@@ -298,10 +280,17 @@ static void drain_rx()
 
 void stm32_link_task()
 {
+    const uint32_t now = millis();
     drain_rx();
 
-    if (millis() - last_heartbeat_ms >= 3000UL) {
-        send_heartbeat();
+    if (stm32_is_online && last_valid_stm32_rx_ms != 0 &&
+        now - last_valid_stm32_rx_ms > STM32_RX_OFFLINE_TIMEOUT_MS) {
+        stm32_is_online = false;
+        device_state_set_stm32_online(false);
+        if (!offline_reported) {
+            Serial.println("[STM32] offline");
+            offline_reported = true;
+        }
     }
 
     drain_rx();

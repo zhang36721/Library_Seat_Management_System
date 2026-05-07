@@ -100,9 +100,7 @@ uint8_t kt_system_health_is_ok_for_watchdog(void)
     uint32_t now = kt_tick_get_ms();
 
     if (last_main_loop_ms == 0U ||
-        last_main_app_ms == 0U ||
-        last_esp32_task_ms == 0U ||
-        last_zigbee_task_ms == 0U) {
+        last_main_app_ms == 0U) {
         return 0U;
     }
 
@@ -110,12 +108,6 @@ uint8_t kt_system_health_is_ok_for_watchdog(void)
         return 0U;
     }
     if ((now - last_main_app_ms) > KT_WATCHDOG_TASK_TIMEOUT_MS) {
-        return 0U;
-    }
-    if ((now - last_esp32_task_ms) > KT_WATCHDOG_TASK_TIMEOUT_MS) {
-        return 0U;
-    }
-    if ((now - last_zigbee_task_ms) > KT_WATCHDOG_TASK_TIMEOUT_MS) {
         return 0U;
     }
 

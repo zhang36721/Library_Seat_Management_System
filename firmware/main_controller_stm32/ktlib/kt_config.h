@@ -65,7 +65,7 @@
  * Log System Configuration (used by kt_log.h / kt_log.c)
  *===========================================================================*/
 #define KT_LOG_ENABLE       1
-#define KT_LOG_LEVEL        0   /* 0=DEBUG, 1=INFO, 2=WARN, 3=ERR, 4=NONE */
+#define KT_LOG_LEVEL        1   /* 0=DEBUG, 1=INFO, 2=WARN, 3=ERR, 4=NONE */
 #define KT_LOG_BUFFER_SIZE  128
 #define KT_LOG_VERBOSE_ENABLE 0
 #define KT_LOG_HEARTBEAT_ENABLE 0
