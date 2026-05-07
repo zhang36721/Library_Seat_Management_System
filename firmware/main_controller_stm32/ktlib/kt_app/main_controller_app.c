@@ -173,8 +173,15 @@ static void oled_show_access_denied(const uint8_t uid[5])
 
 static void start_gate_cycle(void)
 {
+#if (MAIN_GATE_STEPPER_ENABLE != 0)
     gate_state = GATE_STATE_OPEN;
     KT_LOG_INFO("Gate cycle: OPEN");
+#else
+    gate_state = GATE_STATE_IDLE;
+    gate_motor_started = 0U;
+    kt_stepper_stop();
+    KT_LOG_INFO("Gate motor skipped");
+#endif
     kt_esp32_link_send_device_status();
 }
 

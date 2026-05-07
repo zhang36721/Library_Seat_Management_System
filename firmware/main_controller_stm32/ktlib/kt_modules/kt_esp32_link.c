@@ -382,13 +382,24 @@ static void handle_frame(uint8_t type, uint16_t seq, const uint8_t *data, uint16
         }
 #endif
     } else if (type == KT_MSG_ERR) {
-        link_ok = 0U;
         if (len >= 4U) {
-            KT_LOG_WARN("ESP32 RX: ERR err_seq=%u type=%s reason=%u",
-                        (unsigned int)get_u16_le(data),
-                        msg_type_text(data[2]),
-                        (unsigned int)data[3]);
+            if (!is_heartbeat_type(data[2])) {
+                link_ok = 0U;
+                KT_LOG_WARN("ESP32 RX: ERR err_seq=%u type=%s reason=%u",
+                            (unsigned int)get_u16_le(data),
+                            msg_type_text(data[2]),
+                            (unsigned int)data[3]);
+            }
+#if (KT_LOG_UART_FRAME_ENABLE != 0)
+            else {
+                KT_LOG_INFO("ESP32 RX: heartbeat ERR err_seq=%u type=%s reason=%u",
+                            (unsigned int)get_u16_le(data),
+                            msg_type_text(data[2]),
+                            (unsigned int)data[3]);
+            }
+#endif
         } else {
+            link_ok = 0U;
             KT_LOG_WARN("ESP32 RX: ERR seq=%u", (unsigned int)seq);
         }
     } else if (type == KT_MSG_WIFI_STATUS) {
