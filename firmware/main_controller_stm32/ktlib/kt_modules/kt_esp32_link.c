@@ -707,7 +707,8 @@ void kt_esp32_link_print_recent_rx(void)
 
 void kt_esp32_link_print_status(void)
 {
-    KT_LOG_INFO("ESP32 link: %s", link_ok ? "ONLINE" : (ever_online ? "OFFLINE" : "PENDING"));
+    KT_LOG_INFO("ESP32 link mode: STM32_PUSH");
+    KT_LOG_INFO("ESP32 peer RX: %s", link_ok ? "SEEN" : (ever_online ? "TIMEOUT" : "NOT_REQUIRED"));
     KT_LOG_INFO("ESP32 eof errors: %lu", (unsigned long)eof_error_count);
     KT_LOG_INFO("ESP32 rx overflow: %lu ring pending: %u",
                 (unsigned long)rx_overflow_count,
