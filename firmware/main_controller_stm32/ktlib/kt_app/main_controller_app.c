@@ -462,6 +462,9 @@ void main_controller_app_task(void)
         main_keys_set_home_state();
         main_controller_app_show_home();
     }
+    if (result_screen_active) {
+        return;
+    }
 
     if (gate_state != GATE_STATE_IDLE) {
         return;

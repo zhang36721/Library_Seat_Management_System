@@ -78,6 +78,7 @@ static uint32_t last_device_status_ms;
 static uint8_t device_status_dirty;
 static uint32_t link_led_on_ms;
 static uint8_t link_led_active;
+static uint8_t rx_crc_buf[6U + KT_BIN_MAX_PAYLOAD_LEN];
 static esp32_frame_t recent_frame;
 static char wifi_ssid[33];
 static uint8_t wifi_ip[4];
@@ -423,7 +424,6 @@ static void reset_rx(void)
 
 static void parse_byte(uint8_t b)
 {
-    uint8_t crc_buf[6 + KT_BIN_MAX_PAYLOAD_LEN];
     uint16_t calc_crc;
     uint16_t seq;
 
@@ -478,11 +478,11 @@ static void parse_byte(uint8_t b)
             reset_rx();
             break;
         }
-        memcpy(crc_buf, header, 6U);
+        memcpy(rx_crc_buf, header, 6U);
         if (payload_len > 0U) {
-            memcpy(&crc_buf[6], payload, payload_len);
+            memcpy(&rx_crc_buf[6], payload, payload_len);
         }
-        calc_crc = crc16_modbus(crc_buf, (uint16_t)(6U + payload_len));
+        calc_crc = crc16_modbus(rx_crc_buf, (uint16_t)(6U + payload_len));
         if (calc_crc == rx_crc) {
             seq = get_u16_le(&header[2]);
             handle_frame(header[1], seq, payload, payload_len);
