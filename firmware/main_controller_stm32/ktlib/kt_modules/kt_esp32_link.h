@@ -12,6 +12,7 @@ extern "C" {
 void kt_esp32_link_init(void);
 void kt_esp32_link_task(void);
 void kt_esp32_link_uart_rx_callback(UART_HandleTypeDef *huart);
+void kt_esp32_link_uart_tx_callback(UART_HandleTypeDef *huart);
 
 void kt_esp32_link_send_ping(void);
 void kt_esp32_link_send_bad_crc_test(void);

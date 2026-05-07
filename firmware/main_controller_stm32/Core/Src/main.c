@@ -233,6 +233,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     kt_port_uart_rx_callback(huart);
 }
 
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+    kt_esp32_link_uart_tx_callback(huart);
+}
+
 /* USER CODE END 4 */
 
 /**

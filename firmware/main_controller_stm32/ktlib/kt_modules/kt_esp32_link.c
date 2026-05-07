@@ -48,13 +48,17 @@ static uint8_t rx_ring_storage[ESP32_RX_RING_SIZE];
 static volatile uint32_t rx_overflow_count;
 static esp32_tx_item_t tx_queue[KT_ESP32_TX_QUEUE_LEN];
 static uint8_t tx_head;
-static uint8_t tx_tail;
-static uint8_t tx_count;
+static volatile uint8_t tx_tail;
+static volatile uint8_t tx_count;
+static volatile uint8_t tx_active;
+static uint8_t tx_active_bytes[ESP32_TX_FRAME_MAX_LEN];
+static uint16_t tx_active_len;
 static uint32_t tx_drop_count;
 static uint32_t tx_busy_count;
 static uint32_t tx_fail_count;
 static uint8_t last_tx_type;
 static HAL_StatusTypeDef last_tx_result;
+static uint32_t tx_active_start_ms;
 static esp32_rx_state_t rx_state = RX_WAIT_SOF1;
 static uint8_t header[6];
 static uint8_t header_pos;
@@ -162,6 +166,19 @@ static uint8_t tx_queue_push(uint8_t type, const uint8_t *frame, uint16_t len)
     }
     tx_count++;
     return 1U;
+}
+
+static void tx_queue_pop_completed(void)
+{
+    if (tx_count == 0U) {
+        return;
+    }
+
+    tx_tail++;
+    if (tx_tail >= KT_ESP32_TX_QUEUE_LEN) {
+        tx_tail = 0U;
+    }
+    tx_count--;
 }
 
 static uint8_t tx_queue_push_front(uint8_t type, const uint8_t *frame, uint16_t len)
@@ -508,6 +525,9 @@ void kt_esp32_link_init(void)
     tx_drop_count = 0U;
     tx_busy_count = 0U;
     tx_fail_count = 0U;
+    tx_active = 0U;
+    tx_active_len = 0U;
+    tx_active_start_ms = 0U;
     last_tx_type = 0U;
     last_tx_result = HAL_OK;
     recent_valid = 0U;
@@ -537,6 +557,17 @@ void kt_esp32_link_uart_rx_callback(UART_HandleTypeDef *huart)
     }
 }
 
+void kt_esp32_link_uart_tx_callback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == USART3 && tx_active != 0U) {
+        tx_active = 0U;
+        tx_active_len = 0U;
+        tx_active_start_ms = 0U;
+        last_tx_result = HAL_OK;
+        last_tx_ms = kt_tick_get_ms();
+    }
+}
+
 void kt_esp32_link_task(void)
 {
     uint8_t b;
@@ -549,22 +580,35 @@ void kt_esp32_link_task(void)
         rx_budget--;
     }
 
-    if (tx_count > 0U &&
+    if (tx_active != 0U) {
+        if (kt_tick_is_timeout(tx_active_start_ms, KT_ESP32_TX_TIMEOUT_MS)) {
+            (void)HAL_UART_AbortTransmit(&huart3);
+            tx_fail_count++;
+            last_tx_result = HAL_TIMEOUT;
+            tx_active = 0U;
+            tx_active_len = 0U;
+            tx_active_start_ms = 0U;
+            last_tx_ms = kt_tick_get_ms();
+        }
+    } else if (tx_count > 0U &&
         (last_tx_ms == 0U || kt_tick_is_timeout(last_tx_ms, KT_ESP32_TX_GAP_MS))) {
         if (huart3.gState == HAL_UART_STATE_READY) {
             item = &tx_queue[tx_tail];
-            st = HAL_UART_Transmit(&huart3, item->bytes, item->len, KT_ESP32_TX_TIMEOUT_MS);
+            memcpy(tx_active_bytes, item->bytes, item->len);
+            tx_active_len = item->len;
             last_tx_type = item->type;
+            tx_queue_pop_completed();
+            tx_active = 1U;
+            tx_active_start_ms = kt_tick_get_ms();
+            st = HAL_UART_Transmit_IT(&huart3, tx_active_bytes, tx_active_len);
             last_tx_result = st;
             last_tx_ms = kt_tick_get_ms();
             if (st != HAL_OK) {
                 tx_fail_count++;
+                tx_active = 0U;
+                tx_active_len = 0U;
+                tx_active_start_ms = 0U;
             }
-            tx_tail++;
-            if (tx_tail >= KT_ESP32_TX_QUEUE_LEN) {
-                tx_tail = 0U;
-            }
-            tx_count--;
         } else {
             tx_busy_count++;
         }
@@ -677,8 +721,9 @@ void kt_esp32_link_print_status(void)
     KT_LOG_INFO("ESP32 last tx=%lu ms last rx=%lu ms",
                 (unsigned long)last_tx_ms,
                 (unsigned long)last_rx_ms);
-    KT_LOG_INFO("ESP32 tx queue: pending=%u drop=%lu busy=%lu fail=%lu",
+    KT_LOG_INFO("ESP32 tx queue: pending=%u active=%u drop=%lu busy=%lu fail=%lu",
                 (unsigned int)tx_count,
+                (unsigned int)tx_active,
                 (unsigned long)tx_drop_count,
                 (unsigned long)tx_busy_count,
                 (unsigned long)tx_fail_count);
