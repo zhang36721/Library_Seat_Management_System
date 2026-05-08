@@ -68,8 +68,8 @@ Addresses are little-endian:
 
 | Node | Short address | Frame bytes |
 |------|---------------|-------------|
-| Main coordinator | `0x0000` | `00 00` |
-| Seat endpoint | `0x301E` | `1E 30` |
+| Main controller module | `0x301E` | `1E 30` |
+| Seat node module | `0x0000` | `00 00` |
 
 ZigBee uses binary payload only. ASCII text tunneling is not used.
 

@@ -6,8 +6,8 @@
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Debug 串口 | USART2_TX | RXD | PA2 | MCU -> 调试器 | 3.3V TTL, 115200 8N1 | 空闲高 | `FF CMD DATA FF` |
 | Debug 串口 | USART2_RX | TXD | PA3 | 调试器 -> MCU | 3.3V TTL, 115200 8N1 | 空闲高 | 不接 ZigBee |
-| ZigBee CC2530 | USART1_TX | P1.7 RX | PA9 | MCU -> ZigBee | 3.3V TTL, 38400 8N1 | 空闲高 | 发送给主控地址 `0x0000` |
-| ZigBee CC2530 | USART1_RX | P1.6 TX | PA10 | ZigBee -> MCU | 3.3V TTL, 38400 8N1 | 空闲高 | 座位端短地址 `0x301E` |
+| ZigBee CC2530 | USART1_TX | P1.7 RX | PA9 | MCU -> ZigBee | 3.3V TTL, 38400 8N1 | 空闲高 | 发送给主控地址 `0x301E` |
+| ZigBee CC2530 | USART1_RX | P1.6 TX | PA10 | ZigBee -> MCU | 3.3V TTL, 38400 8N1 | 空闲高 | 座位端模块已换为短地址 `0x0000` |
 | ZigBee CC2530 | 唤醒 | P2.0 | GND | 固定 | 低电平保持唤醒 | 唤醒 | VCC 只能接 3.3V |
 | HX711 | 数据 | DT | PA4 | HX711 -> MCU | 3.3V | 输入 | 座位 1 重力检测，ready 等待有超时 |
 | HX711 | 时钟 | SCK | PA5 | MCU -> HX711 | 3.3V | 低 | 未 ready 返回 UNKNOWN，不阻塞主循环 |

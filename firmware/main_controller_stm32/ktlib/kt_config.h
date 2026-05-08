@@ -34,8 +34,8 @@
 /* UART TX Timeout - max blocking time per transmit call */
 #define KT_UART_TX_TIMEOUT_MS     100
 
-#define ZIGBEE_ADDR_SELF       0x0000U
-#define ZIGBEE_ADDR_SEAT_NODE  0x301EU
+#define ZIGBEE_ADDR_SELF       0x301EU
+#define ZIGBEE_ADDR_SEAT_NODE  0x0000U
 
 /*===========================================================================
  * Persistent Boot Count
@@ -195,11 +195,12 @@
 #define KT_ESP32_LINK_LED_PULSE_MS    50U
 #define KT_ESP32_DEVICE_STATUS_MIN_MS 1000U
 #define KT_ESP32_TX_GAP_MS            5U
-#define KT_ESP32_TX_TIMEOUT_MS        30U
+#define KT_ESP32_TX_TIMEOUT_MS        200U
 #define KT_ESP32_RX_BYTES_PER_TASK    128U
 #define KT_ESP32_TX_QUEUE_LEN         12U
-#define KT_ESP32_ASCII_PUSH_ENABLE    1U
-#define KT_ESP32_BINARY_PUSH_ENABLE   0U
+#define KT_ESP32_BINARY_HEARTBEAT_MS  2000U
+#define KT_ESP32_ASCII_PUSH_ENABLE    0U
+#define KT_ESP32_BINARY_PUSH_ENABLE   1U
 
 #define KT_ZIGBEE_RX_BYTES_PER_TASK   32U
 

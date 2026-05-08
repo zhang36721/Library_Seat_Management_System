@@ -9,9 +9,13 @@ constexpr const char *SERVER_BASE_URL_301 = "http://192.168.141.236:18080";
 constexpr const char *SERVER_BASE_URL_310 = "http://192.168.223.93:18080";
 constexpr const char *SERVER_BASE_URL_PROD = "https://www.kento.top/library-seat";
 constexpr bool CLOUD_USE_PROD_SERVER = true;
-constexpr uint32_t CLOUD_HEARTBEAT_PERIOD_MS = 2000;
-constexpr uint32_t CLOUD_HTTP_TIMEOUT_MS = 500;
-constexpr uint32_t CLOUD_PENDING_RETRY_MS = 2000;
+constexpr uint32_t CLOUD_HEARTBEAT_PERIOD_MS = 4000;
+constexpr uint32_t CLOUD_HTTP_TIMEOUT_MS = 1000;
+constexpr uint32_t CLOUD_PENDING_RETRY_MS = 3000;
+constexpr uint32_t CLOUD_UPLOAD_MIN_GAP_MS = 500;
+constexpr uint32_t CLOUD_FAIL_COOLDOWN_MS = 4000;
+constexpr uint32_t CLOUD_DEVICE_STATUS_MIN_POST_MS = 3000;
+constexpr uint32_t CLOUD_CARD_EVENT_MIN_POST_MS = 500;
 #define CLOUD_VERBOSE_LOG 0
 
 void cloud_client_begin();

@@ -9,7 +9,7 @@
 | ESP32S3 | USART3_TX | GPIO48 UART_RX | PB10 | MCU -> ESP32 | 3.3V TTL, 115200 8N1 | 空闲高 | TX/RX 交叉，ESP32 侧 GPIO48 可能与板载 RGB LED 冲突 |
 | ESP32S3 | USART3_RX | GPIO47 UART_TX | PB11 | ESP32 -> MCU | 3.3V TTL, 115200 8N1 | 空闲高 | 必须共地 |
 | ZigBee CC2530 | USART1_TX | P1.7 RX | PA9 | MCU -> ZigBee | 3.3V TTL, 38400 8N1 | 空闲高 | 二进制帧 `FA ADDR_L ADDR_H LEN DATA F5` |
-| ZigBee CC2530 | USART1_RX | P1.6 TX | PA10 | ZigBee -> MCU | 3.3V TTL, 38400 8N1 | 空闲高 | 主控短地址 `0x0000`，座位端 `0x301E` |
+| ZigBee CC2530 | USART1_RX | P1.6 TX | PA10 | ZigBee -> MCU | 3.3V TTL, 38400 8N1 | 空闲高 | 主控模块已换为短地址 `0x301E`，座位端模块 `0x0000` |
 | ZigBee CC2530 | 唤醒 | P2.0 | GND | 固定 | 低电平保持唤醒 | 唤醒 | VCC 只能接 3.3V |
 | RC522 | SPI SCK | SCK | PA5 | MCU -> RC522 | 3.3V | 空闲低/按驱动 | 已实测可读 UID |
 | RC522 | SPI MISO | MISO | PA6 | RC522 -> MCU | 3.3V | 输入 | 已实测可读 UID |

@@ -1,6 +1,7 @@
 #include "stm32_link.h"
 #include "cloud_client.h"
 #include "device_state.h"
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
@@ -9,7 +10,10 @@ static uint16_t tx_seq = 1;
 static bool stm32_is_online = false;
 static bool offline_reported = false;
 static uint32_t last_valid_stm32_rx_ms = 0;
-constexpr uint32_t STM32_RX_OFFLINE_TIMEOUT_MS = 15000UL;
+constexpr uint32_t STM32_RX_OFFLINE_TIMEOUT_MS = 60000UL;
+constexpr bool STM32_ONLINE_LOG_ENABLE = false;
+constexpr uint32_t STM32_LINK_STATUS_LOG_MS = 10000UL;
+static uint32_t last_status_log_ms = 0;
 
 enum RxState { WAIT_SOF1, WAIT_SOF2, HEADER, PAYLOAD, CRC1, CRC2, EOF_BYTE };
 static RxState rx_state = WAIT_SOF1;
@@ -31,7 +35,7 @@ static void mark_stm32_online()
     device_state_set_stm32_online(true);
     offline_reported = false;
     last_valid_stm32_rx_ms = millis();
-    if (!was_online) {
+    if (STM32_ONLINE_LOG_ENABLE && !was_online) {
         Serial.println("[STM32] online");
     }
 }
@@ -343,7 +347,10 @@ static void handle_frame(uint8_t type, uint16_t seq, const uint8_t *p, uint16_t 
     if (UART_VERBOSE_LOG && !is_heartbeat_type(type)) {
         Serial.printf("[UART RX] type=%s seq=%u crc=OK\n", kt_msg_type_name(type), seq);
     }
-    if (type == KT_MSG_PING) {
+    if (type == KT_MSG_HEARTBEAT) {
+        mark_stm32_online();
+        device_state_note_heartbeat();
+    } else if (type == KT_MSG_PING) {
         mark_stm32_online();
         send_pong(seq);
     } else if (type == KT_MSG_HEARTBEAT_ACK || type == KT_MSG_ACK) {
@@ -465,9 +472,23 @@ void stm32_link_task()
         stm32_is_online = false;
         device_state_set_stm32_online(false);
         if (!offline_reported) {
-            Serial.println("[STM32] offline");
+            if (STM32_ONLINE_LOG_ENABLE) {
+                Serial.println("[STM32] offline");
+            }
             offline_reported = true;
         }
+    }
+
+    if (last_status_log_ms == 0 || now - last_status_log_ms >= STM32_LINK_STATUS_LOG_MS) {
+        DeviceStatus status = device_state_get_status();
+        uint32_t age = (last_valid_stm32_rx_ms == 0) ? 0 : (now - last_valid_stm32_rx_ms);
+        Serial.printf("[STM32] link=%s hb=%lu last_rx_age=%lums cards=%u logs=%u\n",
+                      stm32_is_online ? "online" : "offline",
+                      static_cast<unsigned long>(status.heartbeat_count),
+                      static_cast<unsigned long>(age),
+                      static_cast<unsigned int>(status.card_count),
+                      static_cast<unsigned int>(status.log_count));
+        last_status_log_ms = now;
     }
 
     drain_rx();

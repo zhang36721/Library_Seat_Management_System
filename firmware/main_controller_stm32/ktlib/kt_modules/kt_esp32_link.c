@@ -81,6 +81,7 @@ static int8_t wifi_rssi;
 static uint32_t last_rx_ms;
 static uint32_t last_tx_ms;
 static uint32_t last_heartbeat_ms;
+static uint32_t last_heartbeat_tx_ms;
 static uint32_t last_device_status_ms;
 static uint8_t device_status_dirty;
 static uint32_t link_led_on_ms;
@@ -269,7 +270,9 @@ static void send_frame(uint8_t type, const uint8_t *data, uint16_t len, uint8_t 
     pos += 2U;
     frame[pos++] = BIN_EOF;
 
-    if (((type == KT_MSG_HEARTBEAT_ACK) ?
+    if (((type == KT_MSG_HEARTBEAT ||
+          type == KT_MSG_HEARTBEAT_ACK ||
+          type == KT_MSG_CARD_EVENT) ?
          tx_queue_push_front(type, frame, pos) :
          tx_queue_push(type, frame, pos)) != 0U) {
 #if (KT_LOG_UART_FRAME_ENABLE != 0)
@@ -348,6 +351,19 @@ static void enqueue_device_status_now(void)
 void kt_esp32_link_send_device_status(void)
 {
     device_status_dirty = 1U;
+}
+
+static void send_heartbeat_now(void)
+{
+    uint8_t p[4];
+    uint32_t uptime = kt_tick_get_ms();
+
+    p[0] = (uint8_t)(uptime & 0xFFU);
+    p[1] = (uint8_t)((uptime >> 8U) & 0xFFU);
+    p[2] = (uint8_t)((uptime >> 16U) & 0xFFU);
+    p[3] = (uint8_t)((uptime >> 24U) & 0xFFU);
+    send_frame(KT_MSG_HEARTBEAT, p, sizeof(p), 0U);
+    last_heartbeat_tx_ms = kt_tick_get_ms();
 }
 
 static void pulse_link_led(void)
@@ -582,6 +598,7 @@ void kt_esp32_link_init(void)
     recovered_count = 0U;
     eof_error_count = 0U;
     last_heartbeat_ms = 0U;
+    last_heartbeat_tx_ms = 0U;
     link_led_active = 0U;
     wifi_state = 0U;
     wifi_rssi = 0;
@@ -623,6 +640,11 @@ void kt_esp32_link_task(void)
     while (rx_budget > 0U && kt_ringbuf_get(&rx_ring, &b) == 0) {
         parse_byte(b);
         rx_budget--;
+    }
+
+    if (last_heartbeat_tx_ms == 0U ||
+        kt_tick_is_timeout(last_heartbeat_tx_ms, KT_ESP32_BINARY_HEARTBEAT_MS)) {
+        send_heartbeat_now();
     }
 
     if (tx_active != 0U) {

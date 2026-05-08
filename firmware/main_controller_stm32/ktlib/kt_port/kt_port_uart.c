@@ -4,7 +4,9 @@
 
 /* Ring buffer backing storage: 256 bytes (255 usable) */
 #define KT_UART_RX_RING_SIZE  256
+#define KT_UART_TX_RING_SIZE  1024
 static uint8_t kt_uart_rx_ring_buf[KT_UART_RX_RING_SIZE];
+static uint8_t kt_uart_tx_ring_buf[KT_UART_TX_RING_SIZE];
 
 /* Single-byte receive buffer for UART2 interrupt reception */
 volatile uint8_t kt_uart_rx_byte = 0;
@@ -14,16 +16,64 @@ kt_ringbuf_t kt_uart_rx_ring;
 
 /* Overflow counter - incremented in ISR when ring buffer is full */
 static volatile uint32_t kt_uart_rx_overflow_cnt = 0;
+static volatile uint16_t kt_uart_tx_head = 0U;
+static volatile uint16_t kt_uart_tx_tail = 0U;
+static volatile uint8_t kt_uart_tx_busy = 0U;
+static volatile uint32_t kt_uart_tx_drop_cnt = 0U;
+static uint8_t kt_uart_tx_active_byte;
+
+static uint16_t tx_next(uint16_t value)
+{
+    value++;
+    if (value >= KT_UART_TX_RING_SIZE) {
+        value = 0U;
+    }
+    return value;
+}
+
+static void kt_port_uart_tx_kick(void)
+{
+    uint16_t tail;
+
+    if (kt_uart_tx_busy != 0U || kt_uart_tx_head == kt_uart_tx_tail) {
+        return;
+    }
+
+    tail = kt_uart_tx_tail;
+    kt_uart_tx_active_byte = kt_uart_tx_ring_buf[tail];
+    kt_uart_tx_tail = tx_next(tail);
+    kt_uart_tx_busy = 1U;
+    if (HAL_UART_Transmit_IT(&huart2, &kt_uart_tx_active_byte, 1U) != HAL_OK) {
+        kt_uart_tx_busy = 0U;
+        kt_uart_tx_drop_cnt++;
+    }
+}
+
+static uint8_t kt_port_uart_tx_enqueue(uint8_t byte)
+{
+    uint16_t next;
+
+    __disable_irq();
+    next = tx_next(kt_uart_tx_head);
+    if (next == kt_uart_tx_tail) {
+        kt_uart_tx_drop_cnt++;
+        __enable_irq();
+        return 0U;
+    }
+
+    kt_uart_tx_ring_buf[kt_uart_tx_head] = byte;
+    kt_uart_tx_head = next;
+    __enable_irq();
+    return 1U;
+}
 
 /**
- * @brief Transmit a single byte over USART2 (finite timeout)
- *
- *        Uses KT_UART_TX_TIMEOUT_MS to avoid permanent blocking if
- *        UART TX is stuck (e.g., no cable connected, RTS/CTS issue).
+ * @brief Queue a single byte over USART2
  */
 void kt_port_uart_tx_byte(uint8_t byte)
 {
-    HAL_UART_Transmit(&huart2, &byte, 1, (uint32_t)KT_UART_TX_TIMEOUT_MS);
+    (void)kt_port_uart_tx_enqueue(byte);
+    kt_port_uart_tx_kick();
 }
 
 /**
@@ -32,8 +82,9 @@ void kt_port_uart_tx_byte(uint8_t byte)
  */
 int kt_port_uart_tx_string(const char *str)
 {
-    HAL_StatusTypeDef status;
     size_t len;
+    size_t i;
+    uint8_t ok = 1U;
 
     if (str == NULL) {
         return HAL_ERROR;
@@ -44,9 +95,13 @@ int kt_port_uart_tx_string(const char *str)
         return HAL_OK;
     }
 
-    status = HAL_UART_Transmit(&huart2, (uint8_t *)str, len,
-                               (uint32_t)KT_UART_TX_TIMEOUT_MS);
-    return (int)status;
+    for (i = 0U; i < len; i++) {
+        if (kt_port_uart_tx_enqueue((uint8_t)str[i]) == 0U) {
+            ok = 0U;
+        }
+    }
+    kt_port_uart_tx_kick();
+    return ok ? HAL_OK : HAL_BUSY;
 }
 
 /**
@@ -61,6 +116,10 @@ void kt_port_uart_start_receive_it(void)
     kt_ringbuf_init(&kt_uart_rx_ring, kt_uart_rx_ring_buf, KT_UART_RX_RING_SIZE);
 
     kt_uart_rx_overflow_cnt = 0;
+    kt_uart_tx_head = 0U;
+    kt_uart_tx_tail = 0U;
+    kt_uart_tx_busy = 0U;
+    kt_uart_tx_drop_cnt = 0U;
 
     HAL_UART_Receive_IT(&huart2, (uint8_t *)&kt_uart_rx_byte, 1);
 }
@@ -119,4 +178,12 @@ uint32_t kt_port_uart_rx_overflow_count(void)
 {
     /* Safe read of volatile counter from main loop context */
     return kt_uart_rx_overflow_cnt;
+}
+
+void kt_port_uart_tx_callback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == USART2) {
+        kt_uart_tx_busy = 0U;
+        kt_port_uart_tx_kick();
+    }
 }

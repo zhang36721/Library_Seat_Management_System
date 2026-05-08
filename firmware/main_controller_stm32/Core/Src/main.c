@@ -38,6 +38,7 @@
 #include "kt_modules/kt_modules.h"
 #include "kt_modules/kt_uart_links.h"
 #include "kt_modules/kt_esp32_link.h"
+#include "kt_zigbee/kt_zigbee.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -235,7 +236,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
+    kt_zigbee_tx_callback(huart);
     kt_esp32_link_uart_tx_callback(huart);
+    kt_port_uart_tx_callback(huart);
 }
 
 /* USER CODE END 4 */

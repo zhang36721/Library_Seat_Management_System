@@ -41,15 +41,18 @@ static uint32_t zb_len_error;
 static uint32_t zb_tail_error;
 static uint32_t zb_addr_mismatch;
 static uint32_t zb_tx_fail_count;
+static uint32_t zb_raw_payload_count;
 static uint8_t zb_test_seq = 1U;
 static int32_t seat1_hx711_offset;
 static int32_t seat1_counts_per_gram_x100;
 static uint8_t seat1_hx711_tared;
 static uint32_t seat_last_poll_ms;
 static uint32_t seat_last_report_ms;
+static uint32_t seat_repeat_next_ms;
 static uint8_t seat_last_valid;
 static uint8_t seat_candidate_valid;
 static uint8_t seat_candidate_count;
+static uint8_t seat_repeat_remaining;
 
 typedef struct {
     uint32_t magic;
@@ -80,6 +83,33 @@ static seat_snapshot_t seat_last_snapshot;
 static seat_snapshot_t seat_candidate_snapshot;
 
 static void seat_node_send_snapshot(const seat_snapshot_t *snapshot, uint8_t verbose);
+
+static void seat_schedule_repeat(uint32_t now)
+{
+#if (SEAT_NODE_CHANGE_REPEAT_COUNT > 1U)
+    seat_repeat_remaining = (uint8_t)(SEAT_NODE_CHANGE_REPEAT_COUNT - 1U);
+    seat_repeat_next_ms = now + (uint32_t)SEAT_NODE_CHANGE_REPEAT_GAP_MS;
+#else
+    (void)now;
+    seat_repeat_remaining = 0U;
+    seat_repeat_next_ms = 0U;
+#endif
+}
+
+static void seat_repeat_task(uint32_t now)
+{
+    if (seat_last_valid == 0U || seat_repeat_remaining == 0U) {
+        return;
+    }
+
+    if ((int32_t)(now - seat_repeat_next_ms) < 0) {
+        return;
+    }
+
+    seat_node_send_snapshot(&seat_last_snapshot, 0U);
+    seat_repeat_remaining--;
+    seat_repeat_next_ms = now + (uint32_t)SEAT_NODE_CHANGE_REPEAT_GAP_MS;
+}
 
 static void zb_ring_clear(void)
 {
@@ -501,6 +531,7 @@ static void seat_poll_changes(void)
         seat_candidate_count = 0U;
         seat_led_apply(&seat_last_snapshot);
         seat_node_send_snapshot(&seat_last_snapshot, 1U);
+        seat_schedule_repeat(now);
         seat_last_report_ms = now;
         return;
     }
@@ -537,6 +568,7 @@ static void seat_poll_changes(void)
         seat_candidate_count = 0U;
         seat_led_apply(&seat_last_snapshot);
         seat_node_send_snapshot(&seat_last_snapshot, 1U);
+        seat_schedule_repeat(now);
         seat_last_report_ms = now;
     }
 }
@@ -556,6 +588,21 @@ static void zigbee_send_to_main(const uint8_t *data, uint8_t len, uint8_t verbos
                         ZIGBEE_ADDR_MAIN_CTRL,
                         (unsigned int)data[0],
                         (unsigned int)len);
+            if (len == 4U) {
+                KT_LOG_INFO("ZigBee TX frame: FA %02X %02X 04 %02X %02X %02X %02X F5",
+                            (unsigned int)(ZIGBEE_ADDR_MAIN_CTRL & 0xFFU),
+                            (unsigned int)((ZIGBEE_ADDR_MAIN_CTRL >> 8U) & 0xFFU),
+                            (unsigned int)data[0],
+                            (unsigned int)data[1],
+                            (unsigned int)data[2],
+                            (unsigned int)data[3]);
+            } else if (len == 2U) {
+                KT_LOG_INFO("ZigBee TX frame: FA %02X %02X 02 %02X %02X F5",
+                            (unsigned int)(ZIGBEE_ADDR_MAIN_CTRL & 0xFFU),
+                            (unsigned int)((ZIGBEE_ADDR_MAIN_CTRL >> 8U) & 0xFFU),
+                            (unsigned int)data[0],
+                            (unsigned int)data[1]);
+            }
         }
     }
 }
@@ -576,13 +623,19 @@ static void zigbee_handle_payload(uint16_t addr, const uint8_t *data, uint8_t le
 
     if (data[0] == ZB_PAYLOAD_PING && len >= 2U) {
         uint8_t pong[2] = {ZB_PAYLOAD_PONG, data[1]};
+#if (KT_LOG_VERBOSE_ENABLE != 0)
         KT_LOG_INFO("ZigBee RX PING seq=%u", (unsigned int)data[1]);
+#endif
         zigbee_send_to_main(pong, sizeof(pong), 1U);
     } else if (data[0] == ZB_PAYLOAD_PONG && len >= 2U) {
+#if (KT_LOG_VERBOSE_ENABLE != 0)
         KT_LOG_INFO("ZigBee RX PONG seq=%u", (unsigned int)data[1]);
+#endif
     } else {
+#if (KT_LOG_VERBOSE_ENABLE != 0)
         KT_LOG_INFO("ZigBee RX type=0x%02X len=%u",
                     (unsigned int)data[0], (unsigned int)len);
+#endif
     }
 }
 
@@ -644,6 +697,7 @@ static void zigbee_parse_byte(uint8_t b)
     case ZB_RAW_DATA:
         zb_parse_payload[zb_parse_index++] = b;
         if (zb_parse_index >= zb_parse_len) {
+            zb_raw_payload_count++;
             zigbee_handle_payload(zb_parse_addr, zb_parse_payload, zb_parse_len);
             zb_parse_state = ZB_WAIT_HEAD;
         }
@@ -671,12 +725,15 @@ void seat_node_app_init(void)
     zb_tail_error = 0U;
     zb_addr_mismatch = 0U;
     zb_tx_fail_count = 0U;
+    zb_raw_payload_count = 0U;
     zb_recent_len = 0U;
     seat_last_valid = 0U;
     seat_candidate_valid = 0U;
     seat_candidate_count = 0U;
     seat_last_poll_ms = 0U;
     seat_last_report_ms = 0U;
+    seat_repeat_next_ms = 0U;
+    seat_repeat_remaining = 0U;
     seat1_counts_per_gram_x100 = 0;
     seat1_hx711_tared = 0U;
     HAL_GPIO_WritePin(SEAT1_HX711_SCK_PORT, SEAT1_HX711_SCK_PIN, GPIO_PIN_RESET);
@@ -701,8 +758,10 @@ void seat_node_app_task(void)
 {
     uint8_t b;
     uint8_t rx_budget = SEAT_NODE_ZIGBEE_RX_BYTES_PER_TASK;
+    uint32_t now = HAL_GetTick();
 
     seat_poll_changes();
+    seat_repeat_task(now);
 
     while (rx_budget > 0U && zb_ring_get(&b) != 0U) {
         zb_rx_bytes++;
@@ -747,15 +806,16 @@ void seat_node_print_uart_roles(void)
 void seat_node_print_zigbee_info(void)
 {
     KT_LOG_INFO("ZigBee seat node link:");
-    KT_LOG_INFO("role=end-device self=0x%04X peer main=0x%04X",
+    KT_LOG_INFO("role=seat-node self=0x%04X peer main=0x%04X",
                 (unsigned int)ZIGBEE_ADDR_SELF,
                 (unsigned int)ZIGBEE_ADDR_MAIN_CTRL);
     KT_LOG_INFO("UART=USART1 PA9/TX PA10/RX 38400 8N1");
     KT_LOG_INFO("frame=FA ADDRL ADDRH LEN DATA F5");
-    KT_LOG_INFO("TX count=%lu TX fail=%lu RX frame ok=%lu",
+    KT_LOG_INFO("TX count=%lu TX fail=%lu RX payload ok=%lu raw=%lu",
                 (unsigned long)zb_tx_count,
                 (unsigned long)zb_tx_fail_count,
-                (unsigned long)zb_rx_count);
+                (unsigned long)zb_rx_count,
+                (unsigned long)zb_raw_payload_count);
     KT_LOG_INFO("RX bytes=%lu overflow=%lu len_err=%lu tail_err=%lu addr_mismatch=%lu",
                 (unsigned long)zb_rx_bytes,
                 (unsigned long)zb_rx_overflow,

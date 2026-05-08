@@ -10,6 +10,7 @@
 #include <string.h>
 
 #define ZIGBEE_RX_RING_SIZE 256U
+#define ZIGBEE_RX_DUMP_SIZE 32U
 #define ZIGBEE_PAYLOAD_SEAT_STATUS 0x10U
 #define ZIGBEE_PAYLOAD_PING        0x01U
 #define ZIGBEE_PAYLOAD_PONG        0x02U
@@ -45,8 +46,27 @@ static uint32_t zigbee_overflow;
 static uint32_t zigbee_addr_mismatch;
 static uint32_t zigbee_tx_fail_count;
 static uint8_t zigbee_ping_seq = 1U;
+static uint8_t zigbee_ping_pending;
+static uint8_t zigbee_ping_pending_seq;
+static uint32_t zigbee_raw_payload_count;
+static uint32_t zigbee_ignored_byte_count;
+static uint8_t zigbee_recent_rx[ZIGBEE_RX_DUMP_SIZE];
+static uint8_t zigbee_recent_rx_index;
+static uint8_t zigbee_recent_rx_count;
 static uint8_t last_seat_payload[4];
 static uint8_t last_seat_valid;
+
+static void zigbee_record_rx_byte(uint8_t b)
+{
+    zigbee_recent_rx[zigbee_recent_rx_index] = b;
+    zigbee_recent_rx_index++;
+    if (zigbee_recent_rx_index >= ZIGBEE_RX_DUMP_SIZE) {
+        zigbee_recent_rx_index = 0U;
+    }
+    if (zigbee_recent_rx_count < ZIGBEE_RX_DUMP_SIZE) {
+        zigbee_recent_rx_count++;
+    }
+}
 
 static void zigbee_send_payload(uint16_t dst_addr, const uint8_t *data, uint8_t len)
 {
@@ -79,13 +99,18 @@ static void zigbee_handle_payload(uint16_t addr, const uint8_t *data, uint8_t le
 
     if (data[0] == ZIGBEE_PAYLOAD_PING && len >= 2U) {
         uint8_t p[2] = {ZIGBEE_PAYLOAD_PONG, data[1]};
+#if (KT_LOG_VERBOSE_ENABLE != 0)
         KT_LOG_INFO("[ZIGBEE] RX PING seq=%u", (unsigned int)data[1]);
+#endif
         zigbee_send_payload(ZIGBEE_ADDR_SEAT_NODE, p, sizeof(p));
         return;
     }
 
     if (data[0] == ZIGBEE_PAYLOAD_PONG && len >= 2U) {
-        KT_LOG_INFO("[ZIGBEE] RX PONG seq=%u", (unsigned int)data[1]);
+        if (zigbee_ping_pending != 0U && data[1] == zigbee_ping_pending_seq) {
+            zigbee_ping_pending = 0U;
+            KT_LOG_INFO("[ZIGBEE] RX PONG seq=%u", (unsigned int)data[1]);
+        }
         return;
     }
 
@@ -137,12 +162,20 @@ static void zigbee_parse_byte(uint8_t b)
             zb_index = 1U;
             zb_payload[0] = b;
             zb_state = ZB_RAW_DATA;
-        } else if (b == ZIGBEE_PAYLOAD_PING || b == ZIGBEE_PAYLOAD_PONG) {
+        } else if (b == ZIGBEE_PAYLOAD_PONG && zigbee_ping_pending != 0U) {
             zb_addr = ZIGBEE_ADDR_SELF;
             zb_len = 2U;
             zb_index = 1U;
             zb_payload[0] = b;
             zb_state = ZB_RAW_DATA;
+        } else if (b == ZIGBEE_PAYLOAD_PING) {
+            zb_addr = ZIGBEE_ADDR_SELF;
+            zb_len = 2U;
+            zb_index = 1U;
+            zb_payload[0] = b;
+            zb_state = ZB_RAW_DATA;
+        } else {
+            zigbee_ignored_byte_count++;
         }
         break;
     case ZB_ADDR_L:
@@ -180,6 +213,7 @@ static void zigbee_parse_byte(uint8_t b)
     case ZB_RAW_DATA:
         zb_payload[zb_index++] = b;
         if (zb_index >= zb_len) {
+            zigbee_raw_payload_count++;
             zigbee_handle_payload(zb_addr, zb_payload, zb_len);
             zb_state = ZB_WAIT_HEAD;
         }
@@ -206,6 +240,12 @@ void kt_zigbee_uart_start_receive_it(void)
     zigbee_overflow = 0U;
     zigbee_addr_mismatch = 0U;
     zigbee_tx_fail_count = 0U;
+    zigbee_ping_pending = 0U;
+    zigbee_ping_pending_seq = 0U;
+    zigbee_raw_payload_count = 0U;
+    zigbee_ignored_byte_count = 0U;
+    zigbee_recent_rx_index = 0U;
+    zigbee_recent_rx_count = 0U;
     last_payload_len = 0U;
     last_addr = 0U;
     last_seat_valid = 0U;
@@ -230,6 +270,7 @@ void kt_zigbee_task(void)
 
     while (rx_budget > 0U && kt_ringbuf_get(&zigbee_rx_ring, &b) == 0) {
         zigbee_rx_bytes++;
+        zigbee_record_rx_byte(b);
         zigbee_parse_byte(b);
         rx_budget--;
     }
@@ -238,22 +279,54 @@ void kt_zigbee_task(void)
 
 void kt_zigbee_print_link_info(void)
 {
+    char dump_line[64];
+    uint8_t i;
+    uint8_t pos;
+    uint8_t start;
+
     KT_LOG_INFO("ZigBee main link:");
-    KT_LOG_INFO("role=coordinator self=0x%04X peer seat=0x%04X",
+    KT_LOG_INFO("role=main-controller self=0x%04X peer seat=0x%04X",
                 (unsigned int)ZIGBEE_ADDR_SELF,
                 (unsigned int)ZIGBEE_ADDR_SEAT_NODE);
     KT_LOG_INFO("UART=USART1 PA9/TX PA10/RX 38400 8N1");
+    KT_LOG_INFO("USART1 RX PA10 idle=%u SR=0x%04lX",
+                (unsigned int)((HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10) == GPIO_PIN_SET) ? 1U : 0U),
+                (unsigned long)huart1.Instance->SR);
     KT_LOG_INFO("frame=FA ADDRL ADDRH LEN DATA F5");
-    KT_LOG_INFO("TX count=%lu TX fail=%lu RX frame ok=%lu",
+    KT_LOG_INFO("TX count=%lu TX fail=%lu RX payload ok=%lu raw=%lu",
                 (unsigned long)zigbee_tx_count,
                 (unsigned long)zigbee_tx_fail_count,
-                (unsigned long)zigbee_rx_count);
-    KT_LOG_INFO("RX bytes=%lu len_err=%lu tail_err=%lu overflow=%lu addr_mismatch=%lu",
+                (unsigned long)zigbee_rx_count,
+                (unsigned long)zigbee_raw_payload_count);
+    KT_LOG_INFO("RX bytes=%lu len_err=%lu tail_err=%lu overflow=%lu addr_field_not_self=%lu",
                 (unsigned long)zigbee_rx_bytes,
                 (unsigned long)zigbee_len_error,
                 (unsigned long)zigbee_tail_error,
                 (unsigned long)zigbee_overflow,
                 (unsigned long)zigbee_addr_mismatch);
+    KT_LOG_INFO("ignored bytes=%lu", (unsigned long)zigbee_ignored_byte_count);
+    if (zigbee_recent_rx_count == 0U) {
+        KT_LOG_WARN("recent RX raw empty");
+    } else {
+        start = (uint8_t)((zigbee_recent_rx_index + ZIGBEE_RX_DUMP_SIZE - zigbee_recent_rx_count) % ZIGBEE_RX_DUMP_SIZE);
+        for (i = 0U; i < zigbee_recent_rx_count; i += 16U) {
+            uint8_t j;
+            int written = 0;
+            dump_line[0] = '\0';
+            for (j = 0U; j < 16U && (uint8_t)(i + j) < zigbee_recent_rx_count; j++) {
+                pos = (uint8_t)((start + i + j) % ZIGBEE_RX_DUMP_SIZE);
+                written += snprintf(&dump_line[written],
+                                    sizeof(dump_line) - (uint32_t)written,
+                                    "%02X ",
+                                    (unsigned int)zigbee_recent_rx[pos]);
+                if (written < 0 || (uint32_t)written >= sizeof(dump_line)) {
+                    break;
+                }
+            }
+            KT_LOG_INFO("recent RX raw: %s", dump_line);
+        }
+    }
+    KT_LOG_INFO("addr field is target/echo field; not-self is diagnostic only");
     if (last_payload_len == 0U) {
         KT_LOG_WARN("last payload empty");
     } else {
@@ -290,6 +363,8 @@ void kt_zigbee_send_ping(void)
     p[0] = ZIGBEE_PAYLOAD_PING;
     p[1] = zigbee_ping_seq++;
     zigbee_send_payload(ZIGBEE_ADDR_SEAT_NODE, p, sizeof(p));
+    zigbee_ping_pending = 1U;
+    zigbee_ping_pending_seq = p[1];
     KT_LOG_INFO("[ZIGBEE] TX PING seq=%u dst=0x%04X",
                 (unsigned int)p[1], (unsigned int)ZIGBEE_ADDR_SEAT_NODE);
     KT_LOG_INFO("[ZIGBEE] TX frame: FA %02X %02X 02 01 %02X F5",
@@ -324,6 +399,12 @@ void kt_zigbee_clear_stats(void)
     zigbee_overflow = 0U;
     zigbee_addr_mismatch = 0U;
     zigbee_tx_fail_count = 0U;
+    zigbee_ping_pending = 0U;
+    zigbee_ping_pending_seq = 0U;
+    zigbee_raw_payload_count = 0U;
+    zigbee_ignored_byte_count = 0U;
+    zigbee_recent_rx_index = 0U;
+    zigbee_recent_rx_count = 0U;
     last_payload_len = 0U;
     last_seat_valid = 0U;
     KT_LOG_INFO("ZigBee stats cleared");

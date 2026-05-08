@@ -27,6 +27,7 @@
 #include "kt_port_uart.h"
 #include "kt_port_gpio.h"
 #include "seat_node_app.h"
+#include "kt_zigbee/kt_zigbee.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -163,6 +164,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     seat_node_zigbee_rx_callback(huart);
     kt_port_uart_rx_callback(huart);
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+    kt_zigbee_tx_callback(huart);
+    kt_port_uart_tx_callback(huart);
 }
 
 /* USER CODE END 4 */

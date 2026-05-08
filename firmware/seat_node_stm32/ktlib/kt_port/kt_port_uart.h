@@ -51,6 +51,7 @@ void kt_port_uart_start_receive_it(void);
  * @param huart  UART handle that triggered the callback
  */
 void kt_port_uart_rx_callback(UART_HandleTypeDef *huart);
+void kt_port_uart_tx_callback(UART_HandleTypeDef *huart);
 
 #ifdef __cplusplus
 }

@@ -2,6 +2,9 @@
 #include "kt_config.h"
 #include <string.h>
 
+#define KT_ZIGBEE_TX_QUEUE_LEN 8U
+#define KT_ZIGBEE_TX_FRAME_MAX (KT_ZIGBEE_MAX_PAYLOAD_LEN + 5U)
+
 typedef enum
 {
     ZB_PARSE_WAIT_HEAD = 0,
@@ -20,6 +23,19 @@ static uint8_t parse_len;
 static uint8_t parse_index;
 static uint8_t parse_payload[KT_ZIGBEE_MAX_PAYLOAD_LEN];
 
+typedef struct {
+    uint8_t len;
+    uint8_t bytes[KT_ZIGBEE_TX_FRAME_MAX];
+} zigbee_tx_item_t;
+
+static zigbee_tx_item_t tx_queue[KT_ZIGBEE_TX_QUEUE_LEN];
+static volatile uint8_t tx_head;
+static volatile uint8_t tx_tail;
+static volatile uint8_t tx_count;
+static volatile uint8_t tx_active;
+static uint8_t tx_active_bytes[KT_ZIGBEE_TX_FRAME_MAX];
+static uint8_t tx_active_len;
+
 static void parser_reset(void)
 {
     parse_state = ZB_PARSE_WAIT_HEAD;
@@ -32,14 +48,47 @@ void kt_zigbee_init(UART_HandleTypeDef *uart, kt_zigbee_rx_callback_t callback)
 {
     zigbee_uart = uart;
     zigbee_callback = callback;
+    tx_head = 0U;
+    tx_tail = 0U;
+    tx_count = 0U;
+    tx_active = 0U;
+    tx_active_len = 0U;
     parser_reset();
+}
+
+static void tx_kick(void)
+{
+    zigbee_tx_item_t *item;
+
+    if (zigbee_uart == 0 || tx_active != 0U || tx_count == 0U) {
+        return;
+    }
+
+    if (zigbee_uart->gState != HAL_UART_STATE_READY) {
+        return;
+    }
+
+    item = &tx_queue[tx_tail];
+    memcpy(tx_active_bytes, item->bytes, item->len);
+    tx_active_len = item->len;
+    tx_tail++;
+    if (tx_tail >= KT_ZIGBEE_TX_QUEUE_LEN) {
+        tx_tail = 0U;
+    }
+    tx_count--;
+    tx_active = 1U;
+
+    if (HAL_UART_Transmit_IT(zigbee_uart, tx_active_bytes, tx_active_len) != HAL_OK) {
+        tx_active = 0U;
+        tx_active_len = 0U;
+    }
 }
 
 HAL_StatusTypeDef kt_zigbee_send_to(uint16_t dst_addr,
                                     const uint8_t *data,
                                     uint8_t len)
 {
-    uint8_t frame[KT_ZIGBEE_MAX_PAYLOAD_LEN + 5U];
+    uint8_t frame[KT_ZIGBEE_TX_FRAME_MAX];
     uint8_t index = 0U;
 
     if (zigbee_uart == 0 || data == 0 || len == 0U || len > KT_ZIGBEE_MAX_PAYLOAD_LEN) {
@@ -54,7 +103,31 @@ HAL_StatusTypeDef kt_zigbee_send_to(uint16_t dst_addr,
     index = (uint8_t)(index + len);
     frame[index++] = KT_ZIGBEE_FRAME_TAIL;
 
-    return HAL_UART_Transmit(zigbee_uart, frame, index, KT_UART_TX_TIMEOUT_MS);
+    __disable_irq();
+    if (tx_count >= KT_ZIGBEE_TX_QUEUE_LEN) {
+        __enable_irq();
+        return HAL_BUSY;
+    }
+
+    tx_queue[tx_head].len = index;
+    memcpy(tx_queue[tx_head].bytes, frame, index);
+    tx_head++;
+    if (tx_head >= KT_ZIGBEE_TX_QUEUE_LEN) {
+        tx_head = 0U;
+    }
+    tx_count++;
+    __enable_irq();
+    tx_kick();
+    return HAL_OK;
+}
+
+void kt_zigbee_tx_callback(UART_HandleTypeDef *huart)
+{
+    if (zigbee_uart != 0 && huart->Instance == zigbee_uart->Instance) {
+        tx_active = 0U;
+        tx_active_len = 0U;
+        tx_kick();
+    }
 }
 
 void kt_zigbee_rx_byte(uint8_t byte)

@@ -101,6 +101,7 @@ constexpr const char *SERVER_BASE_URL_301 = "http://192.168.141.236:18080";
 | [docs/05_test_record.md](docs/05_test_record.md) | 测试记录 |
 | [docs/06_demo_guide.md](docs/06_demo_guide.md) | 演示指南 |
 | [docs/07_cloud_deploy.md](docs/07_cloud_deploy.md) | 云服务器部署指南 |
+| [docs/08_sample_handover.md](docs/08_sample_handover.md) | 样品交付说明 |
 | [hardware/wiring/main_controller_wiring.md](hardware/wiring/main_controller_wiring.md) | STM32 主控接线图 |
 | [hardware/wiring/seat_node_wiring.md](hardware/wiring/seat_node_wiring.md) | 座位端接线图 |
 | [hardware/wiring/esp32s3_wiring.md](hardware/wiring/esp32s3_wiring.md) | ESP32S3 接线图 |

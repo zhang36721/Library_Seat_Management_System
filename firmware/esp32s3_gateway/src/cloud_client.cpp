@@ -9,9 +9,13 @@ static uint32_t last_success_upload_ms = 0;
 static uint32_t failed_upload_count = 0;
 static bool device_status_pending = false;
 static uint32_t last_device_status_try_ms = 0;
+static uint32_t last_device_status_post_ms = 0;
 static uint32_t last_card_event_try_ms = 0;
+static uint32_t last_card_event_post_ms = 0;
+static uint32_t last_http_end_ms = 0;
+static uint32_t last_http_fail_ms = 0;
 
-constexpr size_t CLOUD_CARD_EVENT_QUEUE_MAX = 8;
+constexpr size_t CLOUD_CARD_EVENT_QUEUE_MAX = 16;
 static CardEvent card_event_queue[CLOUD_CARD_EVENT_QUEUE_MAX];
 static size_t card_event_head = 0;
 static size_t card_event_tail = 0;
@@ -61,8 +65,11 @@ static String json_escape(const String &value)
 
 static bool post_json(const char *name, const char *path, const String &body, const String &extra = "")
 {
+    uint32_t start_ms = millis();
+
     if (WiFi.status() != WL_CONNECTED) {
         failed_upload_count++;
+        last_http_fail_ms = millis();
         Serial.printf("[CLOUD] %s POST FAIL code=-1 reason=wifi_offline failed=%lu\n",
                       name, static_cast<unsigned long>(failed_upload_count));
         return false;
@@ -81,6 +88,8 @@ static bool post_json(const char *name, const char *path, const String &body, co
 
     if (!begin_ok) {
         failed_upload_count++;
+        last_http_end_ms = millis();
+        last_http_fail_ms = last_http_end_ms;
         Serial.printf("[CLOUD] %s POST FAIL code=-1 reason=begin_failed failed=%lu\n",
                       name, static_cast<unsigned long>(failed_upload_count));
         return false;
@@ -88,24 +97,41 @@ static bool post_json(const char *name, const char *path, const String &body, co
     http.addHeader("Content-Type", "application/json");
     int code = http.POST(body);
     http.end();
+    last_http_end_ms = millis();
 
     if (code >= 200 && code < 300) {
         last_success_upload_ms = millis();
+        last_http_fail_ms = 0;
         if (String(name) == "card-event") {
             Serial.printf("[CLOUD] %s POST OK code=%d %s last_upload_ms=%lu\n",
                           name, code, extra.c_str(), static_cast<unsigned long>(last_success_upload_ms));
         } else if (CLOUD_VERBOSE_LOG) {
-            Serial.printf("[CLOUD] %s POST OK code=%d last_upload_ms=%lu\n",
-                          name, code, static_cast<unsigned long>(last_success_upload_ms));
+            Serial.printf("[CLOUD] %s POST OK code=%d cost=%lums\n",
+                          name, code, static_cast<unsigned long>(last_http_end_ms - start_ms));
         }
         return true;
     }
 
     failed_upload_count++;
+    last_http_fail_ms = last_http_end_ms;
     String reason = HTTPClient::errorToString(code);
-    Serial.printf("[CLOUD] %s POST FAIL code=%d reason=%s failed=%lu\n",
-                  name, code, reason.c_str(), static_cast<unsigned long>(failed_upload_count));
+    Serial.printf("[CLOUD] %s POST FAIL code=%d reason=%s failed=%lu cost=%lums\n",
+                  name, code, reason.c_str(), static_cast<unsigned long>(failed_upload_count),
+                  static_cast<unsigned long>(last_http_end_ms - start_ms));
     return false;
+}
+
+static bool cloud_upload_ready(uint32_t now)
+{
+    if (last_http_end_ms != 0 && now - last_http_end_ms < CLOUD_UPLOAD_MIN_GAP_MS) {
+        return false;
+    }
+
+    if (last_http_fail_ms != 0 && now - last_http_fail_ms < CLOUD_FAIL_COOLDOWN_MS) {
+        return false;
+    }
+
+    return true;
 }
 
 static String status_bool(bool value)
@@ -140,7 +166,11 @@ void cloud_client_begin()
     failed_upload_count = 0;
     device_status_pending = false;
     last_device_status_try_ms = 0;
+    last_device_status_post_ms = 0;
     last_card_event_try_ms = 0;
+    last_card_event_post_ms = 0;
+    last_http_end_ms = 0;
+    last_http_fail_ms = 0;
     card_event_head = 0;
     card_event_tail = 0;
     card_event_count = 0;
@@ -151,28 +181,37 @@ void cloud_client_begin()
 void cloud_client_task()
 {
     uint32_t now = millis();
+    if (!cloud_upload_ready(now)) {
+        return;
+    }
+
     if (last_heartbeat_post_ms == 0 || now - last_heartbeat_post_ms >= CLOUD_HEARTBEAT_PERIOD_MS) {
         last_heartbeat_post_ms = now;
         post_heartbeat();
         return;
     }
 
-    if (card_event_count > 0 && (last_card_event_try_ms == 0 ||
-                                 now - last_card_event_try_ms >= CLOUD_PENDING_RETRY_MS)) {
+    if (card_event_count > 0 &&
+        (last_card_event_try_ms == 0 || now - last_card_event_try_ms >= CLOUD_PENDING_RETRY_MS) &&
+        (last_card_event_post_ms == 0 || now - last_card_event_post_ms >= CLOUD_CARD_EVENT_MIN_POST_MS)) {
         last_card_event_try_ms = now;
         if (cloud_client_upload_card_event(card_event_queue[card_event_tail])) {
+            last_card_event_post_ms = millis();
             card_event_tail = (card_event_tail + 1U) % CLOUD_CARD_EVENT_QUEUE_MAX;
             card_event_count--;
         }
         return;
     }
 
-    if (device_status_pending && (last_device_status_try_ms == 0 ||
-                                  now - last_device_status_try_ms >= CLOUD_PENDING_RETRY_MS)) {
+    if (device_status_pending &&
+        (last_device_status_try_ms == 0 || now - last_device_status_try_ms >= CLOUD_PENDING_RETRY_MS) &&
+        (last_device_status_post_ms == 0 || now - last_device_status_post_ms >= CLOUD_DEVICE_STATUS_MIN_POST_MS)) {
         last_device_status_try_ms = now;
         if (cloud_client_upload_device_status()) {
+            last_device_status_post_ms = millis();
             device_status_pending = false;
         }
+        return;
     }
 }
 
@@ -244,6 +283,7 @@ void cloud_client_request_card_event_upload(const CardEvent &event)
     card_event_queue[card_event_head] = event;
     card_event_head = (card_event_head + 1U) % CLOUD_CARD_EVENT_QUEUE_MAX;
     card_event_count++;
+    last_card_event_try_ms = 0;
 }
 
 uint32_t cloud_client_failed_count()

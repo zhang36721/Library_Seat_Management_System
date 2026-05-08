@@ -20,6 +20,7 @@ void kt_zigbee_init(UART_HandleTypeDef *uart, kt_zigbee_rx_callback_t callback);
 HAL_StatusTypeDef kt_zigbee_send_to(uint16_t dst_addr,
                                     const uint8_t *data,
                                     uint8_t len);
+void kt_zigbee_tx_callback(UART_HandleTypeDef *huart);
 void kt_zigbee_rx_byte(uint8_t byte);
 
 #ifdef __cplusplus

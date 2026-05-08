@@ -19,14 +19,14 @@ extern volatile uint8_t kt_uart_rx_byte;
 extern kt_ringbuf_t kt_uart_rx_ring;
 
 /**
- * @brief Transmit a string over USART2 (blocking)
+ * @brief Queue a string for USART2 interrupt transmission
  * @param str  Null-terminated string to send
  * @return HAL_StatusTypeDef  HAL_OK on success, error code otherwise
  */
 int kt_port_uart_tx_string(const char *str);
 
 /**
- * @brief Transmit a single byte over USART2 (blocking)
+ * @brief Queue a single byte for USART2 interrupt transmission
  * @param byte  Byte to send
  */
 void kt_port_uart_tx_byte(uint8_t byte);
@@ -45,6 +45,7 @@ void kt_port_uart_start_receive_it(void);
  * @param huart  UART handle that triggered the callback
  */
 void kt_port_uart_rx_callback(UART_HandleTypeDef *huart);
+void kt_port_uart_tx_callback(UART_HandleTypeDef *huart);
 
 /**
  * @brief Get number of bytes available for reading from the RX ring buffer
